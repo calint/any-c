@@ -1,16 +1,17 @@
 #include<stdlib.h>
 #include<stdio.h>
 
-#define class_path_bytes 8
+#define class_depth_cap 8
 #define object_count_cap 1024
 #define object_parts_cap 1
+
+struct vec4{float x,y,z,w;};
 
 struct part{};
 
 struct object{
 	struct part parts[object_parts_cap];
-
-	char class[class_path_bytes];
+	char class[class_depth_cap];
 	char*alloc_byte_ptr;
 	struct object*parent;
 };
@@ -29,6 +30,10 @@ struct{
 struct part_name{
 	struct part part;
 	const char*name;
+};
+
+struct ninja{
+	struct object object;
 };
 
 inline static void objects_init(){
