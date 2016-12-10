@@ -4,7 +4,9 @@
 
 inline static int run(int c,char**a){
 	puts("run");
-	ninja*n=ninja_new(0);
+	ninja*o;
+	o=ninja_new(0);
+	o=ninja_new(0);
 	ninjas_print(&_ninjas);
 }
 
