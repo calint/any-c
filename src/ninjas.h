@@ -25,13 +25,13 @@ inline static void _ninjas_insure_free_capcity(ninjas*o,unsigned n){
 		return;
 	if(o->data){
 		unsigned new_cap=o->cap*2;
-		ninja *new_data=realloc(o->data,sizeof(ninja)*new_cap);
+		ninja* *new_data=realloc(o->data,sizeof(ninja*)*new_cap);
 		if(!new_data){
 			fprintf(stderr,"\nout-of-memory");
 			fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
 			exit(-1);
 		}
-		if(new_data!=*o->data){
+		if((ninja*)new_data!=*o->data){
 			o->data=new_data;
 		}
 		o->cap=new_cap;
@@ -130,7 +130,7 @@ inline static void ninjas_print(ninjas*o){
 
 //-----------------------------------------------------------------------------
 
-static ninja _ninjas;
+static ninjas _ninjas;
 
 inline static/*gives*/ninja*ninja_new(ninja*def){
 	ninja*o=malloc(sizeof(ninja));
