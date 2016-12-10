@@ -1,0 +1,143 @@
+#pragma once
+#include<unistd.h>
+#include<stdlib.h>
+#include<stdio.h>
+${include}
+//----------------------------------------------------------------------config
+
+#define ${nameplr}_initial_capacity 8
+#define ${nameplr}_bounds_check 1
+
+//------------------------------------------------------------------------ def
+
+typedef struct _${nameplr}{
+	${type}${ptr} *data;
+	unsigned count;
+	unsigned cap;
+}${nameplr};
+#define ${nameplr}_def (${nameplr}{0,0,0})
+
+//--------------------------------------------------------------------- private
+
+inline static void _${nameplr}_insure_free_capcity(${nameplr}*o,unsigned n){
+	const unsigned rem=o->cap-o->count;
+	if(rem>=n)
+		return;
+	if(o->data){
+		unsigned new_cap=o->cap*2;
+		${type} *new_data=realloc(o->data,sizeof(${type})*new_cap);
+		if(!new_data){
+			fprintf(stderr,"\nout-of-memory");
+			fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
+			exit(-1);
+		}
+		if(new_data!=${ptr}o->data){
+			o->data=new_data;
+		}
+		o->cap=new_cap;
+		return;
+	}
+	o->cap=${nameplr}_initial_capacity;
+	o->data=malloc(sizeof(${type})*o->cap);
+	if(!o->data){
+		fprintf(stderr,"\nout-of-memory");
+		fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
+		exit(-1);
+	}
+}
+
+//---------------------------------------------------------------------- public
+
+inline static void ${nameplr}_add(${nameplr}*o,${type}${ptr} obj){
+	_${nameplr}_insure_free_capcity(o,1);
+	*(o->data+o->count++)=obj;
+}
+
+//-----------------------------------------------------------------------------
+
+inline static ${type}${ptr} ${nameplr}_get(${nameplr}*o,unsigned index){
+#ifdef ${nameplr}_bounds_check
+	if(index>=o->cap){
+		fprintf(stderr,"\nindex-out-of-bounds");
+		fprintf(stderr,"\t%s\n\n%d  index: %u    capacity: %u\n",
+				__FILE__,__LINE__,index,o->cap);
+		exit(-1);
+	}
+#endif
+	${type}${ptr} p=*(o->data+index);
+	return p;
+}
+
+//-----------------------------------------------------------------------------
+
+inline static ${type}${ptr} ${nameplr}_get_last(${nameplr}*o){
+	${type}${ptr} p=*(o->data+o->count-1);
+	return p;
+}
+
+//-----------------------------------------------------------------------------
+
+inline static size_t ${nameplr}_size_in_bytes(${nameplr}*o){
+	return o->count*sizeof(${type});
+}
+
+//-----------------------------------------------------------------------------
+
+inline static void ${nameplr}_free(${nameplr}*o){
+	if(!o->data)
+		return;
+	free(o->data);
+}
+
+//-----------------------------------------------------------------------------
+
+inline static void ${nameplr}_add_list(${nameplr}*o,
+		/*copies*/const ${type}${ptr}*str,int n){
+	//? optimize
+	const ${type}${ptr}*p=str;
+	while(n--){
+		_${nameplr}_insure_free_capcity(o,1);
+		*(o->data+o->count++)=*p++;
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+inline static void ${nameplr}_add_string(${nameplr}*o,
+		/*copies*/const ${type}${ptr}*str){
+	//? optimize
+	const ${type}${ptr}*p=str;
+	while(*(char*)p){
+		_${nameplr}_insure_free_capcity(o,1);
+		*(o->data+o->count++)=*p++;
+	}
+}
+
+//-----------------------------------------------------------------------------
+
+inline static void ${nameplr}_write_to_fd(${nameplr}*o,int fd){
+	if(!o->data)
+		return;
+	write(fd,o->data,o->count);
+}
+
+//-----------------------------------------------------------------------------
+
+inline static void ${nameplr}_print(${nameplr}*o){
+	printf("${nameplr}[ data: %p  cap: %u  count: %u ]",
+			(void*)o->data,o->cap,o->count);
+}
+
+//-----------------------------------------------------------------------------
+
+static ${name} _${nameplr};
+
+inline static/*gives*/${name}*${name}_new(${name}*def){
+	${name}*o=malloc(sizeof(${name}));
+	if(def)
+		*o=*def;
+	${nameplr}_add(&_${nameplr},o);
+	return o;
+}
+
+

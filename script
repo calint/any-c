@@ -1,0 +1,40 @@
+ : ninja
+ # /ninja/
+ : name
+ # /ninja/name/
+ : "default ninja"
+ : ..
+ # /ninja/
+ : stars
+ # /ninja/stars
+ : 1
+ : save
+ # saved ninja.tc
+ : make
+ 
+ .....
+ ninja.tc
+ ninja
+   name "default ninja"
+   stars 1
+done
+ ....
+ 
+ struct name{char d[16];}
+ struct name name_def={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+ 
+ struct stars{int d;}
+ struct stars stars_def={1};
+ 
+ struct ninja{
+ 	struct name name_;
+ 	struct stars stars_;
+ }
+ struct ninja ninja_def{{"default_ninja"},{1}};
+ 
+ struct ninja ninja_dupl(ninja*this){
+ }
+ 
+ struct ninja_all;
+ struct ninja*ninja_alloc(const ninja*template){
+ }

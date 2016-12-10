@@ -1,42 +1,46 @@
 #pragma once
-#include"typedefs.h"
-//----------------------------------------------------------------------config
+#include<stdio.h>
+#include<stdlib.h>
 
-#define ${name}_initial_capacity 8
-#define ${name}_bounds_check 1
+//----------------------------------------------------------------------config
+typedef unsigned arrayix;
+#define nullptr 0
+
+#define string_initial_capacity 8
+#define string_bounds_check 1
 
 //------------------------------------------------------------------------ def
 
-typedef struct ${name}{
-	${type} *data;
+typedef struct string{
+	char *data;
 	unsigned count;
 	unsigned cap;
-}${name};
-${name} ${name}_def={0,0,0};
-
+}string;
+static string const string_init={nullptr,0,0};
+#define string_def {nullptr,0,0}
 //--------------------------------------------------------------------- private
 
-inline static void _${name}_insure_free_capcity(${name}*this,arrayix n){
-	const unsigned rem=this->cap-this->count;
+inline static void _string_insure_free_capcity(string*o,arrayix n){
+	const unsigned rem=o->cap-o->count;
 	if(rem>=n)
 		return;
-	if(this->data){
-		unsigned new_cap=this->cap*2;
-		${type} *new_data=realloc(this->data,sizeof(${type})*new_cap);
+	if(o->data){
+		unsigned new_cap=o->cap*2;
+		char *new_data=realloc(o->data,sizeof(char)*new_cap);
 		if(!new_data){
 			fprintf(stderr,"\nout-of-memory");
 			fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
 			exit(-1);
 		}
-		if(new_data!=this->data){
-			this->data=new_data;
+		if(new_data!=o->data){
+			o->data=new_data;
 		}
-		this->cap=new_cap;
+		o->cap=new_cap;
 		return;
 	}
-	this->cap=${name}_initial_capacity;
-	this->data=malloc(sizeof(${type})*this->cap);
-	if(!this->data){
+	o->cap=string_initial_capacity;
+	o->data=malloc(sizeof(char)*o->cap);
+	if(!o->data){
 		fprintf(stderr,"\nout-of-memory");
 		fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
 		exit(-1);
@@ -45,15 +49,15 @@ inline static void _${name}_insure_free_capcity(${name}*this,arrayix n){
 
 //---------------------------------------------------------------------- public
 
-inline static void ${name}_add(${name}*this,${type} o){
-	_${name}_insure_free_capcity(this,1);
+inline static void string_add(string*this,char o){
+	_string_insure_free_capcity(this,1);
 	*(this->data+this->count++)=o;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static ${type} ${name}_get(${name}*this,arrayix index){
-#ifdef ${name}_bounds_check
+inline static char string_get(string*this,arrayix index){
+#ifdef string_bounds_check
 	if(index>=this->cap){
 		fprintf(stderr,"\nindex-out-of-bounds");
 		fprintf(stderr,"\t%s\n\n%d  index: %u    capacity: %u\n",
@@ -61,26 +65,26 @@ inline static ${type} ${name}_get(${name}*this,arrayix index){
 		exit(-1);
 	}
 #endif
-	${type} p=*(this->data+index);
+	char p=*(this->data+index);
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static ${type} ${name}_get_last(${name}*this){
-	${type} p=*(this->data+this->count-1);
+inline static char string_get_last(string*this){
+	char p=*(this->data+this->count-1);
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static size_t ${name}_size_in_bytes(${name}*this){
-	return this->count*sizeof(${type});
+inline static size_t string_size_in_bytes(string*this){
+	return this->count*sizeof(char);
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_free(${name}*this){
+inline static void string_free(string*this){
 	if(!this->data)
 		return;
 	free(this->data);
@@ -88,29 +92,29 @@ inline static void ${name}_free(${name}*this){
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_add_list(${name}*this,/*copies*/const ${type}*str,int n){
+inline static void string_add_list(string*this,/*copies*/const char*str,int n){
 	//? optimize
-	const ${type}*p=str;
+	const char*p=str;
 	while(n--){
-		_${name}_insure_free_capcity(this,1);
+		_string_insure_free_capcity(this,1);
 		*(this->data+this->count++)=*p++;
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_add_string(${name}*this,/*copies*/const ${type}*str){
+inline static void string_add_string(string*this,/*copies*/const char*str){
 	//? optimize
-	const ${type}*p=str;
+	const char*p=str;
 	while(*p){
-		_${name}_insure_free_capcity(this,1);
+		_string_insure_free_capcity(this,1);
 		*(this->data+this->count++)=*p++;
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_write_to_fd(${name}*this,int fd){
+inline static void string_write_to_fd(string*this,int fd){
 	if(!this->data)
 		return;
 	write(fd,this->data,this->count);
