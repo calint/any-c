@@ -25,7 +25,7 @@ inline static void _ci_block_free_(ci_expr*oo){
 
 inline static void toc_indent_for_source(ci_toc*tc){
 	for(unsigned i=2;i<tc->scopes.count;i++){
-		printf("    ");
+		printf("\t");
 	}
 }
 

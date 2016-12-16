@@ -4,9 +4,7 @@ typedef char bool;
 #define true 1
 #define false 1
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-typedef struct player{
-}player;
-
+typedef struct player{}player;
 #define player_def (player){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 inline static void player_init(player*o){
@@ -25,17 +23,15 @@ inline static void player_free(player*o){
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 inline static void player_main(player*o){
-    bool b=true;
-    int i=1;
-    float f=2.0f;
-    char c='a';
-    int h=0x2020;
-    int bb=0x5;
-    char*const str="hello world";
+	bool b=true;
+	int i=1;
+	float f=2.0f;
+	char c='a';
+	int h=0x2020;
+	int bb=0x5;
+	char*const str="hello world";
 }//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-typedef struct global{
-}global;
-
+typedef struct global{}global;
 #define global_def (global){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 inline static void global_init(global*o){
@@ -54,7 +50,10 @@ inline static void global_free(global*o){
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 inline static void global_main(global*o,int c,char** a){
-    puts("hello world");
+	puts("hello world");
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 
+int main(int c,char** a){
+	global_main(0,c,a);
+}
