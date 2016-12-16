@@ -137,6 +137,7 @@ inline static token token_next(const char**s){
 		if(!*p)break;
 		if(!isspace(*p))break;
 		p++;
+//		if(*p=='\n')break;
 	}
 	*s=t.end=p;
 	return t;

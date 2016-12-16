@@ -1,6 +1,6 @@
 player{
 	int c;
-	void print(){
+	print{
 		printf(" player: %d\n",c);
 	}
 }

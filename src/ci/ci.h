@@ -216,23 +216,34 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 }
 
 inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
-		token*type,token*name){
+		token*type){
 	ci_func*f=malloc(sizeof(ci_func));
 	*f=ci_func_def;
-	token_setz(type,&f->type);
-	token_setz(name,&f->name);
+	bool enclosed_args=false;
+	if(**pp=='{'){                             // g{main{print "hello"}}
+		f->type=str_const("void");
+		token_setz(type,&f->name);
+	}else if(**pp=='('){                       // g{void main(str){p "hello" s}}
+		f->name=str_const("void");
+		token_setz(type,&f->name);
+	}else{
+		token tkname=token_next(pp);
+		token_setz(type,&f->type);
+		token_setz(&tkname,&f->name);
+	}
+
 	dynp_add(&c->funcs,f);
+
+	if(**pp=='('){
+		enclosed_args=true;
+		(*pp)++;
+	}
 
 	ci_toc_push_scope(tc,'f',f->name.data);
 	while(1){
 		token argtype=token_next(pp);
 		if(token_is_empty(&argtype)){
-			if(**pp==')'){
-				(*pp)++;
-				break;
-			}
-			printf("<file> <line:col> expected function arguments or ')'\n");
-			exit(1);
+			break;
 		}
 		token argname=token_next(pp);
 		ci_func_arg*fa=malloc(sizeof(ci_func_arg));
@@ -249,6 +260,14 @@ inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 
 		if(**pp==','){
 			(*pp)++;
+		}
+	}
+	if(enclosed_args){
+		if(**pp==')'){
+			(*pp)++;
+		}else{
+			printf("<file> <line:col> expected ')' after arguments\n");
+			exit(1);
 		}
 	}
 	ci_block_parse(&f->code,pp,tc);
@@ -274,16 +293,8 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 	}
 	if(**pp==';'){
 		(*pp)++;
-//		printf("<file> <line:col> expected ';' to finish field declaration\n");
-//		exit(1);
 	}
-	(*pp)++;
-
-	ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
-	*id=ci_toc_ident_def;
-	str_setz(&id->type,f->type.data);
-	str_setz(&id->name,f->name.data);
-	ci_toc_add_ident(tc,id);
+	return;
 }
 
 inline static void _ci_compile_to_c(ci_toc*tc){
@@ -500,15 +511,22 @@ inline static /*gives*/ci_class*_ci_parse_class(
 			(*pp)++;
 			break;
 		}
-		token name=token_next(pp);
-		if(**pp=='('){
-			(*pp)++;
-			_ci_parse_func(pp,tc,c,&type,&name);
+		if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
+//			(*pp)++;
+			_ci_parse_func(pp,tc,c,&type);
 		}else if(**pp=='=' || **pp==';'){
+			token name=token_next(pp);
 			_ci_parse_field(pp,tc,c,&type,&name);
 		}else{
-			printf("<file> <line:col> expected ';'\n");
-			exit(1);
+			token nm=token_next(pp);
+			if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
+				*pp=nm.content;
+				_ci_parse_func(pp,tc,c,&type);
+			}else{
+				_ci_parse_field(pp,tc,c,&type,&nm);
+			}
+//			printf("<file> <line:col> expected ';'\n");
+//			exit(1);
 		}
 	}
 	ci_toc_pop_scope(tc);
