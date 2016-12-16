@@ -8,7 +8,7 @@
 typedef struct ci_expr_ident{
 	ci_expr super;
 	str name;
-	bool post_inc;
+	char incdecbits;
 }ci_expr_ident;
 
 inline static void _ci_expr_ident_free_(struct ci_expr*oo){
@@ -89,21 +89,22 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 			}else{
 				printf("%s",o->name.data);
 			}
-			if(o->post_inc){
-				printf("++");
-			}
+			if(o->incdecbits&1)printf("++");
+			if(o->incdecbits&2)printf("--");
 			return;
 		}
 	}else{
 		const char idtype=ci_toc_find_ident_scope_type(tc,o->name.data);
 		if(idtype=='c'){// class member
 			printf("o->%s",o->name.data);
-			if(o->post_inc)printf("++");
+			if(o->incdecbits&1)printf("++");
+			if(o->incdecbits&2)printf("--");
 			return;
 		}
 		if(idtype){// local identifier
 			printf("%s",o->name.data);
-			if(o->post_inc)printf("++");
+			if(o->incdecbits&1)printf("++");
+			if(o->incdecbits&2)printf("--");
 			return;
 		}
 	}

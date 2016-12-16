@@ -209,21 +209,31 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		(*pp)--;
 	}
 
+	char incdecbits=0;
 	if(**pp=='+'){
 		(*pp)++;
 		if(**pp=='+'){
 			(*pp)++;
-			ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-			*e=ci_expr_ident_def;
-			e->name=name;
-			e->post_inc=true;
-			return(ci_expr*)e;
+			incdecbits|=1;
+		}else{
+			(*pp)--;
+			(*pp)--;
+		}
+	}else if(**pp=='-'){
+		(*pp)++;
+		if(**pp=='-'){
+			(*pp)++;
+			incdecbits|=2;
+		}else{
+			(*pp)--;
+			(*pp)--;
 		}
 	}
 
 	ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 	*e=ci_expr_ident_def;
 	e->name=name;
+	e->incdecbits=incdecbits;
 	return(ci_expr*)e;
 }
 //inline static str ci_abbreviate_func_arg_name_for_type(ci_toc*tc,const char*tp){
