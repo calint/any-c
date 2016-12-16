@@ -7,4 +7,4 @@ cd qa &&
 ./do-test.sh 2 &&
 ./do-test.sh 3 &&
 date &&
-echo done
+echo done. ok

@@ -1,8 +1,8 @@
 player{
-	var i=1
+	var i=17
 	var f=2.2f
 	var b=true
-	var s="hello"
+	var s="hello \" world "
 	var ch='.'
 	print{
 		printf(" %f %d %d %s %c \n",f,i,b,s,ch);
