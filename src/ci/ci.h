@@ -61,6 +61,9 @@ inline static /*gives*/ci_expr*ci_expr_new_from_pp(
 	}else if(token_equals(&tk,"float")){
 		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
 		return(ci_expr*)e;
+	}else if(token_equals(&tk,"bool")){
+		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
+		return(ci_expr*)e;
 	}
 
 
