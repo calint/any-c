@@ -115,7 +115,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 
 	// float
 	strtof(tks.data,&endptr);
-	if(*endptr=='f'){
+	if(*endptr=='f' && tks.count>2){
 		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 		*e=ci_expr_ident_def;
 		e->name=tks;
@@ -250,10 +250,12 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 		(*pp)++;
 		ci_expr*e=_ci_expr_new_from_pp(pp,tc);
 		f->initval=e;
+		f->type=e->type;//? assert types
 	}
-	if(**pp!=';'){
-		printf("<file> <line:col> expected ';' to finish field declaration\n");
-		exit(1);
+	if(**pp==';'){
+		(*pp)++;
+//		printf("<file> <line:col> expected ';' to finish field declaration\n");
+//		exit(1);
 	}
 	(*pp)++;
 	ci_toc_add_ident(tc,f->name.data);
