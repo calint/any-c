@@ -26,24 +26,16 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 		return;
 	}
 
+
+	// constant
+
+	// string or character
 	if(o->name.data[0]=='"' || o->name.data[0]=='\''){
-//		// scan string
-//		const char*p=o->name.data;
-//		while(1){
-//			if(!*p)break;
-//			if(*p=='\\'){
-//				p++;
-//				continue;
-//			}
-//			if(*p=='"')
-//				break;
-//		}
 		printf("%s",o->name.data);
 		return;
 	}
 
-
-	// constant
+	// boolean
 	if(!strcmp("true",o->name.data)){
 		printf("true");
 		return;
@@ -56,18 +48,21 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 
 	char*endptr;
 
+	// float
 	strtof(o->name.data,&endptr);
 	if(*endptr=='f'){
 		printf("%s",o->name.data);
 		return;
 	}
 
+	// int
 	strtol(o->name.data,&endptr,10);
 	if(endptr==o->name.data+o->name.count-1){
 		printf("%s",o->name.data);
 		return;
 	}
 
+	// hex
 	if(o->name.count>1){
 		if((o->name.data[0]=='0' && o->name.data[1]=='x')){
 			strtol(o->name.data+2,&endptr,16);
