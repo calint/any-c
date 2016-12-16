@@ -1,12 +1,19 @@
 class player{
+	bool b=true;
+	int i=1;
+	float f=2.0f;
+	char c='a';
+	int h=0x2020;
+	int bb=0b101;
+	int str="hello world";
+
 	void main(){
-		auto b=true;
-		auto i=1;
-		auto f=2.0f;
-		auto c='a';
-		auto h=0x2020;
-		auto bb=0b101;
-		auto str="hello world";
+		b=false;
+		i=2;
+		f=3.0f;
+		c='b';
+		h=0x3232;
+		str="wello";
 	}
 }
 
