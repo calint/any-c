@@ -32,9 +32,9 @@ inline static void _ci_expr_assign_compile_(const ci_expr*oo,ci_toc*tc){
 		if(idtype){// local identifier
 			printf("%s",o->name.data);
 		}
-		printf("=");
+		printf("=",o->name.data);
 		o->expr->compile(o->expr,tc);
-//		printf(";\n");
+		printf(";\n");
 		return;
 	}
 

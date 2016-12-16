@@ -72,9 +72,9 @@ inline static const ci_toc_ident*ci_toc_find_ident(ci_toc*oo,const char*name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		ci_toc_scope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
-			const char*id=(const char*)dynp_get(&s->idents,i);
-			if(!strcmp(id,name))
-				return(const ci_toc_ident*)s;
+			const ci_toc_ident*id=(const ci_toc_ident*)dynp_get(&s->idents,i);
+			if(!strcmp(id->name.data,name))
+				return id;
 		}
 	}
 	return 0;

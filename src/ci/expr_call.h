@@ -11,12 +11,29 @@ typedef struct ci_expr_call{
 	dynp/*owns ci_expression*/args;
 }ci_expr_call;
 
-inline static void _ci_expr_call_compile_(const ci_expr*o,ci_toc*toc){
+inline static void _ci_expr_call_compile_(const ci_expr*o,ci_toc*tc){
 	ci_expr_call*e=(ci_expr_call*)o;
-	printf("%s(",e->name.data);
+
+	const char*p=strpbrk(e->name.data,".");
+	if(p){
+		str s=str_def;
+		str_add_list(&s,e->name.data,p-e->name.data);
+		str_add(&s,0);
+
+		const ci_toc_ident*id=ci_toc_find_ident(tc,s.data);
+		printf("%s_%s((%s*)&%s",
+				id->type.data,p+1,
+				id->type.data,s.data);
+		if(e->args.count){
+			printf(",");
+		}
+	}else{
+		printf("%s",e->name.data);
+		printf("(");
+	}
 	dynp_foac(&e->args,{
 		ci_expr*a=(ci_expr*)o;
-		a->compile(a,toc);
+		a->compile(a,tc);
 		if(i!=e->args.count-1){
 			printf(",");
 		}

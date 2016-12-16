@@ -28,7 +28,9 @@ inline static void player_free(player*o){
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
+inline static void player_print(player*o){
+	printf(" player: %d",o->c);
+}//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 typedef struct global{}global;
 #define global_def (global){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
@@ -50,6 +52,8 @@ inline static void global_free(global*o){
 inline static void global_main(global*o,int c,char** a){
 	player p;
 	p.c=2;
+;
+	player_print((player*)&p);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 

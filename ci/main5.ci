@@ -1,14 +1,10 @@
 class player{
 	int c;
-	void print(){
-		printf(" player: %d",c);
-	}
 }
 
 class global{
 	void main(int c,char** a){
 		player p;
 		p.c=2;
-		p.print();
 	}
 }
