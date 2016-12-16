@@ -29,6 +29,18 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 		o->cnst=0;
 		return;
 	}
+
+	//
+	if(strcmp("true",o->name.data)){
+		printf("true");
+		return;
+	}
+
+	if(strcmp("false",o->name.data)){
+		printf("false");
+		return;
+	}
+
 	// constant
 	o->cnst=1;
 	char* endptr;
