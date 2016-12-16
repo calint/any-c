@@ -460,8 +460,9 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 	printf("\n");
 }
 
-inline static /*gives*/ci_class*_ci_parse_class(const char**pp,ci_toc*tc,
-		token type,token name){
+inline static /*gives*/ci_class*_ci_parse_class(
+		const char**pp,ci_toc*tc,token name){
+
 	ci_class*c=malloc(sizeof(ci_class));
 	*c=ci_class_def;
 	dynp_add(&ci_classes,c);
@@ -516,18 +517,12 @@ inline static /*gives*/ci_class*_ci_parse_class(const char**pp,ci_toc*tc,
 inline static void ci_compile_file(const char*path){
 	str s=str_from_file(path);
 	const char*p=s.data;
-	ci_toc toc=ci_toc_def;
+	ci_toc tc=ci_toc_def;
 	while(1){
-		token t=token_next(&p);
-		if(token_is_empty(&t))
-			break;
-		if(!token_equals(&t,"class")){
-			printf("expected 'class' declaration\n");
-			exit(1);
-		}
-		token nm=token_next(&p);
-		_ci_parse_class(&p,&toc,t,nm);
+		token nmspc=token_next(&p);
+		if(token_is_empty(&nmspc))break;
+		_ci_parse_class(&p,&tc,nmspc);
 	}
-	_ci_compile_to_c(&toc);
+	_ci_compile_to_c(&tc);
 }
 

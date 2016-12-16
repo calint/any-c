@@ -1,11 +1,11 @@
-class player{
+player{
 	int c;
 	void print(){
 		printf(" player: %d\n",c);
 	}
 }
 
-class global{
+global{
 	void main(int c,char** a){
 		player p1
 		player p2
