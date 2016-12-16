@@ -3,7 +3,7 @@ class player:object,santa{
 		char c='a';
 		p("he\"llo");
 		int i=0x20;
-		float f=2f;
+		float f=2.0f;
 		bool b=true;
 		int bin=0b10;
 	}
