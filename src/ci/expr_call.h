@@ -63,8 +63,9 @@ inline static void ci_expr_call_free(ci_expr*o){
 	free(o);
 }
 
-inline static /*gives*/ci_expr_call*ci_expr_call_next(
-		const char**pp,ci_toc*tc,/*takes*/str name){
+inline static ci_expr_call*ci_expr_call_next(
+		const char**pp,ci_toc*tc,str name){
+
 	ci_expr_call*o=malloc(sizeof(ci_expr_call));
 	*o=ci_expr_call_def;
 	o->name=name;

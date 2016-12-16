@@ -1,7 +1,0 @@
-class player{}
-
-class global{
-	void main(int c,char** a){
-		player p;
-	}
-}

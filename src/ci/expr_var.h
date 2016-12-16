@@ -36,7 +36,7 @@ inline static void _ci_expr_var_compile_(const ci_expr*oo,ci_toc*tc){
 	if(o->initval.super.compile){
 		_ci_expr_assign_compile_((ci_expr*)&o->initval,tc);
 	}else{
-		printf("%s",o->name.data);
+		printf("%s=%s_def",o->name.data,o->super.type.data);
 	}
 }
 

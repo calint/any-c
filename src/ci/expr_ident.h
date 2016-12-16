@@ -42,7 +42,7 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 
 	// float
 	strtof(o->name.data,&endptr);
-	if(*endptr=='f'){
+	if(*endptr=='f' && endptr!=o->name.data){
 		printf("%s",o->name.data);
 		return;
 	}
