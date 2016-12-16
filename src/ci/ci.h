@@ -37,6 +37,11 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 							" end of string\n");
 					exit(1);
 				}
+				if(c=='\n'){
+					printf("<file> <line:col> did not find the "
+							" end of string on the same line\n");
+					exit(1);
+				}
 				(*pp)++;
 				if(c=='\\'){
 					(*pp)++;
