@@ -1,0 +1,27 @@
+class object{
+	char[8] type;
+}
+class santa{
+	dynp presents;
+}
+class player:object,santa{
+	int keybits=100;
+	vec3 lookvec;
+	
+	void set_keybits(int kb){
+		int a=2;
+		loop{
+			keybits=kb;
+			break;
+			continue;
+		}
+	}
+}
+
+
+		if (keybits || keybits!=kb && (kb==2 && keybits) ) {
+		
+		}else if(kb==1){
+		}else{
+
+		}

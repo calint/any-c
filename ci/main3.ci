@@ -1,0 +1,13 @@
+class player:object,santa{
+	int keybits=1;
+
+	void set_keybits(int kb){
+		if (keybits || keybits!=kb && (kb==2 && keybits) ) {
+			keybits=kb;
+		}else if(kb==1){
+			kb=keybits;
+		}else{
+			kb=2;
+		}
+	}
+}

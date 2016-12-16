@@ -1,0 +1,5 @@
+class player:object,santa{
+	void main(){
+		p(12);
+	}
+}
