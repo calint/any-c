@@ -4,8 +4,7 @@ CC='gcc -std=gnu11'
 SRC=src/main.c
 BIN=any-c
 
-WARNINGS='-Wall -Wextra -Wfatal-errors -Wno-unused-function 
-   -Wno-unused-parameter -Wno-incompatible-pointer-types-discards-qualifiers -Wno-discarded-qualifiers'
+WARNINGS='-Wall -Wextra -Wfatal-errors -Wno-unused-parameter -Wno-discarded-qualifiers'
 
 LIBS=
 OPTIMIZATION=-O3
