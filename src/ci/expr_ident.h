@@ -69,11 +69,17 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 	}
 
 	if(o->name.count>1){
-		if((o->name.data[0]=='0' && o->name.data[1]=='x')||
-			(o->name.data[0]=='0' && o->name.data[1]=='x')){
+		if((o->name.data[0]=='0' && o->name.data[1]=='x')){
 			strtol(o->name.data+2,&endptr,16);
 			if(endptr==o->name.data+o->name.count-2+1){
 				printf("%s",o->name.data);
+				return;
+			}
+		}
+		if((o->name.data[0]=='0' && o->name.data[1]=='b')){
+			unsigned v=strtol(o->name.data+2,&endptr,2);
+			if(endptr==o->name.data+o->name.count-2+1){
+				printf("0x%x",v);
 				return;
 			}
 		}
