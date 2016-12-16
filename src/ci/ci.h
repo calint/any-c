@@ -220,11 +220,8 @@ inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 	ci_func*f=malloc(sizeof(ci_func));
 	*f=ci_func_def;
 	bool enclosed_args=false;
-	if(**pp=='{'){                             // g{main{print "hello"}}
+	if(**pp=='{' || **pp=='('){
 		f->type=str_const("void");
-		token_setz(type,&f->name);
-	}else if(**pp=='('){                       // g{void main(str){p "hello" s}}
-		f->name=str_const("void");
 		token_setz(type,&f->name);
 	}else{
 		token tkname=token_next(pp);
