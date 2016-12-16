@@ -28,10 +28,10 @@ inline static ci_class*ci_find_class_by_name(const char*name){
 inline static void ci_init(){}
 
 inline static void ci_free(){
-	dynp_foa(&ci_classes,{
-		ci_class_free((ci_class*)o);
-	});
-	dynp_free(&ci_classes);
+//	dynp_foa(&ci_classes,{
+//		ci_class_free((ci_class*)o);
+//	});
+//	dynp_free(&ci_classes);
 }
 
 inline static str str_const(const char*s){
@@ -214,7 +214,9 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 	e->name=name;
 	return(ci_expr*)e;
 }
-
+//inline static str ci_abbreviate_func_arg_name_for_type(ci_toc*tc,const char*tp){
+//	return *tp;
+//}
 inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 		token*type){
 	ci_func*f=malloc(sizeof(ci_func));
@@ -238,22 +240,29 @@ inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 
 	ci_toc_push_scope(tc,'f',f->name.data);
 	while(1){
-		token argtype=token_next(pp);
-		if(token_is_empty(&argtype)){
+		token tkt=token_next(pp);
+		if(token_is_empty(&tkt)){
 			break;
 		}
-		token argname=token_next(pp);
 		ci_func_arg*fa=malloc(sizeof(ci_func_arg));
-		*fa=ci_func_arg_def;
 		dynp_add(&f->args,fa);
-		token_setz(&argtype,&fa->type);
-		token_setz(&argname,&fa->name);
+		*fa=ci_func_arg_def;
 
 		ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
-		*id=ci_toc_ident_def;
-		token_setz(&argtype,&id->type);
-		token_setz(&argname,&id->name);
 		ci_toc_add_ident(tc,id);
+		*id=ci_toc_ident_def;
+		token_setz(&tkt,&fa->type);
+		token_setz(&tkt,&id->type);
+
+		token tkn=token_next(pp);
+//		if(token_is_empty(&tkn)){
+//			str nm=ci_abbreviate_func_arg_name_for_type(fa->type);
+//		}else{
+			token_setz(&tkn,&fa->name);
+			token_setz(&tkn,&id->name);
+//		}
+
+
 
 		if(**pp==','){
 			(*pp)++;

@@ -1,6 +1,6 @@
 #/bin/sh -x
 sh make.sh && 
-./any-c > c.c && 
+./any-c main.ci > c.c && 
 gcc -O3 c.c &&
  ./a.out
  

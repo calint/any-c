@@ -5,12 +5,13 @@ player{
 	var s="hello \" world "
 	var ch='.'
 	print{
-		printf(" %f %d %d %s %c \n",f,i,b,s,ch);
+		printf(" %f %d %d %s %c \n",f,i,b,s,ch)
 	}
 }
 
 global{
-	main(int c,char** a){
+	main(int i,char**c){
+		printf(" argument count: %d\n",i);
 		player p
 		p.print()
 	}
