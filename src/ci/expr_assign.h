@@ -24,18 +24,23 @@ inline static void _ci_expr_assign_compile_(const ci_expr*oo,ci_toc*tc){
 		str_add_list(&s,o->name.data,p-o->name.data);
 		str_add(&s,0);
 
-		ci_toc_ident*id=ci_toc_find_ident(tc, s.data);
-		const char idtype=ci_toc_find_ident_scope_type(tc,s.data);
-		if(idtype=='c'){// class member
-			printf("%s->%s",s.data,o->name.data);
+		const ci_toc_ident*id=ci_toc_find_ident(tc,s.data);
+		if(!id){
+			printf("<file> <line:col> identifier '%s' not found\n",s.data);
+			exit(1);
 		}
-		if(idtype){// local identifier
-			printf("%s",o->name.data);
+		const char scopetype=ci_toc_find_ident_scope_type(tc,s.data);
+		if(scopetype){
+			if(scopetype=='c'){// class member
+				printf("%s->%s",s.data,o->name.data);
+			}else{// local identifier
+				printf("%s",o->name.data);
+			}
+			printf("=");
+			o->expr->compile(o->expr,tc);
+//			printf(";\n");
+			return;
 		}
-		printf("=",o->name.data);
-		o->expr->compile(o->expr,tc);
-		printf(";\n");
-		return;
 	}
 
 

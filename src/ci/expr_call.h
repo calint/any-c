@@ -21,6 +21,11 @@ inline static void _ci_expr_call_compile_(const ci_expr*o,ci_toc*tc){
 		str_add(&s,0);
 
 		const ci_toc_ident*id=ci_toc_find_ident(tc,s.data);
+		if(!id){
+			printf("<file> <line:col> identifier not found: %s\n",
+					s.data);
+			exit(1);
+		}
 		printf("%s_%s((%s*)&%s",
 				id->type.data,p+1,
 				id->type.data,s.data);
