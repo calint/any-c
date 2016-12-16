@@ -1,0 +1,18 @@
+class player{
+	void main(){
+		auto b=true;
+		auto i=1;
+		auto f=2.0f;
+		auto c='a';
+		auto h=0x2020;
+		auto bb=0b101;
+		auto str="hello world";
+	}
+}
+
+
+class global{
+	void main(int c,char** a){
+		puts("hello world");
+	}
+}
