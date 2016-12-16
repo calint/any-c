@@ -184,7 +184,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 	token_setz(&tk,&name);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
-			token_equals(&tk,"auto")){
+			token_equals(&tk,"auto")||token_equals(&tk,"var")){
 		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
 		return(ci_expr*)e;
 	}
@@ -207,6 +207,18 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 			return(ci_expr*)e;
 		}
 		(*pp)--;
+	}
+
+	if(**pp=='+'){
+		(*pp)++;
+		if(**pp=='+'){
+			(*pp)++;
+			ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+			*e=ci_expr_ident_def;
+			e->name=name;
+			e->post_inc=true;
+			return(ci_expr*)e;
+		}
 	}
 
 	ci_expr_ident*e=malloc(sizeof(ci_expr_ident));

@@ -8,13 +8,16 @@
 typedef struct ci_expr_ident{
 	ci_expr super;
 	str name;
-	long int cnst;
+	bool post_inc;
 }ci_expr_ident;
 
 inline static void _ci_expr_ident_free_(struct ci_expr*oo){
 	ci_expr_ident*o=(ci_expr_ident*)oo;
 	ci_expr_free((ci_expr*)o);
 }
+
+#define ci_expr_ident_def (ci_expr_ident){\
+	{str_def,_ci_expr_ident_compile_,_ci_expr_ident_free_},str_def,false}
 
 inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 	const ci_expr_ident*o=(ci_expr_ident*)oo;
@@ -86,17 +89,21 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 			}else{
 				printf("%s",o->name.data);
 			}
-//			printf("=%s",o->name.data);
+			if(o->post_inc){
+				printf("++");
+			}
 			return;
 		}
 	}else{
 		const char idtype=ci_toc_find_ident_scope_type(tc,o->name.data);
 		if(idtype=='c'){// class member
 			printf("o->%s",o->name.data);
+			if(o->post_inc)printf("++");
 			return;
 		}
 		if(idtype){// local identifier
 			printf("%s",o->name.data);
+			if(o->post_inc)printf("++");
 			return;
 		}
 	}
@@ -113,6 +120,3 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 //	str_setz(&o->super.type,"int");
 	printf("%s",o->name.data);
 }
-
-#define ci_expr_ident_def (ci_expr_ident){\
-	{str_def,_ci_expr_ident_compile_,_ci_expr_ident_free_},str_def,0}
