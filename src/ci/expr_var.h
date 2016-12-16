@@ -18,14 +18,20 @@ inline static void _ci_expr_var_free_(ci_expr*oo){
 
 inline static void _ci_expr_var_compile_(const ci_expr*oo,ci_toc*tc){
 	ci_expr_var*o=(ci_expr_var*)oo;
-	const char idtype=ci_toc_find_ident_type(tc,o->name.data);
+	const char idtype=ci_toc_find_ident_scope_type(tc,o->name.data);
 	if(idtype){
 		printf("\n\n<file> <line:col> '%s' is already declared at ..."
 				,o->initval.name.data);
 		exit(1);
 		return;
 	}
-	ci_toc_add_ident(tc,o->name.data);
+
+	ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
+	*id=ci_toc_ident_def;
+	str_setz(&id->type,o->super.type.data);
+	str_setz(&id->name,o->name.data);
+	ci_toc_add_ident(tc,id);
+
 	printf("%s ",o->super.type.data);
 	if(o->initval.super.compile){
 		_ci_expr_assign_compile_((ci_expr*)&o->initval,tc);

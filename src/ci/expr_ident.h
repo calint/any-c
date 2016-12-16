@@ -18,14 +18,35 @@ inline static void _ci_expr_ident_free_(struct ci_expr*oo){
 
 inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 	const ci_expr_ident*o=(ci_expr_ident*)oo;
-	const char idtype=ci_toc_find_ident_type(tc,o->name.data);
-	if(idtype=='c'){// class member
-		printf("o->%s",o->name.data);
+
+
+	const char*p=strpbrk(o->name.data,".");
+	if(p){
+		str s=str_def;
+		str_add_list(&s,o->name.data,p-o->name.data);
+		str_add(&s,0);
+
+		ci_toc_ident*id=ci_toc_find_ident(tc, s.data);
+		const char idtype=ci_toc_find_ident_scope_type(tc,s.data);
+		if(idtype=='c'){// class member
+			printf("%s->%s",s.data,o->name.data);
+		}
+		if(idtype){// local identifier
+			printf("%s",o->name.data);
+		}
+		printf("=%s",o->name.data);
 		return;
-	}
-	if(idtype){// local identifier
-		printf("%s",o->name.data);
-		return;
+	}else{
+
+	const char idtype=ci_toc_find_ident_scope_type(tc,o->name.data);
+		if(idtype=='c'){// class member
+			printf("o->%s",o->name.data);
+			return;
+		}
+		if(idtype){// local identifier
+			printf("%s",o->name.data);
+			return;
+		}
 	}
 
 

@@ -241,7 +241,11 @@ inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 		token_setz(&argtype,&fa->type);
 		token_setz(&argname,&fa->name);
 
-		ci_toc_add_ident(tc,fa->name.data);
+		ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
+		*id=ci_toc_ident_def;
+		token_setz(&argtype,&id->type);
+		token_setz(&argname,&id->name);
+		ci_toc_add_ident(tc,id);
 
 		if(**pp==','){
 			(*pp)++;
@@ -274,7 +278,12 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 //		exit(1);
 	}
 	(*pp)++;
-	ci_toc_add_ident(tc,f->name.data);
+
+	ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
+	*id=ci_toc_ident_def;
+	str_setz(&id->type,f->type.data);
+	str_setz(&id->name,f->name.data);
+	ci_toc_add_ident(tc,id);
 }
 
 inline static void _ci_compile_to_c(ci_toc*tc){
@@ -333,7 +342,13 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 		// fields
 		dynp_foa(&c->fields,{
 			ci_field*s=o;
-			ci_toc_add_ident(tc,s->name.data);
+
+			ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
+			*id=ci_toc_ident_def;
+			str_setz(&id->type,s->type.data);
+			str_setz(&id->name,s->name.data);
+			ci_toc_add_ident(tc,id);
+
 			if(!strcmp(s->type.data,"auto")){
 				if(!s->initval){
 					printf("<file> <line:col> expected initializer with auto");
@@ -425,7 +440,12 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 				ci_func_arg*a=o;
 				printf(",");
 				printf("%s %s",a->type.data,a->name.data);
-				ci_toc_add_ident(tc,a->name.data);
+
+				ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
+				*id=ci_toc_ident_def;
+				str_setz(&id->type,a->type.data);
+				str_setz(&id->name,a->name.data);
+				ci_toc_add_ident(tc,id);
 			});
 			printf(")");
 			f->code.super.compile((ci_expr*)&f->code,tc);

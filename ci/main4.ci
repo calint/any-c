@@ -1,10 +1,7 @@
-class player{
-	int c;
-}
+class player{}
 
 class global{
 	void main(int c,char** a){
 		player p;
-		p.c=2;
 	}
 }

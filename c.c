@@ -8,8 +8,10 @@ typedef char bool;
 #define float_def 0.0f
 #define bool_def false
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-typedef struct player{}player;
-#define player_def (player){}
+typedef struct player{
+    int c;
+}player;
+#define player_def (player){int_def,}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 inline static void player_init(player*o){
 }
@@ -47,6 +49,7 @@ inline static void global_free(global*o){
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 inline static void global_main(global*o,int c,char** a){
 	player p;
+	p.c=2;
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 
