@@ -138,7 +138,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 			}
 		}
 		if((tks.data[0]=='0' && tks.data[1]=='b')){
-			unsigned v=strtol(tks.data+2,&endptr,2);
+			strtol(tks.data+2,&endptr,2);
 			if(endptr==tks.data+tks.count-2+1){
 				ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 				*e=ci_expr_ident_def;
@@ -289,13 +289,17 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 //		printf("}\n");
 //	}
 //	return;
+	printf("#include<stdlib.h>\n");
+	printf("#include<stdio.h>\n");
+	printf("typedef char bool;\n");
+	printf("#define true 1\n");
+	printf("#define false 1\n");
 
 	dynp_foa(&ci_classes,{
 		ci_class*c=o;
 		ci_toc_push_scope(tc,'c',c->name.data);
-		printf("\n");
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
-		printf("static typedef struct %s{\n",c->name.data);
+		printf("typedef struct %s{\n",c->name.data);
 		dynp_foa(&c->extends,{
 			str*s=o;
 			printf("    %s %s;\n",s->data,s->data);
@@ -320,7 +324,7 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 		printf("\n");
 
 		// #define object_def {...}
-		printf("#define %s_def {",c->name.data);
+		printf("#define %s_def (%s){",c->name.data,c->name.data);
 		dynp_foa(&c->extends,{
 			str*s=o;
 			printf("%s_def,",s->data);
@@ -407,6 +411,9 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 		ci_toc_pop_scope(tc);
 	});
 	printf("\n//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+	printf("\nint main(int c,char** a){");
+	printf("\n    global_main(0,c,a);");
+	printf("\n}");
 	printf("\n");
 }
 

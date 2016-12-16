@@ -1,0 +1,59 @@
+#pragma once
+//--------------------------------------------------------------- ${name}
+//------------------------------------------------------------------------ def
+static object ${name}_def={
+	.n=node_def,
+	.b={	.r=1.4f,
+			.s={1,1,1,0}},
+	.p={	.p={0,0,0,0},
+			.v={0,0,0,0},
+			.a={0,0,0,0},
+			.av={0,0,0,0},},
+	.v={	.init=NULL,
+			.update=NULL,
+			.collision=NULL,
+			.render=object_render_glob,
+			.free=NULL,
+	},
+	.t={{'a','a',0,0,0,0,0,0}},
+	.part={NULL,NULL,NULL,NULL},
+	.alloc_bits_ptr=NULL,
+};
+//------------------------------------------------------------------ extension
+typedef struct ${name}{
+	part part;
+	unsigned stars;
+}${name}_ext;
+//------------------------------------------------------------------ overrides
+static void _${name}_part_init(object*,part*);
+static void _${name}_update(object*,part*,dt);
+static void _${name}_part_render(object*,part*);
+static void _${name}_free(object*,part*);
+//----------------------------------------------------------------------- init
+static ${name}_ext ${name}_ext_def={
+	.part=(part){
+		.init=NULL,
+		.update=_${name}_update,
+		.render=NULL,
+		.free=NULL,
+	},
+	.stars=7,
+};
+//----------------------------------------------------------------------- impl
+static void _${name}_part_init(object*po,part*o){}
+static void _${name}_update(object*po,part*o,dt dt){}
+static void _${name}_part_render(object*po,part*o){}
+static void _${name}_part_free(object*po,part*o){}
+//printf("%s:%u  [ %p %p ]\n",__FILE__,__LINE__,(void*)po,(void*)o);
+//----------------------------------------------------------------------------
+
+
+//----------------------------------------------------------------- alloc/free
+inline static/*gives*/object*${name}_alloc_def(){
+	object*o=object_alloc(&${name}_def);
+	${name}_ext*p=malloc(sizeof(${name}_ext));
+	*p=${name}_part_def;
+	o->part[0]=(part*)p;
+	return o;
+}
+//----------------------------------------------------------------------------

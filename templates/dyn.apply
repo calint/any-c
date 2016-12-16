@@ -12,27 +12,25 @@
 alert='\033[0;33m'
 normal='\033[0m'
 
-if [ "$#" -lt 3 ]; then
+if [ "$#" -ne 2 ]; then
     echo -e "$alert"
-    echo "    usage example: make_object ninja ninjas"
+    echo "    usage example:"
+    echo "      $0 vvec void*"
+    echo "      $0 string char"
+    echo
+    echo "     where:"
+    echo "       'char' replaces the type in dyn"
+    echo "       'string' replaces the name 'dyn'"
+    echo "                 and creates 'string.h'"
 	echo -e "$normal"
 	exit -1
 fi
 
+template=dyn
 name=$1
-nameplr=$2
+type=$2
 
-
-cp object $nameplr.h &&
-sed -i "s/\${name}/$name/g" $nameplr.h &&
-sed -i "s/\${nameplr}/$nameplr/g" $nameplr.h &&
-sed -i "s/\${type}/$name/g" $nameplr.h &&
-
-if [ -z "$3" ]; then
-	sed -i "s/\${include}//g" $nameplr.h
-else
-	sed -i "s/\${include}/#include\"$name.h\"/g" $nameplr.h &&
-	sed -i "s/\${ptr}/*/g" $nameplr.h
-fi &&
-
-ls -la --color $nameplr.h
+cp $template $name.h &&
+sed -i "s/\${name}/$name/g" $name.h &&
+sed -i "s/\${type}/$type/g" $name.h &&
+ls -la --color $name.h

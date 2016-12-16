@@ -1,0 +1,151 @@
+#pragma once
+//-----------------------------------------------------------------------------
+// ${name} allocator generated from template ... do not modify
+//-----------------------------------------------------------------------------
+#include"${name}.h"
+#include"part.h"
+#define ${name}_cap ${cap}
+#define ${name}_assert_free
+#define ${name}_assert_bounds
+#define ${name}_assert_cast
+#define ${name}_metrics
+static unsigned ${name}_metrics_allocated;
+//--------------------------------------------------------------------- storage
+static ${name} ${nameplr}[${name}_cap];
+static ${name}*${nameplr}_start_ptr=${nameplr};
+static ${name}*${nameplr}_seek_ptr=${nameplr};
+static ${name}*${nameplr}_end_ptr=${nameplr}+${name}_cap;
+//------------------------------------------------------------------------ bits
+static bits ${nameplr}_bits[${name}_cap];
+static bits*${nameplr}_bits_start_ptr=${nameplr}_bits;
+static bits*${nameplr}_bits_seek_ptr=${nameplr}_bits;
+static bits*${nameplr}_bits_end_ptr=${nameplr}_bits+${name}_cap;
+//----------------------------------------------------------------------- alloc
+inline static ${name}*${name}_alloc(${name}*initializer){
+	int iterate_to_scan_the_table=2;
+	while(iterate_to_scan_the_table--){
+		while(${nameplr}_bits_seek_ptr<${nameplr}_bits_end_ptr){
+			// *** critical begin
+			if(*${nameplr}_bits_seek_ptr&1){// is allocated
+				${nameplr}_bits_seek_ptr++;
+				${nameplr}_seek_ptr++;
+				continue;
+			}
+			*${nameplr}_bits_seek_ptr=1;// allocate
+			// *** critical end
+#ifdef ${name}_metrics
+			${name}_metrics_allocated++;
+#endif
+			${name}*o=${nameplr}_seek_ptr++;
+			*o=initializer?*initializer:${name}_def;
+			o->alloc_bits_ptr=objects_bits_seek_ptr++;
+			if (o->v.init)o->v.init(o);
+			return o;
+		}
+		${nameplr}_bits_seek_ptr=${nameplr}_bits_start_ptr;
+		${nameplr}_seek_ptr=${nameplr}_start_ptr;
+	}
+	fprintf(stderr,"\n    out of ${nameplr}\n");
+	fprintf(stderr,"           in %s at line %d\n\n",__FILE__,__LINE__);
+	exit(-1);
+}
+//------------------------------------------------------------------------ free
+inline static void ${name}_free(${name}*o){
+#ifdef ${name}_assert_free
+	if(*o->alloc_bits_ptr&2){
+		fprintf(stderr,"\n    ${name} %p already freed\n",(void*)o);
+		fprintf(stderr,"           in %s at line %d\n\n",__FILE__,__LINE__);
+		exit(-1);
+	}
+#endif
+#ifdef ${name}_metrics
+			${name}_metrics_allocated--;
+#endif
+	*o->alloc_bits_ptr=2;// flag not allocated and deleted
+}
+//------------------------------------------------------------------- accessors
+inline static void _${name}_assert_bounds(unsigned i){
+	if(i<${name}_cap)
+		return;
+	fprintf(stderr,"\n    ${name} index %u out of bounds %u\n",
+			i,${name}_cap);
+	fprintf(stderr,"           in %s at line %d\n\n",__FILE__,__LINE__);
+	exit(-1);
+}
+
+//-----------------------------------------------------------------------------
+inline static const ${name}*${name}_ptr_const(const void*p){
+	return(const ${name}*)p;
+}
+//-----------------------------------------------------------------------------
+inline static ${name}*${name}_ptr(void*p){return(${name}*)p;}
+//-----------------------------------------------------------------------------
+inline static ${name}*${name}_at(unsigned i){
+#ifdef ${name}_assert_bounds
+	_${name}_assert_bounds(i);
+#endif
+	return&${nameplr}[i];
+}
+//-----------------------------------------------------------------------------
+inline static const ${name}*${name}_at_const(unsigned i){
+#ifdef ${name}_assert_bounds
+	_${name}_assert_bounds(i);
+#endif
+	return&${nameplr}[i];
+}
+//-----------------------------------------------------------------------------
+inline static void ${nameplr}_free() {
+	${name}*o=${nameplr};
+	while(o<${nameplr}_end_ptr){
+		if(!o->alloc_bits_ptr){
+			o++;
+			continue;
+		}
+		{/*** critical ****/
+		if(*o->alloc_bits_ptr&1){
+			*o->alloc_bits_ptr&=(unsigned char)~(1|2);
+		}else{
+			o++;
+			continue;
+		}
+		/*** critical done ****/}
+		if(o->v.free)o->v.free(o);
+		for(int i=0;i<${name}_part_cap;i++){
+			if(!o->part[i])
+				continue;
+			part*p=(part*)o->part[i];
+			if(p->free)
+				p->free(o,p);
+		}
+		o++;
+	}
+}
+//-----------------------------------------------------------------------------
+inline static void ${nameplr}_foreach_allocated(int(*f)(${name}*)){
+	${name}*o=${nameplr};
+	while(o<${nameplr}_end_ptr){
+		if(!o->alloc_bits_ptr||!(*o->alloc_bits_ptr&1)){
+			o++;
+			continue;
+		}
+		if(f(o))
+			break;
+		o++;
+	}
+}
+#define ${nameplr}_fou(body)${nameplr}_foreach_allocated(({int __fn__ (${name}*o) body __fn__;}))
+//-----------------------------------------------------------------------------
+inline static void ${nameplr}_foreach_allocated_all(void(*f)(${name}*)){
+	${name}*o=${nameplr};
+	while(o<${nameplr}_end_ptr){
+		if(!o->alloc_bits_ptr||!(*o->alloc_bits_ptr&1)){
+			o++;
+			continue;
+		}
+		f(o);
+		o++;
+	}
+}
+#define ${nameplr}_foa(body)${nameplr}_foreach_allocated_all(({void __fn__ (${name}*o) body __fn__;}))
+//-----------------------------------------------------------------------------
+
