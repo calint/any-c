@@ -138,7 +138,7 @@ inline static void ci_expr_bool_parse(ci_expr_bool*o,
 		}
 
 
-		o->lh=ci_expr_new_from_pp(pp,tc);
+		o->lh=_ci_expr_new_from_pp(pp,tc);
 
 		if(**pp=='='){
 			(*pp)++;
@@ -182,7 +182,7 @@ inline static void ci_expr_bool_parse(ci_expr_bool*o,
 			o->rh_negate=true;
 		}
 
-		o->rh=ci_expr_new_from_pp(pp,tc);
+		o->rh=_ci_expr_new_from_pp(pp,tc);
 
 		if(**pp==')'){
 			return;

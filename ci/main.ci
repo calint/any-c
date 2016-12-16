@@ -1,7 +1,9 @@
 class player:object,santa{
 	void main(){
-		p(12);
-		float a=2;
-		bool t=true;
+		char c='a';
+		p("he\"llo");
+		int i=0x20;
+		float f=2f;
+		bool b=true;
 	}
 }

@@ -2,6 +2,7 @@
 #include"../lib.h"
 #include "expr.h"
 #include "toc.h"
+inline static /*gives*/ci_expr*_ci_expr_new_from_pp(const char**pp,ci_toc*tc);
 
 typedef struct ci_block{
 	ci_expr super;
@@ -55,8 +56,6 @@ inline static void _ci_block_compile_(const ci_expr*oo,ci_toc*tc){
 //	free(o);
 //}
 
-inline static /*gives*/ci_expr*ci_expr_new_from_pp(const char**pp,ci_toc*tc);
-
 inline static /*gives*/ci_block*ci_block_parse(ci_block*o,const char**pp,ci_toc*tc){
 //	ci_code*c=malloc(sizeof(ci_code));
 //	*o=ci_code_def;
@@ -68,7 +67,7 @@ inline static /*gives*/ci_block*ci_block_parse(ci_block*o,const char**pp,ci_toc*
 		o->is_encaps=1;
 	}
 	while(1){
-		ci_expr*e=ci_expr_new_from_pp(pp,tc);
+		ci_expr*e=_ci_expr_new_from_pp(pp,tc);
 		if(ci_expr_is_empty(e)){
 			break;
 		}

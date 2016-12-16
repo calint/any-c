@@ -23,14 +23,57 @@ inline static void ci_free(){
 	dynp_free(&ci_classes);
 }
 
-inline static /*gives*/ci_expr*ci_expr_new_from_pp(
+inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		const char**pp,ci_toc*tc){
 
 	token tk=token_next(pp);
 	if(token_is_empty(&tk)){
-		ci_expr*e=malloc(sizeof(ci_expr));
-		*e=ci_expr_def;
-		return e;
+		if(**pp=='"'){
+			(*pp)++;
+			while(1){
+				const char c=**pp;
+				if(c==0){
+					printf("<file> <line:col> did not find the "
+							" end of string\n");
+					exit(1);
+				}
+				(*pp)++;
+				if(c=='\\'){
+					(*pp)++;
+					continue;
+				}
+				if(c=='"')break;
+			}
+			tk.end=tk.content_end=*pp;
+			ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+			*e=ci_expr_ident_def;
+			str name=str_def;
+			token_setz(&tk,&name);
+			e->name=name;
+			e->super.type=str_from_string("const char*");
+			return(ci_expr*)e;
+		}else if(**pp=='\''){
+			(*pp)++;
+			(*pp)++;
+			if(**pp!='\''){
+				printf("<file> <line:col> expected a character\n"
+						" example 'a'\n");
+				exit(1);
+			}
+			(*pp)++;
+			tk.end=tk.content_end=*pp;
+			ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+			*e=ci_expr_ident_def;
+			str name=str_def;
+			token_setz(&tk,&name);
+			e->name=name;
+			e->super.type=str_from_string("char");
+			return(ci_expr*)e;
+		}else{
+			ci_expr*e=malloc(sizeof(ci_expr));
+			*e=ci_expr_def;
+			return e;
+		}
 	}
 
 	if(token_equals(&tk,"loop")){
@@ -55,13 +98,8 @@ inline static /*gives*/ci_expr*ci_expr_new_from_pp(
 
 	str name=str_def;
 	token_setz(&tk,&name);
-	if(token_equals(&tk,"int")){
-		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
-		return(ci_expr*)e;
-	}else if(token_equals(&tk,"float")){
-		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
-		return(ci_expr*)e;
-	}else if(token_equals(&tk,"bool")){
+	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
+			token_equals(&tk,"bool")||token_equals(&tk,"char")){
 		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
 		return(ci_expr*)e;
 	}
@@ -136,7 +174,7 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 	dynp_add(&c->fields,f);
 	if(**pp=='='){
 		(*pp)++;
-		ci_expr*e=ci_expr_new_from_pp(pp,tc);
+		ci_expr*e=_ci_expr_new_from_pp(pp,tc);
 		f->initval=e;
 	}
 	if(**pp!=';'){

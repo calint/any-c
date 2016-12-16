@@ -11,7 +11,6 @@ typedef struct ci_expr_ident{
 
 inline static void _ci_expr_ident_free_(struct ci_expr*oo){
 	ci_expr_ident*o=(ci_expr_ident*)oo;
-//	str_free(&o->name);
 	ci_expr_free((ci_expr*)o);
 }
 
@@ -27,6 +26,23 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 		return;
 	}
 
+	if(o->name.data[0]=='"' || o->name.data[0]=='\''){
+//		// scan string
+//		const char*p=o->name.data;
+//		while(1){
+//			if(!*p)break;
+//			if(*p=='\\'){
+//				p++;
+//				continue;
+//			}
+//			if(*p=='"')
+//				break;
+//		}
+		printf("%s",o->name.data);
+		return;
+	}
+
+
 	// constant
 	if(!strcmp("true",o->name.data)){
 		printf("true");
@@ -38,8 +54,31 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 		return;
 	}
 
-	char* endptr;
+	char*endptr;
+
+	strtof(o->name.data,&endptr);
+	if(*endptr=='f'){
+		printf("%s",o->name.data);
+		return;
+	}
+
 	strtol(o->name.data,&endptr,10);
+	if(endptr==o->name.data+o->name.count-1){
+		printf("%s",o->name.data);
+		return;
+	}
+
+	if(o->name.count>1){
+		if((o->name.data[0]=='0' && o->name.data[1]=='x')||
+			(o->name.data[0]=='0' && o->name.data[1]=='x')){
+			strtol(o->name.data+2,&endptr,16);
+			if(endptr==o->name.data+o->name.count-2+1){
+				printf("%s",o->name.data);
+				return;
+			}
+		}
+	}
+
 	if(*endptr!=0){
 		// not end of string
 		printf("\n\n<file> <line:col> '%s' is not found and could not "
@@ -47,14 +86,10 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 		exit(1);
 
 	}
+
 //	str_setz(&o->super.type,"int");
 	printf("%s",o->name.data);
 }
 
 #define ci_expr_ident_def (ci_expr_ident){\
 	{str_def,_ci_expr_ident_compile_,_ci_expr_ident_free_},str_def,0}
-
-//inline static void ci_expr_ident_free(ci_expr_ident*o){
-//	ci_expression_free(&o->super);
-//	free(o);
-//}
