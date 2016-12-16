@@ -14,6 +14,17 @@
 
 dynp/*owns*/ci_classes=dynp_def;
 
+inline static ci_class*ci_find_class_by_name(const char*name){
+	for(unsigned i=0;i<ci_classes.count;i++){
+		ci_class*c=dynp_get(&ci_classes,i);
+		if(!strcmp(c->name.data,name)){
+			return c;
+		}
+	}
+	return NULL;
+}
+
+
 inline static void ci_init(){}
 
 inline static void ci_free(){
@@ -61,7 +72,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 			str name=str_def;
 			token_setz(&tk,&name);
 			e->name=name;
-			e->super.type=str_from_string("char*const");
+			e->super.type=str_from_string("const char*");
 			return(ci_expr*)e;
 		}else if(**pp=='\''){
 			(*pp)++;
@@ -178,6 +189,11 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		return(ci_expr*)e;
 	}
 
+	ci_class*c=ci_find_class_by_name(name.data);
+	if(c){// instantiate
+		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
+		return(ci_expr*)e;
+	}
 
 	if(**pp=='('){// function call
 		ci_expr_call*e=ci_expr_call_next(pp,tc,/*gives*/name);
@@ -296,6 +312,11 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 	printf("typedef char bool;\n");
 	printf("#define true 1\n");
 	printf("#define false 1\n");
+
+	printf("#define char_def 0\n");
+	printf("#define int_def 0\n");
+	printf("#define float_def 0.0f\n");
+	printf("#define bool_def false\n");
 
 	dynp_foa(&ci_classes,{
 		ci_class*c=o;

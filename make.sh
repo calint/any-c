@@ -15,6 +15,8 @@ REMARKS=
 #PROFILE=-pg
 PROFILE=
 
+rm -f $BIN &&
+
 $CC $PROFILE $SRC -o $BIN $OPTIMIZATION $CFLAGS $LIBS $WARNINGS &&
 
 ls -la --color $BIN

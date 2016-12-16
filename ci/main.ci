@@ -1,18 +1,7 @@
-class player{
-	auto i=1
-	auto f=2.0f
-	auto c='a'
-
-	void main(){
-		i=2;
-		f=3.0f
-		c='a'
-	}
-}
-
+class player{}
 
 class global{
 	void main(int c,char** a){
-		puts("hello world")
+		player p;
 	}
 }

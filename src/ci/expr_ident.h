@@ -3,6 +3,8 @@
 #include "expr.h"
 #include "toc.h"
 
+//inline static ci_class*ci_find_class_by_name(const char*);
+
 typedef struct ci_expr_ident{
 	ci_expr super;
 	str name;
