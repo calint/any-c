@@ -23,6 +23,12 @@ inline static void ci_free(){
 	dynp_free(&ci_classes);
 }
 
+inline static str str_const(const char*s){
+	str st=str_def;
+	st.data=s;
+	st.cap=st.count=strlen(s)+1;
+	return st;
+}
 inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		const char**pp,ci_toc*tc){
 
@@ -55,7 +61,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 			str name=str_def;
 			token_setz(&tk,&name);
 			e->name=name;
-			e->super.type=str_from_string("const char*");
+			e->super.type=str_from_string("char*const");
 			return(ci_expr*)e;
 		}else if(**pp=='\''){
 			(*pp)++;
@@ -78,6 +84,68 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 			ci_expr*e=malloc(sizeof(ci_expr));
 			*e=ci_expr_def;
 			return e;
+		}
+	}
+
+
+	// constant
+	str tks=str_def;
+	token_setz(&tk,&tks);
+
+	// boolean
+	if(!strcmp("true",tks.data) || !strcmp("false",tks.data)){
+		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+		*e=ci_expr_ident_def;
+		e->name=tks;
+		e->super.type=str_const("bool");
+		return(ci_expr*)e;
+	}
+
+
+	char*endptr;
+	// int
+	strtol(tks.data,&endptr,10);
+	if(endptr==tks.data+tks.count-1){
+		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+		*e=ci_expr_ident_def;
+		e->name=tks;
+		e->super.type=str_const("int");
+		return(ci_expr*)e;
+	}
+
+	// float
+	strtof(tks.data,&endptr);
+	if(*endptr=='f'){
+		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+		*e=ci_expr_ident_def;
+		e->name=tks;
+		e->super.type=str_const("float");
+		return(ci_expr*)e;
+	}
+//
+
+//
+	// hex
+	if(tks.count>1){
+		if((tks.data[0]=='0' && tks.data[1]=='x')){
+			strtol(tks.data+2,&endptr,16);
+			if(endptr==tks.data+tks.count-2+1){
+				ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+				*e=ci_expr_ident_def;
+				e->name=tks;
+				e->super.type=str_const("int");
+				return(ci_expr*)e;
+			}
+		}
+		if((tks.data[0]=='0' && tks.data[1]=='b')){
+			unsigned v=strtol(tks.data+2,&endptr,2);
+			if(endptr==tks.data+tks.count-2+1){
+				ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
+				*e=ci_expr_ident_def;
+				e->name=tks;
+				e->super.type=str_const("int");
+				return(ci_expr*)e;
+			}
 		}
 	}
 
@@ -104,7 +172,8 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 	str name=str_def;
 	token_setz(&tk,&name);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
-			token_equals(&tk,"bool")||token_equals(&tk,"char")){
+			token_equals(&tk,"bool")||token_equals(&tk,"char")||
+			token_equals(&tk,"auto")){
 		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
 		return(ci_expr*)e;
 	}

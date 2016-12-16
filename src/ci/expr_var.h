@@ -27,7 +27,7 @@ inline static void _ci_expr_var_compile_(const ci_expr*oo,ci_toc*tc){
 		return;
 	}
 	ci_toc_add_ident(tc,o->initval.name.data);
-	printf("%s ",o->super.type.data);
+	printf("%s ",o->initval.super.type.data);
 	_ci_expr_assign_compile_((ci_expr*)&o->initval,tc);
 }
 
@@ -42,11 +42,24 @@ inline static /*gives*/ci_expr_var*ci_expr_var_next(
 	*e=ci_expr_var_def;
 	e->super.type/*takes*/=type;
 	token tk=token_next(pp);
-	str name=str_def;
-	token_setz(&tk,&name);
+	token_setz(&tk,&e->name);
+	bool is_var=!strcmp(e->super.type.data,"var")||
+			!strcmp(e->super.type.data,"auto");
 	if(**pp=='='){
 		(*pp)++;
-		ci_expr_assign_parse(&e->initval,pp,tc,/*gives*/name);
+		ci_expr_assign_parse(&e->initval,pp,tc,/*shares*/e->name);
+		if(is_var){
+			e->super.type=e->initval.super.type;
+		}else{
+			if(strcmp(e->super.type.data,e->initval.super.type.data)){
+				printf("\n\n<file> <line:col> %s declared as %s but initial"
+						" expression is of type %s\n",
+						e->initval.name.data,
+						e->super.type.data,
+						e->initval.super.type.data);
+				exit(1);
+			}
+		}
 	}else{
 		e->initval.super.compile=NULL;
 	}

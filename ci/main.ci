@@ -1,10 +1,11 @@
 class player:object,santa{
 	void main(){
-		char c='a';
-		p("he\"llo");
-		int i=0x20;
-		float f=2.0f;
-		bool b=true;
-		int bin=0b10;
+		auto b=true;
+		auto i=1;
+		auto f=2.0f;
+		auto c='a';
+		auto h=0x2020;
+		auto bb=0b101;
+		auto str="hello world";
 	}
 }
