@@ -21,12 +21,11 @@ inline static type*toc_find_class_by_name(toc*o,const char*name){
 	return NULL;
 }
 
-
 inline static void toc_add_class(toc*o,type*c){
 	dynp_add(&o->types,c);
 }
 
-inline static bool toc_is_assignable_from(toc*tc,
+inline static bool toc_can_assign(toc*tc,
 		const char*dst,const char*path,const char*src){
 
 	type*c=toc_find_class_by_name(tc,dst);
@@ -362,7 +361,7 @@ inline static void toc_parse_field(const char**pp,toc*tc,type*c,
 		(*pp)++;
 		xexpr*e=toc_next_expr_from_pp(pp,tc);
 		f->initval=e;
-		if(strcmp(f->type.data,"var") && !toc_is_assignable_from(tc,
+		if(strcmp(f->type.data,"var") && !toc_can_assign(tc,
 				f->type.data,f->initval->type.data,e->type.data)){
 
 			printf("<file> <line:col> cannot assign '%s' to '%s'\n",

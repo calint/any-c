@@ -9,7 +9,7 @@ typedef struct toc{
 
 #define toc_def {dynp_def,dynp_def,str_def}
 
-inline static bool toc_is_assignable_from(toc*o,const char*dst,const char*path,
+inline static bool toc_can_assign(toc*o,const char*dst,const char*path,
 		const char*src);
 
 typedef struct tocscope{
@@ -119,7 +119,7 @@ inline static void toc_print_resolved_identifier_for_assignment(
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			exit(1);
 		}
-		if(!toc_is_assignable_from(tc,i->type.data,p+1,type)){
+		if(!toc_can_assign(tc,i->type.data,p+1,type)){
 //			const char*ft=ci_toc_meta_get_first_field_type_for_class_name(tc,
 //					i->type.data);
 
