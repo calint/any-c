@@ -12,11 +12,9 @@
 #include "expr_var.h"
 #include "expr_ife.h"
 
-dynp/*owns*/ci_classes=dynp_def;
-
-inline static ci_class*ci_find_class_by_name(const char*name){
-	for(unsigned i=0;i<ci_classes.count;i++){
-		ci_class*c=dynp_get(&ci_classes,i);
+inline static ci_class*ci_find_class_by_name(ci_toc*tc,const char*name){
+	for(unsigned i=0;i<tc->ci_classes.count;i++){
+		ci_class*c=dynp_get(&tc->ci_classes,i);
 		if(!strcmp(c->name.data,name)){
 			return c;
 		}
@@ -37,7 +35,7 @@ inline static ci_class*ci_find_class_by_name(const char*name){
 inline static bool ci_is_assignable_from(ci_toc*tc,
 		const char*dst,const char*path,const char*src){
 
-	ci_class*c=ci_find_class_by_name(dst);
+	ci_class*c=ci_find_class_by_name(tc,dst);
 	const char*endptr=path;
 	while(1){
 		const char*p=strpbrk(endptr,".");
@@ -59,7 +57,7 @@ inline static bool ci_is_assignable_from(ci_toc*tc,
 		for(unsigned i=0;i<c->extends.count;i++){
 			str*ext=(str*)dynp_get(&c->extends,i);
 			if(!strcmp(ext->data,ident.data)){
-				c=ci_find_class_by_name(ext->data);
+				c=ci_find_class_by_name(tc,ext->data);
 				found=true;
 				break;
 			}
@@ -68,7 +66,7 @@ inline static bool ci_is_assignable_from(ci_toc*tc,
 		for(unsigned i=0;i<c->fields.count;i++){
 			ci_field*fld=(ci_field*)dynp_get(&c->fields,i);
 			if(!strcmp(fld->name.data,ident.data)){
-				c=ci_find_class_by_name(fld->type.data);
+				c=ci_find_class_by_name(tc,fld->type.data);
 				if(!c){
 					if(!src)
 						return true;//?
@@ -251,7 +249,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		return(ci_expr*)e;
 	}
 
-	ci_class*c=ci_find_class_by_name(name.data);
+	ci_class*c=ci_find_class_by_name(tc,name.data);
 	if(c){// instantiate
 		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
 		return(ci_expr*)e;
@@ -385,7 +383,167 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 	return;
 }
 
-inline static void _ci_compile_to_c(ci_toc*tc){
+//inline static void _ci_compile_to_c(ci_toc*tc){
+//	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+//	printf("#include<stdlib.h>\n");
+//	printf("#include<stdio.h>\n");
+//	printf("typedef char bool;\n");
+//	printf("#define true 1\n");
+//	printf("#define false 1\n");
+//	printf("#define char_def 0\n");
+//	printf("#define int_def 0\n");
+//	printf("#define float_def 0.0f\n");
+//	printf("#define bool_def false\n");
+//	for(unsigned i=0;i<ci_classes.count;i++){
+//		ci_class*c=(ci_class*)dynp_get(&ci_classes,i);
+//		ci_toc_push_scope(tc,'c',c->name.data);
+//		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+//		printf("typedef struct %s{",c->name.data);
+//		if(c->extends.count||c->fields.count)
+//			printf("\n");
+//		for(unsigned i=0;i<c->extends.count;i++){
+//			str*s=(str*)dynp_get(&c->extends,i);
+//			printf("    %s %s;\n",s->data,s->data);
+//		}
+//		// fields
+//		for(unsigned i=0;i<c->fields.count;i++){
+//			ci_field*f=(ci_field*)dynp_get(&c->fields,i);
+//			ci_toc_add_ident(tc,f->type.data,f->name.data);
+//			if(!strcmp(f->type.data,"auto")){
+//				if(!f->initval){
+//					printf("<file> <line:col> expected initializer with auto");
+//					exit(1);
+//				}
+//				f->initval->compile(f->initval,tc);
+//				f->type=f->initval->type;
+//			}
+//			printf("    %s %s;\n",f->type.data,f->name.data);
+//		}
+//		printf("}%s;\n",c->name.data);
+//
+//		// #define object_def {...}
+//		printf("#define %s_def (%s){",c->name.data,c->name.data);
+//		for(unsigned i=0;i<c->extends.count;i++){
+//			str*s=(str*)dynp_get(&c->extends,i);
+//			printf("%s_def",s->data);
+//			if(i!=c->extends.count-1)
+//				printf(",");
+//		}
+//		for(unsigned i=0;i<c->fields.count;i++){
+//			ci_field*s=(ci_field*)dynp_get(&c->fields,i);
+//			if(s->initval){
+//				s->initval->compile(s->initval,tc);
+//			}else{
+//				printf("%s_def",s->type.data);
+//			}
+//			if(i!=c->fields.count-1)
+//				printf(",");
+//		}
+//		printf("}\n");
+////
+////		// casts
+//////		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+////		for(unsigned i=0;i<c->extends.count;i++){
+////			str*s=(str*)dynp_get(&c->extends,i);
+////			printf(	"inline static %s*%s_as_%s(const %s*o){"
+////					"return(%s*)&o->%s;"
+////					"}\n",s->data,c->name.data,s->data,c->name.data,
+////					s->data,s->data
+////			);
+////			printf(	"inline static const %s*%s_as_const_%s(const %s*o){"
+////					"return(const %s*)&o->%s;"
+////					"}\n",s->data,c->name.data,s->data,c->name.data,
+////					s->data,s->data
+////			);
+////		}
+//		// functions
+//		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+//		for(unsigned i=0;i<c->funcs.count;i++){
+//			ci_func*f=(ci_func*)dynp_get(&c->funcs,i);
+//			ci_toc_push_scope(tc,'f',f->name.data);
+//			printf("inline static %s %s_%s(%s*o",
+//					f->type.data,c->name.data,f->name.data,c->name.data);
+//
+//			for(unsigned j=0;j<f->args.count;j++){
+//				ci_func_arg*a=(ci_func_arg*)dynp_get(&f->args,j);
+//				printf(",");
+//				printf("%s %s",a->type.data,a->name.data);
+//				ci_toc_add_ident(tc,a->type.data,a->name.data);
+//			}
+//			printf(")");
+//			f->code.super.compile((ci_expr*)&f->code,tc);
+//			ci_toc_pop_scope(tc);
+//		}
+//		ci_toc_pop_scope(tc);
+//	}
+//	printf("\n//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+//	printf("int main(int c,char** a){global_main(0,c,a);}\n");
+//	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+//}
+
+inline static /*gives*/ci_class*_ci_parse_class(
+		const char**pp,ci_toc*tc,token name){
+
+	ci_class*c=malloc(sizeof(ci_class));
+	*c=ci_class_def;
+	dynp_add(&tc->ci_classes,c);
+	token_setz(&name,&c->name);
+	ci_toc_push_scope(tc,'c',c->name.data);
+	if(**pp==':'){
+		(*pp)++;
+		while(1){
+			token extends_name=token_next(pp);
+			dynp_add(&c->extends,/*takes*/token_to_str(&extends_name));
+			if(**pp=='{'){
+				break;
+			}else if(**pp==','){
+				(*pp)++;
+				continue;
+			}
+			printf("<file> <line:col> expected '{' or ',' followed by "
+					"class name");
+			exit(1);
+
+		}
+	}
+	if(**pp!='{'){
+		printf("<file> <line:col> expected '{' to open class body");
+		exit(1);
+	}
+	(*pp)++;
+	while(1){
+		token type=token_next(pp);
+		if(token_is_empty(&type)){
+			if(**pp!='}'){
+				printf("<file> <line:col> expected '}' to close class body\n");
+				exit(1);
+			}
+			(*pp)++;
+			break;
+		}
+		if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
+//			(*pp)++;
+			_ci_parse_func(pp,tc,c,&type);
+		}else if(**pp=='=' || **pp==';'){
+			token name=token_next(pp);
+			_ci_parse_field(pp,tc,c,&type,&name);
+		}else{
+			token nm=token_next(pp);
+			if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
+				*pp=nm.content;
+				_ci_parse_func(pp,tc,c,&type);
+			}else{
+				_ci_parse_field(pp,tc,c,&type,&nm);
+			}
+//			printf("<file> <line:col> expected ';'\n");
+//			exit(1);
+		}
+	}
+	ci_toc_pop_scope(tc);
+	return/*gives*/c;
+}
+
+inline static void toc_compile_to_c(ci_toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
@@ -396,8 +554,8 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 	printf("#define int_def 0\n");
 	printf("#define float_def 0.0f\n");
 	printf("#define bool_def false\n");
-	for(unsigned i=0;i<ci_classes.count;i++){
-		ci_class*c=(ci_class*)dynp_get(&ci_classes,i);
+	for(unsigned i=0;i<tc->ci_classes.count;i++){
+		ci_class*c=dynp_get(&tc->ci_classes,i);
 		ci_toc_push_scope(tc,'c',c->name.data);
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		printf("typedef struct %s{",c->name.data);
@@ -483,67 +641,6 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
-inline static /*gives*/ci_class*_ci_parse_class(
-		const char**pp,ci_toc*tc,token name){
-
-	ci_class*c=malloc(sizeof(ci_class));
-	*c=ci_class_def;
-	dynp_add(&ci_classes,c);
-	token_setz(&name,&c->name);
-	ci_toc_push_scope(tc,'c',c->name.data);
-	if(**pp==':'){
-		(*pp)++;
-		while(1){
-			token extends_name=token_next(pp);
-			dynp_add(&c->extends,/*takes*/token_to_str(&extends_name));
-			if(**pp=='{'){
-				break;
-			}else if(**pp==','){
-				(*pp)++;
-				continue;
-			}
-			printf("<file> <line:col> expected '{' or ',' followed by "
-					"class name");
-			exit(1);
-
-		}
-	}
-	if(**pp!='{'){
-		printf("<file> <line:col> expected '{' to open class body");
-		exit(1);
-	}
-	(*pp)++;
-	while(1){
-		token type=token_next(pp);
-		if(token_is_empty(&type)){
-			if(**pp!='}'){
-				printf("<file> <line:col> expected '}' to close class body\n");
-				exit(1);
-			}
-			(*pp)++;
-			break;
-		}
-		if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
-//			(*pp)++;
-			_ci_parse_func(pp,tc,c,&type);
-		}else if(**pp=='=' || **pp==';'){
-			token name=token_next(pp);
-			_ci_parse_field(pp,tc,c,&type,&name);
-		}else{
-			token nm=token_next(pp);
-			if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
-				*pp=nm.content;
-				_ci_parse_func(pp,tc,c,&type);
-			}else{
-				_ci_parse_field(pp,tc,c,&type,&nm);
-			}
-//			printf("<file> <line:col> expected ';'\n");
-//			exit(1);
-		}
-	}
-	ci_toc_pop_scope(tc);
-	return/*gives*/c;
-}
 inline static void ci_compile_file(const char*path){
 	str s=str_from_file(path);
 	const char*p=s.data;
@@ -553,6 +650,6 @@ inline static void ci_compile_file(const char*path){
 		if(token_is_empty(&nmspc))break;
 		_ci_parse_class(&p,&tc,nmspc);
 	}
-	_ci_compile_to_c(&tc);
+	toc_compile_to_c(&tc);
 }
 

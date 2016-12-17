@@ -3,10 +3,12 @@
 //#include"class.h"
 
 typedef struct ci_toc{
+	dynp/*owns*/ci_classes;
 	dynp/*own ci_toc_scope*/scopes;
+	str src;
 }ci_toc;
 
-#define ci_toc_def {dynp_def}
+#define ci_toc_def {dynp_def,dynp_def,str_def}
 
 //inline static void ci_toc_free(ci_toc*o){
 //	for(unsigned i=0;i<o->scopes.count;i++){
