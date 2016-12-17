@@ -8,7 +8,7 @@ inline static void _xcont_compile_(const xexpr*oo,toc*tc){
 	printf("continue");
 }
 
-#define xcont_def (xcont){{str_def,_xcont_compile_,NULL}}
+#define xcont_def (xcont){{_xcont_compile_,NULL,str_def,0}}
 
 inline static xcont*xcont_read_next(const char**pp,toc*tc){
 	if(**pp==';')

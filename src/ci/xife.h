@@ -18,7 +18,7 @@ inline static void _xif_compile_(const xexpr*oo,toc*tc){
 	_codeblk_compile_((xexpr*)&o->code,tc);
 }
 
-#define xif_def (xif){{str_def,_xif_compile_,NULL},xbool_def,codeblk_def}
+#define xif_def (xif){{_xif_compile_,NULL,str_def,0},xbool_def,codeblk_def}
 
 inline static xif*xif_read_next(const char**pp,toc*tc){
 	xif*o=malloc(sizeof(xif));
@@ -50,7 +50,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define xife_def (xife){{str_def,_xife_compile_,NULL},dynp_def,codeblk_def}
+#define xife_def (xife){{_xife_compile_,NULL,str_def,0},dynp_def,codeblk_def}
 
 inline static xife*xife_read_next(const char*pp[],toc*tc){
 	xife*o=malloc(sizeof(xife));

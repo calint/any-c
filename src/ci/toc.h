@@ -182,12 +182,13 @@ inline static void toc_indent_for_compile(toc*o){
 }
 
 typedef struct xexpr{
-	str type;
 	void (*compile)(const struct xexpr*,struct toc*);
 	void (*free)(struct xexpr*);
+	str type;
+	char bits;
 }xexpr;
 
-#define xexpr_def (xexpr){str_def,NULL,NULL}
+#define xexpr_def (xexpr){NULL,NULL,str_def,0}
 
 inline static int xexpr_is_empty(xexpr*o){
 	return o->compile==NULL;

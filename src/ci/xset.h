@@ -16,7 +16,7 @@ inline static void _xset_compile_(const xexpr*oo,toc*tc){
 	o->expr->compile((xexpr*)o->expr,tc);
 }
 
-#define xset_def (xset){{str_def,_xset_compile_,NULL},str_def,0}
+#define xset_def (xset){{_xset_compile_,NULL,str_def,0},str_def,0}
 
 inline static/*gives*/xset*xset_read_next(
 		const char**pp,toc*tc,/*takes*/str name){

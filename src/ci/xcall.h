@@ -23,7 +23,7 @@ inline static void _xcall_compile_(const xexpr*o,toc*tc){
 	printf(")");
 }
 
-#define xcall_def (xcall){{str_def,_xcall_compile_,NULL},str_def,dynp_def}
+#define xcall_def (xcall){{_xcall_compile_,NULL,str_def,0},str_def,dynp_def}
 
 inline static xcall*xcall_read_next(
 		const char**pp,toc*tc,str name){

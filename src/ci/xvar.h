@@ -29,7 +29,7 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define xvar_def (xvar){{str_def,_xvar_compile_,NULL},str_def,xset_def}
+#define xvar_def (xvar){{_xvar_compile_,NULL,str_def,0},str_def,xset_def}
 
 inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
 	xvar*e=malloc(sizeof(xvar));

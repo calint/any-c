@@ -6,7 +6,7 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(const char**pp,toc*o);
 
 typedef struct codeblk{
 	xexpr super;
-	int is_encaps;
+	bool is_encaps;
 	dynp/*own expr*/exprs;
 }codeblk;
 
@@ -31,7 +31,7 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define codeblk_def (codeblk){{str_def,_codeblk_compile_,NULL},0,dynp_def}
+#define codeblk_def (codeblk){{_codeblk_compile_,NULL,str_def,0},0,dynp_def}
 
 inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
 	token_skip_empty_space(pp);
