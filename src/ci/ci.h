@@ -385,6 +385,7 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 }
 
 inline static void _ci_compile_to_c(ci_toc*tc){
+	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
 	printf("typedef char bool;\n");
@@ -397,7 +398,7 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 	for(unsigned i=0;i<ci_classes.count;i++){
 		ci_class*c=(ci_class*)dynp_get(&ci_classes,i);
 		ci_toc_push_scope(tc,'c',c->name.data);
-		printf("\n//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		printf("typedef struct %s{",c->name.data);
 		if(c->extends.count||c->fields.count)
 			printf("\n");
