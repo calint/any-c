@@ -2,7 +2,8 @@ global{
 	int main(int argc,char** arga){
 		if(argc==1){
 			break
-		}else
+		}else{
 			continue
+		}
 	}	
 }

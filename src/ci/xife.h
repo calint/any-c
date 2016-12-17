@@ -36,7 +36,6 @@ typedef struct xife{
 
 inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	xife*o=(xife*)oo;
-
 	for(unsigned i=0;i<o->ifs.count;i++){
 		xif*fi=(xif*)dynp_get(&o->ifs,i);
 		if(i>0){
@@ -44,8 +43,15 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 		}
 		_xif_compile_((xexpr*)fi,tc);
 	}
+	xif*fi=(xif*)dynp_get_last(&o->ifs);
 	if(o->elsecode.exprs.count){
-		printf(" else ");
+		if(fi->super.bits&1)
+			printf(" else ");
+		else{
+//			printf("\n");
+			toc_indent_for_compile(tc);
+			printf("else ");
+		}
 		_codeblk_compile_((xexpr*)&o->elsecode,tc);
 	}
 }
