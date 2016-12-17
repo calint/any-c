@@ -12,7 +12,7 @@ typedef char bool;
 typedef struct player{
     int c;
 }player;
-#define player_def (player){2,}
+#define player_def (player){2}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 inline static void player_print(player*o){
 	printf(" player: %d\n",o->c);

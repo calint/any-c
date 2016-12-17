@@ -426,7 +426,9 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 		printf("#define %s_def (%s){",c->name.data,c->name.data);
 		for(unsigned i=0;i<c->extends.count;i++){
 			str*s=(str*)dynp_get(&c->extends,i);
-			printf("%s_def,",s->data);
+			printf("%s_def",s->data);
+			if(i!=c->extends.count-1)
+				printf(",");
 		}
 		for(unsigned i=0;i<c->fields.count;i++){
 			ci_field*s=(ci_field*)dynp_get(&c->fields,i);
@@ -435,7 +437,8 @@ inline static void _ci_compile_to_c(ci_toc*tc){
 			}else{
 				printf("%s_def",s->type.data);
 			}
-			printf(",");
+			if(i!=c->fields.count-1)
+				printf(",");
 		}
 		printf("}\n");
 //

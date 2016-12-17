@@ -1,7 +1,7 @@
 player{
 	int c=2
 	print{
-		printf(" player: %d\n",c);
+		printf(" player: %d\n",c)
 	}
 }
 
