@@ -24,10 +24,9 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 		toc_indent_for_compile(tc);
 		e->compile(e,tc);
 		if(!(e->bits&1))
-			printf(";");
+			printf(";\n");
 		else
-			printf("***");
-		printf("\n");
+			printf("\n");
 	}
 	toc_pop_scope(tc);
 	if(o->super.bits&1){
@@ -60,6 +59,7 @@ inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
 		toc_pop_scope(tc);
 		return;
 	}
+	o->super.bits&=~1;
 	xexpr*e=toc_read_next_xexpr(pp,tc);
 	dynp_add(&o->exprs,e);
 	if(**pp==';'){

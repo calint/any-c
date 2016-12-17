@@ -39,7 +39,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 
 	for(unsigned i=0;i<o->ifs.count;i++){
 		xif*fi=(xif*)dynp_get(&o->ifs,i);
-		if(i){
+		if(i>0){
 			printf(" else ");
 		}
 		_xif_compile_((xexpr*)fi,tc);
@@ -55,7 +55,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 inline static xife*xife_read_next(const char*pp[],toc*tc){
 	xife*o=malloc(sizeof(xife));
 	*o=xife_def;
-
+	o->super.bits|=1;
 	while(1){
 		xif*i=malloc(sizeof(xif));
 		*i=xif_def;
@@ -63,6 +63,8 @@ inline static xife*xife_read_next(const char*pp[],toc*tc){
 
 		xbool_parse(&i->cond,pp,tc);
 		codeblk_read_next(&i->code,pp,tc);
+
+		i->super.bits=i->code.super.bits; // encapsulation
 
 		token t=token_next(pp);
 		if(!token_equals(&t,"else")){
@@ -72,6 +74,7 @@ inline static xife*xife_read_next(const char*pp[],toc*tc){
 
 		token t2=token_next(pp);
 		if(!token_equals(&t2,"if")){
+			*pp=t2.begin;
 			codeblk_read_next(&o->elsecode,pp,tc);
 			return o;
 		}

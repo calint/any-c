@@ -15,12 +15,11 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static int global_main(global*o,int argc,char** arga){
-	while(1){
-		puts("hello");
-		if (argc==1) {
-			break;
-		};
-	};
+	if (argc==1) {
+		break;
+	} else 
+		continue;
+
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char** a){global_main(0,c,a);}
