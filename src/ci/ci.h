@@ -2,13 +2,13 @@
 #include"../lib.h"
 #include "codeblk.h"
 #include "type.h"
-#include "xassign.h"
 #include "xbreak.h"
 #include "xcall.h"
 #include "xcontinue.h"
 #include "xident.h"
 #include "xife.h"
 #include "xloop.h"
+#include "xset.h"
 #include "xvar.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
@@ -256,7 +256,7 @@ inline static /*gives*/xexpr*toc_next_expr_from_pp(
 	if(**pp=='='){// assignment
 		(*pp)++;
 		if(**pp!='='){
-			xassign*e=/*takes*/xassign_next(pp,tc,/*gives*/name);
+			xset*e=/*takes*/xset_read_next(pp,tc,/*gives*/name);
 			return(xexpr*)e;
 		}
 		(*pp)--;

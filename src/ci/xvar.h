@@ -1,12 +1,12 @@
 #pragma once
 #include"../lib.h"
 #include "toc.h"
-#include "xassign.h"
+#include "xset.h"
 
 typedef struct xvar{
 	xexpr super;
 	str name;
-	xassign initval;
+	xset initval;
 }xvar;
 
 inline static void _xvar_compile_(const xexpr*oo,toc*tc){
@@ -23,13 +23,13 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 
 	printf("%s ",o->super.type.data);
 	if(o->initval.super.compile){
-		_xassign_compile_((xexpr*)&o->initval,tc);
+		_xset_compile_((xexpr*)&o->initval,tc);
 	}else{
 		printf("%s=%s_def",o->name.data,o->super.type.data);
 	}
 }
 
-#define xvar_def (xvar){{str_def,_xvar_compile_,NULL},str_def,xassign_def}
+#define xvar_def (xvar){{str_def,_xvar_compile_,NULL},str_def,xset_def}
 
 inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
 	xvar*e=malloc(sizeof(xvar));
@@ -48,7 +48,7 @@ inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
 
 	if(**pp=='='){
 		(*pp)++;
-		xassign_parse(&e->initval,pp,tc,/*shares*/e->name);
+		xset_parse_next(&e->initval,pp,tc,/*shares*/e->name);
 		if(is_var){
 			e->super.type=e->initval.super.type;
 		}else{
