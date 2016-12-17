@@ -15,6 +15,8 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 	toc_push_scope(tc,'b',"");
 	if(o->is_encaps){
 		printf("{\n");
+	}else{
+		printf("\n");
 	}
 	for(unsigned i=0;i<o->exprs.count;i++){
 		xexpr*e=dynp_get(&o->exprs,i);
