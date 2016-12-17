@@ -4,13 +4,13 @@
 #include "expr.h"
 #include "expr_call.h"
 #include "expr_ident.h"
-#include "expr_assign.h"
 #include "expr_loop.h"
 #include "expr_break.h"
 #include "expr_continue.h"
 #include "expr_var.h"
 #include "expr_ife.h"
 #include "type.h"
+#include "xassign.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
 	for(unsigned i=0;i<o->ci_classes.count;i++){

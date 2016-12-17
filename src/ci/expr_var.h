@@ -2,7 +2,7 @@
 #include"../lib.h"
 #include "expr.h"
 #include "toc.h"
-#include"expr_assign.h"
+#include "xassign.h"
 
 typedef struct ci_expr_var{
 	ci_expr super;

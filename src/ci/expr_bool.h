@@ -27,10 +27,10 @@ typedef struct ci_expr_bool{
 
 	bool is_negated;
 
-}ci_expr_bool;
+}xbool;
 
-inline static void _ci_expr_bool_compile_(const ci_expr*oo,toc*tc){
-	ci_expr_bool*o=(ci_expr_bool*)oo;
+inline static void _xbool_compile_(const ci_expr*oo,toc*tc){
+	xbool*o=(xbool*)oo;
 
 	if(o->bool_list.count){
 		if(o->is_negated){
@@ -40,7 +40,7 @@ inline static void _ci_expr_bool_compile_(const ci_expr*oo,toc*tc){
 			printf("(");
 		}
 		for(unsigned i=0;i<o->bool_list.count;i++){
-			ci_expr_bool*b=(ci_expr_bool*)dynp_get(&o->bool_list,i);
+			xbool*b=(xbool*)dynp_get(&o->bool_list,i);
 			char op=str_get(&o->bool_op_list,i);
 			if(op){
 				if(op=='&'){
@@ -52,7 +52,7 @@ inline static void _ci_expr_bool_compile_(const ci_expr*oo,toc*tc){
 					exit(1);
 				}
 			}
-			_ci_expr_bool_compile_((ci_expr*)b,tc);
+			_xbool_compile_((ci_expr*)b,tc);
 			// ...
 		}
 		if(o->is_encapsulated){
@@ -100,18 +100,18 @@ inline static void _ci_expr_bool_compile_(const ci_expr*oo,toc*tc){
 	}
 }
 
-inline static void _ci_expr_bool_free_(ci_expr*oo){
-	ci_expr_free(oo);
+inline static void _xbool_free_(ci_expr*oo){
+//	ci_expr_free(oo);
 }
 
-#define ci_expr_bool_def (ci_expr_bool){\
-	{str_def,_ci_expr_bool_compile_,_ci_expr_bool_free_},\
+#define xbool_def (xbool){\
+	{str_def,_xbool_compile_,_xbool_free_},\
 	false,NULL,0,false,NULL,\
 	str_def,\
 	dynp_def,\
 	false,false}
 
-inline static void ci_expr_bool_parse(ci_expr_bool*o,
+inline static void ci_expr_bool_parse(xbool*o,
 		const char**pp,toc*tc){
 
 	o->super.type=str_from_string("bool");
@@ -217,8 +217,8 @@ inline static void ci_expr_bool_parse(ci_expr_bool*o,
 	(*pp)++;
 	str_add(&o->bool_op_list,0);
 	while(1){
-		ci_expr_bool*e=malloc(sizeof(ci_expr_bool));
-		*e=ci_expr_bool_def;
+		xbool*e=malloc(sizeof(xbool));
+		*e=xbool_def;
 		ci_expr_bool_parse(e,pp,tc);
 		dynp_add(&o->bool_list,e);
 		token_skip_empty_space(pp);
