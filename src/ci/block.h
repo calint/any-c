@@ -59,7 +59,7 @@ inline static void _codeblock_compile_(const ci_expr*oo,toc*tc){
 //	free(o);
 //}
 
-inline static /*gives*/codeblock*ci_block_parse(codeblock*o,const char**pp,toc*tc){
+inline static void codeblock_read_next_from_pp(codeblock*o,const char**pp,toc*tc){
 //	ci_code*c=malloc(sizeof(ci_code));
 //	*o=ci_code_def;
 	token_skip_empty_space(pp);
@@ -90,5 +90,4 @@ inline static /*gives*/codeblock*ci_block_parse(codeblock*o,const char**pp,toc*t
 		(*pp)++;
 	}
 	_ci_toc_pop_scope(tc);
-	return o;
 }

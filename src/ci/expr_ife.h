@@ -45,7 +45,7 @@ inline static ci_expr_ife*ci_expr_ife_next(const char**pp,toc*tc){
 		dynp_add(&o->ifs,i);
 
 		ci_expr_bool_parse(&i->cond,pp,tc);
-		ci_block_parse(&i->code,pp,tc);
+		codeblock_read_next_from_pp(&i->code,pp,tc);
 
 
 		token t=token_next(pp);
@@ -56,7 +56,7 @@ inline static ci_expr_ife*ci_expr_ife_next(const char**pp,toc*tc){
 
 		token t2=token_next(pp);
 		if(!token_equals(&t2,"if")){
-			ci_block_parse(&o->elsecode,pp,tc);
+			codeblock_read_next_from_pp(&o->elsecode,pp,tc);
 			return o;
 		}
 	}

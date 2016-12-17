@@ -1,7 +1,6 @@
 #pragma once
 #include"../lib.h"
 #include "block.h"
-#include "class.h"
 #include "expr.h"
 #include "expr_call.h"
 #include "expr_ident.h"
@@ -11,6 +10,7 @@
 #include "expr_continue.h"
 #include "expr_var.h"
 #include "expr_ife.h"
+#include "type.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
 	for(unsigned i=0;i<o->ci_classes.count;i++){
@@ -352,7 +352,7 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 			exit(1);
 		}
 	}
-	ci_block_parse(&f->code,pp,tc);
+	codeblock_read_next_from_pp(&f->code,pp,tc);
 	_ci_toc_pop_scope(tc);
 }
 
