@@ -2,15 +2,15 @@
 #include"../lib.h"
 #include "block.h"
 #include "expr.h"
-#include "expr_ident.h"
-#include "expr_loop.h"
-#include "expr_var.h"
-#include "expr_ife.h"
 #include "type.h"
 #include "xassign.h"
 #include "xbreak.h"
 #include "xcall.h"
 #include "xcontinue.h"
+#include "xident.h"
+#include "xife.h"
+#include "xloop.h"
+#include "xvar.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
 	for(unsigned i=0;i<o->ci_classes.count;i++){
@@ -226,7 +226,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	}
 
 	if(token_equals(&tk,"loop")){
-		ci_expr_loop*e=ci_expr_loop_next(pp,tc);
+		xloop*e=xloop_read_next(pp,tc);
 		return (ci_expr*)e;
 	}
 
@@ -241,7 +241,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	}
 
 	if(token_equals(&tk,"if")){
-		ci_expr_ife*e=ci_expr_ife_next(pp,tc);
+		xife*e=xife_read_next(pp,tc);
 		return (ci_expr*)e;
 	}
 
@@ -250,13 +250,13 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 			token_equals(&tk,"auto")||token_equals(&tk,"var")){
-		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
+		xvar*e=xvar_read_next(pp,tc,name);
 		return(ci_expr*)e;
 	}
 
 	type*c=toc_find_class_by_name(tc,name.data);
 	if(c){// instantiate
-		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
+		xvar*e=xvar_read_next(pp,tc,name);
 		return(ci_expr*)e;
 	}
 
@@ -352,7 +352,7 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 			exit(1);
 		}
 	}
-	codeblock_read_next_from_pp(&f->code,pp,tc);
+	codeblock_read_next(&f->code,pp,tc);
 	_ci_toc_pop_scope(tc);
 }
 

@@ -4,20 +4,20 @@
 #include "toc.h"
 #include "xassign.h"
 
-typedef struct ci_expr_var{
+typedef struct xvar{
 	ci_expr super;
 	str name;
 	xassign initval;
-}ci_expr_var;
+}xvar;
 
-inline static void _ci_expr_var_free_(ci_expr*oo){
-	ci_expr_var*o=(ci_expr_var*)oo;
+inline static void _xvar_free_(ci_expr*oo){
+	xvar*o=(xvar*)oo;
 	str_free(&o->name);
 	_xassign_free_((ci_expr*)&o->initval);
 }
 
-inline static void _ci_expr_var_compile_(const ci_expr*oo,toc*tc){
-	ci_expr_var*o=(ci_expr_var*)oo;
+inline static void _xvar_compile_(const ci_expr*oo,toc*tc){
+	xvar*o=(xvar*)oo;
 	const char idtype=_ci_toc_find_ident_scope_type(tc,o->name.data);
 	if(idtype){
 		printf("\n\n<file> <line:col> '%s' is already declared at ..."
@@ -36,15 +36,14 @@ inline static void _ci_expr_var_compile_(const ci_expr*oo,toc*tc){
 	}
 }
 
-#define ci_expr_var_def (ci_expr_var){\
-	{str_def,_ci_expr_var_compile_,_ci_expr_var_free_},\
-	str_def,ci_expr_assign_def}
+#define xvar_def (xvar){{str_def,_xvar_compile_,_xvar_free_},str_def,\
+	ci_expr_assign_def}
 
-inline static /*gives*/ci_expr_var*ci_expr_var_next(
+inline static /*gives*/xvar*xvar_read_next(
 		const char**pp,toc*tc,/*takes*/str type){
 
-	ci_expr_var*e=malloc(sizeof(ci_expr_var));
-	*e=ci_expr_var_def;
+	xvar*e=malloc(sizeof(xvar));
+	*e=xvar_def;
 	e->super.type/*takes*/=type;
 	token tk=token_next(pp);
 	token_setz(&tk,&e->name);
