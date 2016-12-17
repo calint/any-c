@@ -68,7 +68,7 @@ inline static bool toc_is_assignable_from(toc*tc,
 		}
 		if(found)continue;
 		for(unsigned i=0;i<c->fields.count;i++){
-			ci_field*fld=(ci_field*)dynp_get(&c->fields,i);
+			field*fld=(field*)dynp_get(&c->fields,i);
 			if(!strcmp(fld->name.data,ident.data)){
 				c=toc_find_class_by_name(tc,fld->type.data);
 				if(!c){
@@ -358,8 +358,8 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 inline static void toc_parse_field(const char**pp,toc*tc,type*c,
 		token*type,token*name){
 
-	ci_field*f=malloc(sizeof(ci_field));
-	*f=ci_field_def;
+	field*f=malloc(sizeof(field));
+	*f=field_def;
 	token_setz(type,&f->type);
 	if(token_is_empty(name)){
 		token_setz(type,&f->name);
@@ -572,7 +572,7 @@ inline static void toc_compile_to_c(toc*tc){
 		}
 		// fields
 		for(unsigned i=0;i<c->fields.count;i++){
-			ci_field*f=(ci_field*)dynp_get(&c->fields,i);
+			field*f=(field*)dynp_get(&c->fields,i);
 			toc_add_ident(tc,f->type.data,f->name.data);
 			if(!strcmp(f->type.data,"auto")){
 				if(!f->initval){
@@ -595,7 +595,7 @@ inline static void toc_compile_to_c(toc*tc){
 				printf(",");
 		}
 		for(unsigned i=0;i<c->fields.count;i++){
-			ci_field*s=(ci_field*)dynp_get(&c->fields,i);
+			field*s=(field*)dynp_get(&c->fields,i);
 			if(s->initval){
 				s->initval->compile(s->initval,tc);
 			}else{

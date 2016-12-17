@@ -23,7 +23,7 @@ inline static void _xif_compile_(const xexpr*oo,toc*tc){
 inline static xif*xif_read_next(const char**pp,toc*tc){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
-	ci_expr_bool_parse(&o->cond,pp,tc);
+	xbool_parse(&o->cond,pp,tc);
 	codeblock_read_next(&o->code,pp,tc);
 	return o;
 }

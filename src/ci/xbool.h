@@ -2,7 +2,7 @@
 #include"../lib.h"
 #include "codeblock.h"
 #include "toc.h"
-typedef struct ci_expr_bool{
+typedef struct xbool{
 	xexpr super;
 
 	// element
@@ -99,18 +99,13 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-inline static void _xbool_free_(xexpr*oo){
-//	ci_expr_free(oo);
-}
-
-#define xbool_def (xbool){\
-	{str_def,_xbool_compile_,_xbool_free_},\
+#define xbool_def (xbool){{str_def,_xbool_compile_,NULL},\
 	false,NULL,0,false,NULL,\
 	str_def,\
 	dynp_def,\
 	false,false}
 
-inline static void ci_expr_bool_parse(xbool*o,
+inline static void xbool_parse(xbool*o,
 		const char**pp,toc*tc){
 
 	o->super.type=str_from_string("bool");
@@ -218,7 +213,7 @@ inline static void ci_expr_bool_parse(xbool*o,
 	while(1){
 		xbool*e=malloc(sizeof(xbool));
 		*e=xbool_def;
-		ci_expr_bool_parse(e,pp,tc);
+		xbool_parse(e,pp,tc);
 		dynp_add(&o->bool_list,e);
 		token_skip_empty_space(pp);
 		if(**pp==')'){

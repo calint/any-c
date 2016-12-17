@@ -14,28 +14,28 @@ inline static bool toc_is_assignable_from(toc*o,
 //inline static bool ci_toc_is_assignable_from(ci_toc*tc,
 //		const char*dst,const char*path,const char*src);
 
-typedef struct ci_toc_scope{
+typedef struct tocscope{
 	char type;
 	const char*name;
 	dynp/*const char**/idents;
-}ci_toc_scope;
+}tocscope;
 
-#define ci_toc_scope_def (ci_toc_scope){0,NULL,dynp_def}
+#define ci_toc_scope_def (tocscope){0,NULL,dynp_def}
 
-typedef struct ci_toc_ident{
+typedef struct tocident{
 	str type;
 	str name;
-}toctn;
+}tocident;
 
-#define toctn_def (toctn){str_def,str_def}
+#define toctn_def (tocident){str_def,str_def}
 
-inline static void toc_scope_free(ci_toc_scope*o){
+inline static void toc_scope_free(tocscope*o){
 	dynp_free(&o->idents);
 	free(o);
 }
 
 inline static void toc_push_scope(toc*o,char type,const char*name){
-	ci_toc_scope*s=malloc(sizeof(ci_toc_scope));
+	tocscope*s=malloc(sizeof(tocscope));
 	*s=ci_toc_scope_def;
 	s->type=type;
 	s->name=name;
@@ -51,10 +51,10 @@ inline static void toc_push_scope(toc*o,char type,const char*name){
 
 inline static void toc_print(toc*o){
 	for(unsigned j=0;j<o->scopes.count;j++){
-		ci_toc_scope*s=dynp_get(&o->scopes,j);
+		tocscope*s=dynp_get(&o->scopes,j);
 		printf("%c %s\n",s->type,s->name);
 		for(unsigned i=0;i<s->idents.count;i++){
-			toctn*id=(toctn*)dynp_get(&s->idents,i);
+			tocident*id=(tocident*)dynp_get(&s->idents,i);
 			for(unsigned k=0;k<=j;k++){
 				printf("    ");
 			}
@@ -64,11 +64,11 @@ inline static void toc_print(toc*o){
 }
 
 inline static void toc_add_ident(toc*o,const char*type,const char*name){
-	toctn*id=(toctn*)malloc(sizeof(toctn));
+	tocident*id=(tocident*)malloc(sizeof(tocident));
 	*id=toctn_def;
 	str_setz(&id->type,type);
 	str_setz(&id->name,name);
-	ci_toc_scope*s=dynp_get_last(&o->scopes);
+	tocscope*s=dynp_get_last(&o->scopes);
 	dynp_add(&s->idents,id);
 //	ci_toc_print(o);
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
@@ -77,9 +77,9 @@ inline static void toc_add_ident(toc*o,const char*type,const char*name){
 
 inline static char toc_find_ident_scope_type(toc*oo,const char*name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
-		ci_toc_scope*s=dynp_get(&oo->scopes,(unsigned)j);
+		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
-			toctn*id=(toctn*)dynp_get(&s->idents,i);
+			tocident*id=(tocident*)dynp_get(&s->idents,i);
 			if(!strcmp(id->name.data,name))
 				return s->type;
 		}
@@ -88,11 +88,11 @@ inline static char toc_find_ident_scope_type(toc*oo,const char*name){
 }
 
 
-inline static const toctn*toc_find_ident(toc*oo,const char*name){
+inline static const tocident*toc_find_ident(toc*oo,const char*name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
-		ci_toc_scope*s=dynp_get(&oo->scopes,(unsigned)j);
+		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
-			const toctn*id=(const toctn*)dynp_get(&s->idents,i);
+			const tocident*id=(const tocident*)dynp_get(&s->idents,i);
 			if(!strcmp(id->name.data,name))
 				return id;
 		}
@@ -101,7 +101,7 @@ inline static const toctn*toc_find_ident(toc*oo,const char*name){
 }
 
 inline static void toc_pop_scope(toc*o){
-	ci_toc_scope*s=dynp_get_last(&o->scopes);
+	tocscope*s=dynp_get_last(&o->scopes);
 //	printf("    popped   %s  \n\n\n",s->name);
 	toc_scope_free(s);
 	o->scopes.count--;//? pop
@@ -116,7 +116,7 @@ inline static void toc_print_resolved_identifier_for_assignment(
 		str_add_list(&sid,id,p-id);
 		str_add(&sid,0);
 
-		const toctn*i=toc_find_ident(tc,sid.data);
+		const tocident*i=toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			exit(1);
@@ -164,7 +164,7 @@ inline static void toc_print_resolved_function_identifier_call(
 		str_add_list(&sid,id,p-id);
 		str_add(&sid,0);
 
-		const toctn*i=toc_find_ident(tc,sid.data);
+		const tocident*i=toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier not found: %s\n",sid.data);
 			exit(1);

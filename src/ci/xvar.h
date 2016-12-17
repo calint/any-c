@@ -9,12 +9,6 @@ typedef struct xvar{
 	xassign initval;
 }xvar;
 
-inline static void _xvar_free_(xexpr*oo){
-	xvar*o=(xvar*)oo;
-	str_free(&o->name);
-	_xassign_free_((xexpr*)&o->initval);
-}
-
 inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	xvar*o=(xvar*)oo;
 	const char idtype=toc_find_ident_scope_type(tc,o->name.data);
@@ -35,12 +29,9 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define xvar_def (xvar){{str_def,_xvar_compile_,_xvar_free_},str_def,\
-	ci_expr_assign_def}
+#define xvar_def (xvar){{str_def,_xvar_compile_,NULL},str_def,xassign_def}
 
-inline static /*gives*/xvar*xvar_read_next(
-		const char**pp,toc*tc,/*takes*/str type){
-
+inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
 	xvar*e=malloc(sizeof(xvar));
 	*e=xvar_def;
 	e->super.type/*takes*/=type;

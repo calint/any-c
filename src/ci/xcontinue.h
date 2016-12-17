@@ -15,11 +15,8 @@ inline static void _xcontinue_compile_(const xexpr*oo,toc*tc){
 	{str_def,_xcontinue_compile_,NULL}}
 
 inline static xcontinue*xcontinue_read_next(const char**pp,toc*tc){
-	if(**pp!=';'){
-		printf("\n\n<file> <line:col> expected ';' after keyword 'break'");
-		exit(1);
-	}
-	(*pp)++;
+	if(**pp==';')
+		(*pp)++;
 	xcontinue*e=malloc(sizeof(xcontinue));
 	*e=xcontinue_def;
 	return e;

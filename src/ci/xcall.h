@@ -1,9 +1,8 @@
 #pragma once
 #include"../lib.h"
 #include "toc.h"
-	inline static /*gives*/xexpr*toc_next_expr_from_pp(
-		const char**pp,toc*tc);
 
+inline static /*gives*/xexpr*toc_next_expr_from_pp(const char**pp,toc*tc);
 
 typedef struct xcall{
 	xexpr super;
@@ -13,9 +12,7 @@ typedef struct xcall{
 
 inline static void _xcall_compile_(const xexpr*o,toc*tc){
 	xcall*e=(xcall*)o;
-	toc_print_resolved_function_identifier_call(tc,
-			e->name.data,e->args.count);
-
+	toc_print_resolved_function_identifier_call(tc,e->name.data,e->args.count);
 	for(unsigned i=0;i<e->args.count;i++){
 		xexpr*a=(xexpr*)dynp_get(&e->args,i);
 		a->compile(a,tc);
@@ -26,21 +23,7 @@ inline static void _xcall_compile_(const xexpr*o,toc*tc){
 	printf(")");
 }
 
-#define xcall_def (xcall){{str_def,_xcall_compile_,xexpr_call_free},\
-	str_def,dynp_def}
-
-inline static void xexpr_call_free(xexpr*o){
-//	ci_expr_call*oo=(ci_expr_call*)o;
-//	ci_expr_free(&oo->super);
-//	for(unsigned i=0;i<oo->args.count;i++){
-//		ci_expr*e=(ci_expr*)dynp_get(&oo->args,i);
-//		if(e->free)
-//			e->free(e);
-//		else
-//			ci_expr_free(e);
-//	}
-//	free(o);
-}
+#define xcall_def (xcall){{str_def,_xcall_compile_,NULL},str_def,dynp_def}
 
 inline static xcall*xcall_read_next(
 		const char**pp,toc*tc,str name){

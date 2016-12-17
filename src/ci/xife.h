@@ -38,7 +38,7 @@ inline static xife*xife_read_next(const char**pp,toc*tc){
 		*i=xif_def;
 		dynp_add(&o->ifs,i);
 
-		ci_expr_bool_parse(&i->cond,pp,tc);
+		xbool_parse(&i->cond,pp,tc);
 		codeblock_read_next(&i->code,pp,tc);
 
 
