@@ -17,7 +17,7 @@ inline static void _ci_expr_assign_free_(struct ci_expr*oo){
 
 inline static void _ci_expr_assign_compile_(const ci_expr*oo,ci_toc*tc){
 	ci_expr_assign*o=(ci_expr_assign*)oo;
-	ci_toc_print_resolved_identifier_for_assignment(tc,
+	_ci_toc_print_resolved_identifier_for_assignment(tc,
 			o->name.data,o->expr->type.data);
 
 	o->expr->compile((ci_expr*)o->expr,tc);

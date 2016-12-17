@@ -29,12 +29,12 @@ typedef struct ci_toc_ident{
 
 #define ci_toc_ident_def (ci_toc_ident){str_def,str_def}
 
-inline static void ci_toc_scope_free(ci_toc_scope*o){
+inline static void _ci_toc_scope_free(ci_toc_scope*o){
 	dynp_free(&o->idents);
 	free(o);
 }
 
-inline static void ci_toc_push_scope(ci_toc*o,char type,const char*name){
+inline static void _ci_toc_push_scope(ci_toc*o,char type,const char*name){
 	ci_toc_scope*s=malloc(sizeof(ci_toc_scope));
 	*s=ci_toc_scope_def;
 	s->type=type;
@@ -49,7 +49,7 @@ inline static void ci_toc_push_scope(ci_toc*o,char type,const char*name){
 //	printf("\n");
 }
 
-inline static void ci_toc_print(ci_toc*o){
+inline static void _ci_toc_print(ci_toc*o){
 	for(unsigned j=0;j<o->scopes.count;j++){
 		ci_toc_scope*s=dynp_get(&o->scopes,j);
 		printf("%c %s\n",s->type,s->name);
@@ -63,7 +63,7 @@ inline static void ci_toc_print(ci_toc*o){
 	}
 }
 
-inline static void ci_toc_add_ident(ci_toc*o,const char*type,const char*name){
+inline static void _ci_toc_add_ident(ci_toc*o,const char*type,const char*name){
 	ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
 	*id=ci_toc_ident_def;
 	str_setz(&id->type,type);
@@ -75,7 +75,7 @@ inline static void ci_toc_add_ident(ci_toc*o,const char*type,const char*name){
 }
 
 
-inline static char ci_toc_find_ident_scope_type(ci_toc*oo,const char*name){
+inline static char _ci_toc_find_ident_scope_type(ci_toc*oo,const char*name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		ci_toc_scope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
@@ -88,7 +88,7 @@ inline static char ci_toc_find_ident_scope_type(ci_toc*oo,const char*name){
 }
 
 
-inline static const ci_toc_ident*ci_toc_find_ident(ci_toc*oo,const char*name){
+inline static const ci_toc_ident*_ci_toc_find_ident(ci_toc*oo,const char*name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		ci_toc_scope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
@@ -100,14 +100,14 @@ inline static const ci_toc_ident*ci_toc_find_ident(ci_toc*oo,const char*name){
 	return 0;
 }
 
-inline static void ci_toc_pop_scope(ci_toc*o){
+inline static void _ci_toc_pop_scope(ci_toc*o){
 	ci_toc_scope*s=dynp_get_last(&o->scopes);
 //	printf("    popped   %s  \n\n\n",s->name);
-	ci_toc_scope_free(s);
+	_ci_toc_scope_free(s);
 	o->scopes.count--;//? pop
 }
 
-inline static void ci_toc_print_resolved_identifier_for_assignment(
+inline static void _ci_toc_print_resolved_identifier_for_assignment(
 		ci_toc*tc,const char*id,const char*type){
 
 	const char*p=strpbrk(id,".");
@@ -116,7 +116,7 @@ inline static void ci_toc_print_resolved_identifier_for_assignment(
 		str_add_list(&sid,id,p-id);
 		str_add(&sid,0);
 
-		const ci_toc_ident*i=ci_toc_find_ident(tc,sid.data);
+		const ci_toc_ident*i=_ci_toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			exit(1);
@@ -129,7 +129,7 @@ inline static void ci_toc_print_resolved_identifier_for_assignment(
 					type,i->type.data);
 			exit(1);
 		}
-		const char scopetype=ci_toc_find_ident_scope_type(tc,sid.data);
+		const char scopetype=_ci_toc_find_ident_scope_type(tc,sid.data);
 		if(scopetype){
 			if(scopetype=='c'){// class member
 				printf("o->%s",id);
@@ -141,7 +141,7 @@ inline static void ci_toc_print_resolved_identifier_for_assignment(
 		}
 	}
 //	const ci_toc_ident*i=ci_toc_find_ident(tc,id);
-	const char scopetype=ci_toc_find_ident_scope_type(tc,id);
+	const char scopetype=_ci_toc_find_ident_scope_type(tc,id);
 	if(scopetype=='c'){// class member
 		printf("o->%s=",id);
 		return;
@@ -155,7 +155,7 @@ inline static void ci_toc_print_resolved_identifier_for_assignment(
 	exit(1);
 }
 
-inline static void ci_toc_print_resolved_function_identifier_call(
+inline static void _ci_toc_print_resolved_function_identifier_call(
 		ci_toc*tc,const char*id,unsigned argcount){
 
 	const char*p=strpbrk(id,".");
@@ -164,7 +164,7 @@ inline static void ci_toc_print_resolved_function_identifier_call(
 		str_add_list(&sid,id,p-id);
 		str_add(&sid,0);
 
-		const ci_toc_ident*i=ci_toc_find_ident(tc,sid.data);
+		const ci_toc_ident*i=_ci_toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier not found: %s\n",sid.data);
 			exit(1);

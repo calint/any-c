@@ -14,7 +14,7 @@ typedef struct ci_expr_call{
 
 inline static void _ci_expr_call_compile_(const ci_expr*o,ci_toc*tc){
 	ci_expr_call*e=(ci_expr_call*)o;
-	ci_toc_print_resolved_function_identifier_call(tc,
+	_ci_toc_print_resolved_function_identifier_call(tc,
 			e->name.data,e->args.count);
 
 	for(unsigned i=0;i<e->args.count;i++){

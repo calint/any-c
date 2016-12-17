@@ -12,9 +12,9 @@
 #include "expr_var.h"
 #include "expr_ife.h"
 
-inline static ci_class*ci_find_class_by_name(ci_toc*tc,const char*name){
-	for(unsigned i=0;i<tc->ci_classes.count;i++){
-		ci_class*c=dynp_get(&tc->ci_classes,i);
+inline static ci_class*ci_toc_find_class_by_name(ci_toc*o,const char*name){
+	for(unsigned i=0;i<o->ci_classes.count;i++){
+		ci_class*c=dynp_get(&o->ci_classes,i);
 		if(!strcmp(c->name.data,name)){
 			return c;
 		}
@@ -35,7 +35,7 @@ inline static ci_class*ci_find_class_by_name(ci_toc*tc,const char*name){
 inline static bool _ci_toc_is_assignable_from(ci_toc*tc,
 		const char*dst,const char*path,const char*src){
 
-	ci_class*c=ci_find_class_by_name(tc,dst);
+	ci_class*c=ci_toc_find_class_by_name(tc,dst);
 	const char*endptr=path;
 	while(1){
 		const char*p=strpbrk(endptr,".");
@@ -57,7 +57,7 @@ inline static bool _ci_toc_is_assignable_from(ci_toc*tc,
 		for(unsigned i=0;i<c->extends.count;i++){
 			str*ext=(str*)dynp_get(&c->extends,i);
 			if(!strcmp(ext->data,ident.data)){
-				c=ci_find_class_by_name(tc,ext->data);
+				c=ci_toc_find_class_by_name(tc,ext->data);
 				found=true;
 				break;
 			}
@@ -66,7 +66,7 @@ inline static bool _ci_toc_is_assignable_from(ci_toc*tc,
 		for(unsigned i=0;i<c->fields.count;i++){
 			ci_field*fld=(ci_field*)dynp_get(&c->fields,i);
 			if(!strcmp(fld->name.data,ident.data)){
-				c=ci_find_class_by_name(tc,fld->type.data);
+				c=ci_toc_find_class_by_name(tc,fld->type.data);
 				if(!c){
 					if(!src)
 						return true;//?
@@ -249,7 +249,7 @@ inline static /*gives*/ci_expr*_ci_toc_next_expr_from_pp(
 		return(ci_expr*)e;
 	}
 
-	ci_class*c=ci_find_class_by_name(tc,name.data);
+	ci_class*c=ci_toc_find_class_by_name(tc,name.data);
 	if(c){// instantiate
 		ci_expr_var*e=ci_expr_var_next(pp,tc,name);
 		return(ci_expr*)e;
@@ -299,7 +299,7 @@ inline static /*gives*/ci_expr*_ci_toc_next_expr_from_pp(
 //inline static str ci_abbreviate_func_arg_name_for_type(ci_toc*tc,const char*tp){
 //	return *tp;
 //}
-inline static void _toc_parse_func(const char**pp,ci_toc*tc,ci_class*c,
+inline static void _ci_toc_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 		token*type){
 	ci_func*f=malloc(sizeof(ci_func));
 	*f=ci_func_def;
@@ -320,7 +320,7 @@ inline static void _toc_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 		(*pp)++;
 	}
 
-	ci_toc_push_scope(tc,'f',f->name.data);
+	_ci_toc_push_scope(tc,'f',f->name.data);
 	while(1){
 		token tkt=token_next(pp);
 		if(token_is_empty(&tkt)){
@@ -333,7 +333,7 @@ inline static void _toc_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 		token_setz(&tkt,&fa->type);
 		token_setz(&tkn,&fa->name);
 
-		ci_toc_add_ident(tc,fa->type.data,fa->name.data);
+		_ci_toc_add_ident(tc,fa->type.data,fa->name.data);
 
 		if(**pp==','){
 			(*pp)++;
@@ -348,7 +348,7 @@ inline static void _toc_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 		}
 	}
 	ci_block_parse(&f->code,pp,tc);
-	ci_toc_pop_scope(tc);
+	_ci_toc_pop_scope(tc);
 }
 
 inline static void _ci_toc_parse_field(const char**pp,ci_toc*tc,ci_class*c,
@@ -363,7 +363,7 @@ inline static void _ci_toc_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 		token_setz(name,&f->name);
 	}
 	dynp_add(&c->fields,f);
-	ci_toc_add_ident(tc,f->type.data,f->name.data);
+	_ci_toc_add_ident(tc,f->type.data,f->name.data);
 	if(**pp=='='){
 		(*pp)++;
 		ci_expr*e=_ci_toc_next_expr_from_pp(pp,tc);
@@ -481,14 +481,14 @@ inline static void _ci_toc_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 //	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 //}
 
-inline static /*gives*/ci_class*_toc_parse_class(
+inline static /*gives*/ci_class*_ci_toc_parse_class(
 		const char**pp,ci_toc*tc,token name){
 
 	ci_class*c=malloc(sizeof(ci_class));
 	*c=ci_class_def;
 	dynp_add(&tc->ci_classes,c);
 	token_setz(&name,&c->name);
-	ci_toc_push_scope(tc,'c',c->name.data);
+	_ci_toc_push_scope(tc,'c',c->name.data);
 	if(**pp==':'){
 		(*pp)++;
 		while(1){
@@ -523,7 +523,7 @@ inline static /*gives*/ci_class*_toc_parse_class(
 		}
 		if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
 //			(*pp)++;
-			_toc_parse_func(pp,tc,c,&type);
+			_ci_toc_parse_func(pp,tc,c,&type);
 		}else if(**pp=='=' || **pp==';'){
 			token name=token_next(pp);
 			_ci_toc_parse_field(pp,tc,c,&type,&name);
@@ -531,7 +531,7 @@ inline static /*gives*/ci_class*_toc_parse_class(
 			token nm=token_next(pp);
 			if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
 				*pp=nm.content;
-				_toc_parse_func(pp,tc,c,&type);
+				_ci_toc_parse_func(pp,tc,c,&type);
 			}else{
 				_ci_toc_parse_field(pp,tc,c,&type,&nm);
 			}
@@ -539,11 +539,11 @@ inline static /*gives*/ci_class*_toc_parse_class(
 //			exit(1);
 		}
 	}
-	ci_toc_pop_scope(tc);
+	_ci_toc_pop_scope(tc);
 	return/*gives*/c;
 }
 
-inline static void _toc_compile_to_c(ci_toc*tc){
+inline static void _ci_toc_compile_to_c(ci_toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
@@ -556,7 +556,7 @@ inline static void _toc_compile_to_c(ci_toc*tc){
 	printf("#define bool_def false\n");
 	for(unsigned i=0;i<tc->ci_classes.count;i++){
 		ci_class*c=dynp_get(&tc->ci_classes,i);
-		ci_toc_push_scope(tc,'c',c->name.data);
+		_ci_toc_push_scope(tc,'c',c->name.data);
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		printf("typedef struct %s{",c->name.data);
 		if(c->extends.count||c->fields.count)
@@ -568,7 +568,7 @@ inline static void _toc_compile_to_c(ci_toc*tc){
 		// fields
 		for(unsigned i=0;i<c->fields.count;i++){
 			ci_field*f=(ci_field*)dynp_get(&c->fields,i);
-			ci_toc_add_ident(tc,f->type.data,f->name.data);
+			_ci_toc_add_ident(tc,f->type.data,f->name.data);
 			if(!strcmp(f->type.data,"auto")){
 				if(!f->initval){
 					printf("<file> <line:col> expected initializer with auto");
@@ -620,7 +620,7 @@ inline static void _toc_compile_to_c(ci_toc*tc){
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		for(unsigned i=0;i<c->funcs.count;i++){
 			ci_func*f=(ci_func*)dynp_get(&c->funcs,i);
-			ci_toc_push_scope(tc,'f',f->name.data);
+			_ci_toc_push_scope(tc,'f',f->name.data);
 			printf("inline static %s %s_%s(%s*o",
 					f->type.data,c->name.data,f->name.data,c->name.data);
 
@@ -628,29 +628,29 @@ inline static void _toc_compile_to_c(ci_toc*tc){
 				ci_func_arg*a=(ci_func_arg*)dynp_get(&f->args,j);
 				printf(",");
 				printf("%s %s",a->type.data,a->name.data);
-				ci_toc_add_ident(tc,a->type.data,a->name.data);
+				_ci_toc_add_ident(tc,a->type.data,a->name.data);
 			}
 			printf(")");
 			f->code.super.compile((ci_expr*)&f->code,tc);
-			ci_toc_pop_scope(tc);
+			_ci_toc_pop_scope(tc);
 		}
-		ci_toc_pop_scope(tc);
+		_ci_toc_pop_scope(tc);
 	}
 	printf("\n//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("int main(int c,char** a){global_main(0,c,a);}\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
-inline static void toc_compile_file(const char*path){
+inline static void ci_toc_compile_file(const char*path){
 	str s=str_from_file(path);
 	const char*p=s.data;
 	ci_toc tc=ci_toc_def;
 	while(1){
 		token nmspc=token_next(&p);
 		if(token_is_empty(&nmspc))break;
-		_toc_parse_class(&p,&tc,nmspc);
+		_ci_toc_parse_class(&p,&tc,nmspc);
 	}
-	_toc_compile_to_c(&tc);
+	_ci_toc_compile_to_c(&tc);
 	str_free(&s);
 }
 
