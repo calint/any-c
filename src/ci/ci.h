@@ -22,6 +22,11 @@ inline static ci_class*ci_toc_find_class_by_name(ci_toc*o,const char*name){
 	return NULL;
 }
 
+
+inline static void ci_toc_add_class(ci_toc*o,ci_class*c){
+	dynp_add(&o->ci_classes,c);
+}
+
 //inline static ci_field*ci_class_find_field_for_name(const ci_class*o,
 //		const char*nm){
 //
@@ -486,8 +491,9 @@ inline static /*gives*/ci_class*_ci_toc_parse_class(
 
 	ci_class*c=malloc(sizeof(ci_class));
 	*c=ci_class_def;
-	dynp_add(&tc->ci_classes,c);
+	ci_toc_add_class(tc,c);
 	token_setz(&name,&c->name);
+//	token_setz(&name,&c->name);
 	_ci_toc_push_scope(tc,'c',c->name.data);
 	if(**pp==':'){
 		(*pp)++;
@@ -653,4 +659,5 @@ inline static void ci_toc_compile_file(const char*path){
 	_ci_toc_compile_to_c(&tc);
 	str_free(&s);
 }
+
 
