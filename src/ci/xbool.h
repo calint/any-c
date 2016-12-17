@@ -132,7 +132,7 @@ inline static void xbool_parse(xbool*o,
 		}
 
 
-		o->lh=toc_next_expr_from_pp(pp,tc);
+		o->lh=toc_read_next_xexpr(pp,tc);
 
 		if(**pp=='='){
 			(*pp)++;
@@ -176,7 +176,7 @@ inline static void xbool_parse(xbool*o,
 			o->rh_negate=true;
 		}
 
-		o->rh=toc_next_expr_from_pp(pp,tc);
+		o->rh=toc_read_next_xexpr(pp,tc);
 
 		if(**pp==')'){
 			return;

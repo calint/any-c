@@ -87,7 +87,7 @@ inline static str const_str(const char*s){
 	return st;
 }
 
-inline static /*gives*/xexpr*toc_next_expr_from_pp(
+inline static /*gives*/xexpr*toc_read_next_xexpr(
 		const char**pp,toc*tc){
 
 	token tk=token_next(pp);
@@ -119,7 +119,7 @@ inline static /*gives*/xexpr*toc_next_expr_from_pp(
 			str name=str_def;
 			token_setz(&tk,&name);
 			e->name=name;
-			e->super.type=str_from_string("const char*");
+			e->super.type=str_from_string("ccharp");
 			return(xexpr*)e;
 		}else if(**pp=='\''){
 			(*pp)++;
@@ -226,7 +226,7 @@ inline static /*gives*/xexpr*toc_next_expr_from_pp(
 	token_setz(&tk,&name);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
-			token_equals(&tk,"auto")||token_equals(&tk,"var")){
+			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char
 		xvar*e=xvar_read_next(pp,tc,name);
 		return(xexpr*)e;
 	}
@@ -348,7 +348,7 @@ inline static void toc_parse_field(const char**pp,
 	toc_add_ident(tc,f->type.data,f->name.data);
 	if(**pp=='='){
 		(*pp)++;
-		xexpr*e=toc_next_expr_from_pp(pp,tc);
+		xexpr*e=toc_read_next_xexpr(pp,tc);
 		f->initval=e;
 		if(strcmp(f->type.data,"var") && !toc_can_assign(tc,
 				f->type.data,f->initval->type.data,e->type.data)){
@@ -424,11 +424,24 @@ inline static /*gives*/type*toc_parse_type(
 	return c;
 }
 
+inline static void _print_right_aligned_comment(const char*comment){
+
+	const char*line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
+	const int maxlen=strlen(line);
+	const int ln=strlen(comment);
+	int start_at=maxlen-ln-4;
+	if(start_at<0)start_at=0;
+	printf("//");
+	printf("%.*s %s\n",start_at,line,comment);
+}
+
 inline static void toc_compile_to_c(toc*tc){
+	_print_right_aligned_comment("generated c source");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
 	printf("typedef char bool;\n");
+	printf("typedef const char* ccharp;\n");
 	printf("#define true 1\n");
 	printf("#define false 1\n");
 	printf("#define char_def 0\n");
@@ -438,9 +451,8 @@ inline static void toc_compile_to_c(toc*tc){
 	for(unsigned i=0;i<tc->types.count;i++){
 		type*c=dynp_get(&tc->types,i);
 		toc_push_scope(tc,'c',c->name.data);
-
 		// type
-		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+		_print_right_aligned_comment(c->name.data);
 		printf("typedef struct %s{",c->name.data);
 		if(c->extends.count||c->fields.count)
 			printf("\n");
@@ -485,26 +497,28 @@ inline static void toc_compile_to_c(toc*tc){
 		}
 		printf("}\n");
 
-		// functions
-		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
-		for(unsigned i=0;i<c->funcs.count;i++){
-			func*f=(func*)dynp_get(&c->funcs,i);
-			toc_push_scope(tc,'f',f->name.data);
-			printf("inline static %s %s_%s(%s*o",
-					f->type.data,c->name.data,f->name.data,c->name.data);
-			for(unsigned j=0;j<f->args.count;j++){
-				funcarg*a=(funcarg*)dynp_get(&f->args,j);
-				printf(",");
-				printf("%s %s",a->type.data,a->name.data);
-				toc_add_ident(tc,a->type.data,a->name.data);
+		if(c->funcs.count){
+			_print_right_aligned_comment("funcs");
+			for(unsigned i=0;i<c->funcs.count;i++){
+				func*f=(func*)dynp_get(&c->funcs,i);
+				toc_push_scope(tc,'f',f->name.data);
+				printf("inline static %s %s_%s(%s*o",
+						f->type.data,c->name.data,f->name.data,c->name.data);
+				for(unsigned j=0;j<f->args.count;j++){
+					funcarg*a=(funcarg*)dynp_get(&f->args,j);
+					printf(",");
+					printf("%s %s",a->type.data,a->name.data);
+					toc_add_ident(tc,a->type.data,a->name.data);
+				}
+				printf(")");
+				f->code.super.compile((xexpr*)&f->code,tc);
+				toc_pop_scope(tc);
 			}
-			printf(")");
-			f->code.super.compile((xexpr*)&f->code,tc);
-			toc_pop_scope(tc);
 		}
 		toc_pop_scope(tc);
 	}
-	printf("\n//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+	printf("\n");
+	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("int main(int c,char** a){global_main(0,c,a);}\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }

@@ -2,7 +2,7 @@
 #include"../lib.h"
 #include "toc.h"
 
-inline static /*gives*/xexpr*toc_next_expr_from_pp(const char**pp,toc*tc);
+inline static /*gives*/xexpr*toc_read_next_xexpr(const char**pp,toc*tc);
 
 typedef struct xcall{
 	xexpr super;
@@ -41,7 +41,7 @@ inline static xcall*xcall_read_next(
 			(*pp)++;
 			break;
 		}
-		xexpr*a=toc_next_expr_from_pp(pp,tc);
+		xexpr*a=toc_read_next_xexpr(pp,tc);
 		if(xexpr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			exit(1);

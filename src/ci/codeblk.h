@@ -2,7 +2,7 @@
 #include"../lib.h"
 #include"toc.h"
 
-inline static /*gives*/xexpr*toc_next_expr_from_pp(const char**pp,toc*o);
+inline static /*gives*/xexpr*toc_read_next_xexpr(const char**pp,toc*o);
 
 typedef struct codeblk{
 	xexpr super;
@@ -41,7 +41,7 @@ inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
 		o->is_encaps=1;
 	}
 	while(1){
-		xexpr*e=toc_next_expr_from_pp(pp,tc);
+		xexpr*e=toc_read_next_xexpr(pp,tc);
 		if(xexpr_is_empty(e)){
 			break;
 		}

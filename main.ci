@@ -1,13 +1,15 @@
+ccharp{}
 global{
 	int main(int argc,char** arga){
 		puts("hello")
 		var c=3
+		ccharp s="hello world"
+		s.to()
 		loop{
 			printf(" loop %d\n",c)
 			if(c-->0)
 				continue
 			break
 		}
-	}
-	
+	}	
 }
