@@ -17,7 +17,7 @@ inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,
 typedef struct tocscope{
 	char type;
 	ccharp name;
-	dynp/*ccharp */idents;
+	dynp idents;
 }tocscope;
 
 #define ci_toc_scope_def (tocscope){0,NULL,dynp_def}
@@ -220,7 +220,7 @@ inline static tocloc toc_get_line_number_from_pp(toc*o,const char*p){
 }
 inline static void toc_print_source_location(toc*o,ccharp p){
 	tocloc tl=toc_get_line_number_from_pp(o,p);
-	printf("%s:%d:%d:",tl.filenm,tl.line,tl.col);
+	printf("%s:%d:%d: ",tl.filenm,tl.line,tl.col);
 }
 inline static token toc_next_token(toc*o){
 	return token_next(&o->srcp);
