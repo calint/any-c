@@ -1,6 +1,6 @@
 global{
-	main{
-		var a=2
-		printf("hello world")
+	main(int c,char**a){
+		var b=1
+		printf("%d. hello world",b)
 	}
 }
