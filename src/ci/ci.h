@@ -101,6 +101,7 @@ inline static str str_const(const char*s){
 	st.cap=st.count=strlen(s)+1;
 	return st;
 }
+
 inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		const char**pp,ci_toc*tc){
 
