@@ -22,12 +22,12 @@ typedef struct tocscope{
 
 #define ci_toc_scope_def (tocscope){0,NULL,dynp_def}
 
-typedef struct tocident{
+typedef struct tocdecl{
 	str type;
 	str name;
-}tocident;
+}tocdecl;
 
-#define toctn_def (tocident){str_def,str_def}
+#define toctn_def (tocdecl){str_def,str_def}
 
 inline static void toc_scope_free(tocscope*o){
 	dynp_free(&o->idents);
@@ -54,7 +54,7 @@ inline static void toc_print(toc*o){
 		tocscope*s=dynp_get(&o->scopes,j);
 		printf("%c %s\n",s->type,s->name);
 		for(unsigned i=0;i<s->idents.count;i++){
-			tocident*id=(tocident*)dynp_get(&s->idents,i);
+			tocdecl*id=(tocdecl*)dynp_get(&s->idents,i);
 			for(unsigned k=0;k<=j;k++){
 				printf("    ");
 			}
@@ -64,7 +64,7 @@ inline static void toc_print(toc*o){
 }
 
 inline static void toc_add_ident(toc*o,const char*type,const char*name){
-	tocident*id=(tocident*)malloc(sizeof(tocident));
+	tocdecl*id=(tocdecl*)malloc(sizeof(tocdecl));
 	*id=toctn_def;
 	str_setz(&id->type,type);
 	str_setz(&id->name,name);
@@ -79,7 +79,7 @@ inline static char toc_find_ident_scope_type(toc*oo,const char*name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
-			tocident*id=(tocident*)dynp_get(&s->idents,i);
+			tocdecl*id=(tocdecl*)dynp_get(&s->idents,i);
 			if(!strcmp(id->name.data,name))
 				return s->type;
 		}
@@ -88,11 +88,11 @@ inline static char toc_find_ident_scope_type(toc*oo,const char*name){
 }
 
 
-inline static const tocident*toc_find_ident(toc*oo,const char*name){
+inline static const tocdecl*toc_find_ident(toc*oo,const char*name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
-			const tocident*id=(const tocident*)dynp_get(&s->idents,i);
+			const tocdecl*id=(const tocdecl*)dynp_get(&s->idents,i);
 			if(!strcmp(id->name.data,name))
 				return id;
 		}
@@ -116,7 +116,7 @@ inline static void toc_print_resolved_identifier_for_assignment(
 		str_add_list(&sid,id,p-id);
 		str_add(&sid,0);
 
-		const tocident*i=toc_find_ident(tc,sid.data);
+		const tocdecl*i=toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			exit(1);
@@ -164,7 +164,7 @@ inline static void toc_print_resolved_function_identifier_call(
 		str_add_list(&sid,id,p-id);
 		str_add(&sid,0);
 
-		const tocident*i=toc_find_ident(tc,sid.data);
+		const tocdecl*i=toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier not found: %s\n",sid.data);
 			exit(1);

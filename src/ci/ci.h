@@ -26,16 +26,6 @@ inline static void toc_add_class(toc*o,type*c){
 	dynp_add(&o->ci_classes,c);
 }
 
-//inline static ci_field*ci_class_find_field_for_name(const ci_class*o,
-//		const char*nm){
-//
-//	for(unsigned i=0;i<o->extends.count;i++){
-//		str*ext=(str*)dynp_get(&o->extends,i);
-//		if(!strcmp(ext->name.data,nm))
-//			return ext
-//	}
-//}
-
 inline static bool toc_is_assignable_from(toc*tc,
 		const char*dst,const char*path,const char*src){
 

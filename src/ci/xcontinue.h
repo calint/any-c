@@ -1,7 +1,4 @@
 #pragma once
-#include"../lib.h"
-#include "codeblock.h"
-#include "toc.h"
 
 typedef struct xcontinue{
 	xexpr super;

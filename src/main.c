@@ -1,6 +1,5 @@
 #include<stdlib.h>
 #include<stdio.h>
-#include"ninjas.h"
 #include"ci/ci.h"
 
 int main(int c,char**a){

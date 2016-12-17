@@ -1,7 +1,4 @@
 #pragma once
-#include"../lib.h"
-#include "codeblock.h"
-#include "toc.h"
 
 typedef struct xloop{
 	xexpr super;
@@ -15,7 +12,6 @@ inline static void _xloop_compile_(const xexpr*oo,toc*tc){
 }
 
 #define xloop_def (xloop){{str_def,_xloop_compile_,NULL},codeblock_def}
-
 
 inline static xloop*xloop_read_next(const char**pp,toc*tc){
 	toc_push_scope(tc,'l',"");

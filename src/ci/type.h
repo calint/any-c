@@ -1,7 +1,31 @@
 #pragma once
 #include"../lib.h"
-#include "field.h"
-#include "func.h"
+#include "codeblock.h"
+
+typedef struct field{
+	str type;
+	str name;
+	xexpr*initval;
+}field;
+
+#define field_def (field){str_def,str_def,NULL}
+
+typedef struct funcarg{
+	str type;
+	str name;
+}funcarg;
+
+#define funcarg_def (funcarg){str_def,str_def}
+
+typedef struct func{
+	str type;
+	str name;
+	dynp args;//owns arg*
+	codeblock code;
+}func;
+
+#define func_def (func){str_def,str_def,dynp_def,codeblock_def}
+
 typedef struct type{
 	str name;
 	dynp/*owns str*/extends;
