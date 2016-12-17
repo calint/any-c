@@ -340,7 +340,7 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 			exit(1);
 		}
 	}
-	codeblock_read_next(&f->code,pp,tc);
+	codeblk_read_next(&f->code,pp,tc);
 	toc_pop_scope(tc);
 }
 

@@ -23,7 +23,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	}
 	if(o->elsecode.exprs.count){
 		printf(" else ");
-		_codeblock_compile_((xexpr*)&o->elsecode,tc);
+		_codeblk_compile_((xexpr*)&o->elsecode,tc);
 	}
 }
 
@@ -39,7 +39,7 @@ inline static xife*xife_read_next(const char**pp,toc*tc){
 		dynp_add(&o->ifs,i);
 
 		xbool_parse(&i->cond,pp,tc);
-		codeblock_read_next(&i->code,pp,tc);
+		codeblk_read_next(&i->code,pp,tc);
 
 
 		token t=token_next(pp);
@@ -50,7 +50,7 @@ inline static xife*xife_read_next(const char**pp,toc*tc){
 
 		token t2=token_next(pp);
 		if(!token_equals(&t2,"if")){
-			codeblock_read_next(&o->elsecode,pp,tc);
+			codeblk_read_next(&o->elsecode,pp,tc);
 			return o;
 		}
 	}

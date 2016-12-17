@@ -10,7 +10,7 @@ typedef struct codeblk{
 	dynp/*own expr*/exprs;
 }codeblk;
 
-inline static void _codeblock_compile_(const xexpr*oo,toc*tc){
+inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 	codeblk*o=(codeblk*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->is_encaps){
@@ -29,9 +29,9 @@ inline static void _codeblock_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define codeblk_def (codeblk){{str_def,_codeblock_compile_,NULL},0,dynp_def}
+#define codeblk_def (codeblk){{str_def,_codeblk_compile_,NULL},0,dynp_def}
 
-inline static void codeblock_read_next(codeblk*o,const char**pp,toc*tc){
+inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
 	token_skip_empty_space(pp);
 	toc_push_scope(tc,'b',"");
 	if(**pp=='{'){
