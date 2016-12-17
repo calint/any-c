@@ -1,6 +1,6 @@
 #pragma once
 #include"../lib.h"
-#include "block.h"
+#include "codeblock.h"
 #include "expr.h"
 #include "type.h"
 #include "xassign.h"
@@ -105,7 +105,7 @@ inline static str const_str(const char*s){
 	return st;
 }
 
-inline static /*gives*/ci_expr*toc_next_expr_from_pp(
+inline static /*gives*/xexpr*toc_next_expr_from_pp(
 		const char**pp,toc*tc){
 
 	token tk=token_next(pp);
@@ -138,7 +138,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 			token_setz(&tk,&name);
 			e->name=name;
 			e->super.type=str_from_string("const char*");
-			return(ci_expr*)e;
+			return(xexpr*)e;
 		}else if(**pp=='\''){
 			(*pp)++;
 			(*pp)++;
@@ -155,10 +155,10 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 			token_setz(&tk,&name);
 			e->name=name;
 			e->super.type=str_from_string("char");
-			return(ci_expr*)e;
+			return(xexpr*)e;
 		}else{
-			ci_expr*e=malloc(sizeof(ci_expr));
-			*e=ci_expr_def;
+			xexpr*e=malloc(sizeof(xexpr));
+			*e=xexpr_def;
 			return e;
 		}
 	}
@@ -174,7 +174,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 		*e=xident_def;
 		e->name=tks;
 		e->super.type=const_str("bool");
-		return(ci_expr*)e;
+		return(xexpr*)e;
 	}
 
 
@@ -186,7 +186,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 		*e=xident_def;
 		e->name=tks;
 		e->super.type=const_str("int");
-		return(ci_expr*)e;
+		return(xexpr*)e;
 	}
 
 	// float
@@ -196,7 +196,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 		*e=xident_def;
 		e->name=tks;
 		e->super.type=const_str("float");
-		return(ci_expr*)e;
+		return(xexpr*)e;
 	}
 //
 
@@ -210,7 +210,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 				*e=xident_def;
 				e->name=tks;
 				e->super.type=const_str("int");
-				return(ci_expr*)e;
+				return(xexpr*)e;
 			}
 		}
 		if((tks.data[0]=='0' && tks.data[1]=='b')){
@@ -220,29 +220,29 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 				*e=xident_def;
 				e->name=tks;
 				e->super.type=const_str("int");
-				return(ci_expr*)e;
+				return(xexpr*)e;
 			}
 		}
 	}
 
 	if(token_equals(&tk,"loop")){
 		xloop*e=xloop_read_next(pp,tc);
-		return (ci_expr*)e;
+		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"break")){
 		xbreak*e=xbreak_read_next(pp,tc);
-		return (ci_expr*)e;
+		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"continue")){
 		xcontinue*e=xcontinue_read_next(pp,tc);
-		return (ci_expr*)e;
+		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"if")){
 		xife*e=xife_read_next(pp,tc);
-		return (ci_expr*)e;
+		return (xexpr*)e;
 	}
 
 	str name=str_def;
@@ -251,25 +251,25 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 			token_equals(&tk,"auto")||token_equals(&tk,"var")){
 		xvar*e=xvar_read_next(pp,tc,name);
-		return(ci_expr*)e;
+		return(xexpr*)e;
 	}
 
 	type*c=toc_find_class_by_name(tc,name.data);
 	if(c){// instantiate
 		xvar*e=xvar_read_next(pp,tc,name);
-		return(ci_expr*)e;
+		return(xexpr*)e;
 	}
 
 	if(**pp=='('){// function call
 		xcall*e=xcall_read_next(pp,tc,/*gives*/name);
-		return(ci_expr*)e;
+		return(xexpr*)e;
 	}
 
 	if(**pp=='='){// assignment
 		(*pp)++;
 		if(**pp!='='){
 			xassign*e=/*takes*/xassign_next(pp,tc,/*gives*/name);
-			return(ci_expr*)e;
+			return(xexpr*)e;
 		}
 		(*pp)--;
 	}
@@ -299,15 +299,15 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	*e=xident_def;
 	e->name=name;
 	e->incdecbits=incdecbits;
-	return(ci_expr*)e;
+	return(xexpr*)e;
 }
 //inline static str ci_abbreviate_func_arg_name_for_type(ci_toc*tc,const char*tp){
 //	return *tp;
 //}
 inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 		token*type){
-	ci_func*f=malloc(sizeof(ci_func));
-	*f=ci_func_def;
+	func*f=malloc(sizeof(func));
+	*f=func_def;
 	bool enclosed_args=false;
 	if(**pp=='{' || **pp=='('){
 		f->type=const_str("void");
@@ -371,7 +371,7 @@ inline static void toc_parse_field(const char**pp,toc*tc,type*c,
 	toc_add_ident(tc,f->type.data,f->name.data);
 	if(**pp=='='){
 		(*pp)++;
-		ci_expr*e=toc_next_expr_from_pp(pp,tc);
+		xexpr*e=toc_next_expr_from_pp(pp,tc);
 		f->initval=e;
 		if(strcmp(f->type.data,"var") && !toc_is_assignable_from(tc,
 				f->type.data,f->initval->type.data,e->type.data)){
@@ -625,7 +625,7 @@ inline static void toc_compile_to_c(toc*tc){
 		// functions
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		for(unsigned i=0;i<c->funcs.count;i++){
-			ci_func*f=(ci_func*)dynp_get(&c->funcs,i);
+			func*f=(func*)dynp_get(&c->funcs,i);
 			toc_push_scope(tc,'f',f->name.data);
 			printf("inline static %s %s_%s(%s*o",
 					f->type.data,c->name.data,f->name.data,c->name.data);
@@ -637,7 +637,7 @@ inline static void toc_compile_to_c(toc*tc){
 				toc_add_ident(tc,a->type.data,a->name.data);
 			}
 			printf(")");
-			f->code.super.compile((ci_expr*)&f->code,tc);
+			f->code.super.compile((xexpr*)&f->code,tc);
 			toc_pop_scope(tc);
 		}
 		toc_pop_scope(tc);

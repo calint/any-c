@@ -1,17 +1,18 @@
 #pragma once
 #include"../lib.h"
+#include "codeblock.h"
 #include "expr.h"
 #include "toc.h"
-#include"block.h"
 #include "xbool.h"
 #include "xif.h"
+
 typedef struct xife{
-	ci_expr super;
+	xexpr super;
 	dynp/*own&ci_expr_if*/ifs;
 	codeblock elsecode;
 }xife;
 
-inline static void _xife_compile_(const ci_expr*oo,toc*tc){
+inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	xife*o=(xife*)oo;
 
 	for(unsigned i=0;i<o->ifs.count;i++){
@@ -19,20 +20,15 @@ inline static void _xife_compile_(const ci_expr*oo,toc*tc){
 		if(i){
 			printf(" else ");
 		}
-		_xif_compile_((ci_expr*)iff,tc);
+		_xif_compile_((xexpr*)iff,tc);
 	}
 	if(o->elsecode.exprs.count){
 		printf(" else ");
-		_codeblock_compile_((ci_expr*)&o->elsecode,tc);
+		_codeblock_compile_((xexpr*)&o->elsecode,tc);
 	}
 }
 
-inline static void _xife_free_(ci_expr*oo){
-	ci_expr_free(oo);
-}
-
-#define xife_def (xife){{str_def,_xife_compile_,_xife_free_},dynp_def,\
-	codeblock_def}
+#define xife_def (xife){{str_def,_xife_compile_,NULL},dynp_def,codeblock_def}
 
 inline static xife*xife_read_next(const char**pp,toc*tc){
 	xife*o=malloc(sizeof(xife));

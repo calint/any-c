@@ -4,23 +4,23 @@
 #include "toc.h"
 
 typedef struct xassign{
-	ci_expr super;
+	xexpr super;
 	str name;
-	ci_expr*expr;
+	xexpr*expr;
 }xassign;
 
-inline static void _xassign_free_(struct ci_expr*oo){
+inline static void _xassign_free_(struct expression*oo){
 //	ci_expr_assign*o=(ci_expr_assign*)oo;
 //	str_free(&o->name);
 //	ci_expr_free(o->expr);
 }
 
-inline static void _xassign_compile_(const ci_expr*oo,toc*tc){
+inline static void _xassign_compile_(const xexpr*oo,toc*tc){
 	xassign*o=(xassign*)oo;
 	toc_print_resolved_identifier_for_assignment(tc,
 			o->name.data,o->expr->type.data);
 
-	o->expr->compile((ci_expr*)o->expr,tc);
+	o->expr->compile((xexpr*)o->expr,tc);
 }
 
 #define ci_expr_assign_def (xassign){\

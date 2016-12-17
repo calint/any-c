@@ -2,20 +2,15 @@
 #include"../lib.h"
 #include "toc.h"
 
-typedef struct ci_expr{
+typedef struct xexpr{
 	str type;
-	void (*compile)(const struct ci_expr*,struct toc*);
-	void (*free)(struct ci_expr*);
-}ci_expr;
+	void (*compile)(const struct xexpr*,struct toc*);
+	void (*free)(struct xexpr*);
+}xexpr;
 
-inline static void ci_expr_free(ci_expr*o){
-	str_free(&o->type);
-//	free(o);
-}
+#define xexpr_def (xexpr){str_def,NULL,NULL}
 
-#define ci_expr_def (ci_expr){str_def,NULL,ci_expr_free}
-
-inline static int ci_expr_is_empty(ci_expr*o){
+inline static int expression_is_empty(xexpr*o){
 	return o->compile==NULL;
 }
 

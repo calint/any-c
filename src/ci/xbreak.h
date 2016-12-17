@@ -1,21 +1,18 @@
 #pragma once
 #include"../lib.h"
+#include "codeblock.h"
 #include "expr.h"
 #include "toc.h"
-#include"block.h"
+
 typedef struct xbreak{
-	ci_expr super;
+	xexpr super;
 }xbreak;
 
-inline static void _xbreak_free_(ci_expr*oo){
-	ci_expr_free(oo);
-}
-
-inline static void _xbreak_compile_(const ci_expr*oo,toc*tc){
+inline static void _xbreak_compile_(const xexpr*oo,toc*tc){
 	printf("break");
 }
 
-#define ci_expr_break_def (xbreak){{str_def,_xbreak_compile_,_xbreak_free_}}
+#define xbreak_def (xbreak){{str_def,_xbreak_compile_,NULL}}
 
 inline static xbreak*xbreak_read_next(const char**pp,toc*tc){
 	if(**pp!=';'){
@@ -24,6 +21,6 @@ inline static xbreak*xbreak_read_next(const char**pp,toc*tc){
 	}
 	(*pp)++;
 	xbreak*e=malloc(sizeof(xbreak));
-	*e=ci_expr_break_def;
+	*e=xbreak_def;
 	return e;
 }

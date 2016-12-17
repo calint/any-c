@@ -5,20 +5,15 @@
 
 //inline static ci_class*ci_find_class_by_name(const char*);
 
-typedef struct ci_expr_ident{
-	ci_expr super;
+typedef struct xident{
+	xexpr super;
 	str name;
 	char incdecbits;
 }xident;
 
-inline static void _xident_free_(struct ci_expr*oo){
-	xident*o=(xident*)oo;
-	ci_expr_free((ci_expr*)o);
-}
+#define xident_def (xident){{str_def,_xcompile_,NULL},str_def,false}
 
-#define xident_def (xident){{str_def,_xcompile_,_xident_free_},str_def,false}
-
-inline static void _xcompile_(const ci_expr*oo,toc*tc){
+inline static void _xcompile_(const xexpr*oo,toc*tc){
 	const xident*o=(xident*)oo;
 
 	// test string or charachter

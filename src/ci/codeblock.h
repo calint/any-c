@@ -3,17 +3,17 @@
 #include "expr.h"
 #include "toc.h"
 
-inline static /*gives*/ci_expr*toc_next_expr_from_pp(
+inline static /*gives*/xexpr*toc_next_expr_from_pp(
 		const char**pp,toc*o);
 
 typedef struct codeblock{
-	ci_expr super;
+	xexpr super;
 	int is_encaps;
 	dynp/*own expr*/exprs;
 	token token_pre_block;
 }codeblock;
 
-inline static void _codeblock_free_(ci_expr*oo){
+inline static void _codeblock_free_(xexpr*oo){
 //	ci_block*o=(ci_block*)oo;
 //	for(unsigned i=0;i<o->exprs.count;i++){
 //		ci_expr*e=(ci_expr*)dynp_get(&o->exprs,i);
@@ -25,14 +25,14 @@ inline static void _codeblock_free_(ci_expr*oo){
 //	dynp_free(&o->exprs);
 }
 
-inline static void _codeblock_compile_(const ci_expr*oo,toc*tc){
+inline static void _codeblock_compile_(const xexpr*oo,toc*tc){
 	codeblock*o=(codeblock*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->is_encaps){
 		printf("{\n");
 	}
 	for(unsigned i=0;i<o->exprs.count;i++){
-		ci_expr*e=dynp_get(&o->exprs,i);
+		xexpr*e=dynp_get(&o->exprs,i);
 		toc_indent_for_source(tc);
 		e->compile(e,tc);
 		printf(";\n");//? e->is_block
@@ -64,8 +64,8 @@ inline static void codeblock_read_next(codeblock*o,const char**pp,toc*tc){
 		o->is_encaps=1;
 	}
 	while(1){
-		ci_expr*e=toc_next_expr_from_pp(pp,tc);
-		if(ci_expr_is_empty(e)){
+		xexpr*e=toc_next_expr_from_pp(pp,tc);
+		if(expression_is_empty(e)){
 			break;
 		}
 		dynp_add(&o->exprs,e);

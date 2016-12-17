@@ -1,21 +1,21 @@
 #pragma once
 #include"../lib.h"
+#include "codeblock.h"
 #include "expr.h"
 #include "toc.h"
-#include"block.h"
 typedef struct ci_expr_bool{
-	ci_expr super;
+	xexpr super;
 
 	// element
 	bool lh_negate;
 
-	struct ci_expr*lh;
+	struct xexpr*lh;
 
 	char op;
 
 	bool rh_negate;
 
-	struct ci_expr*rh;
+	struct xexpr*rh;
 
 
 	// list
@@ -29,7 +29,7 @@ typedef struct ci_expr_bool{
 
 }xbool;
 
-inline static void _xbool_compile_(const ci_expr*oo,toc*tc){
+inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 	xbool*o=(xbool*)oo;
 
 	if(o->bool_list.count){
@@ -52,7 +52,7 @@ inline static void _xbool_compile_(const ci_expr*oo,toc*tc){
 					exit(1);
 				}
 			}
-			_xbool_compile_((ci_expr*)b,tc);
+			_xbool_compile_((xexpr*)b,tc);
 			// ...
 		}
 		if(o->is_encapsulated){
@@ -100,7 +100,7 @@ inline static void _xbool_compile_(const ci_expr*oo,toc*tc){
 	}
 }
 
-inline static void _xbool_free_(ci_expr*oo){
+inline static void _xbool_free_(xexpr*oo){
 //	ci_expr_free(oo);
 }
 

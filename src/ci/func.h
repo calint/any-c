@@ -1,21 +1,21 @@
 #pragma once
 #include"../lib.h"
-#include "block.h"
+#include "codeblock.h"
 #include "expr.h"
-#include"block.h"
 
 typedef struct funcarg{
 	str type;
 	str name;
 }funcarg;
+
 #define funcarg_def (funcarg){str_def,str_def}
 
-typedef struct ci_func{
+typedef struct func{
 	str type;
 	str name;
-	dynp/*owns ci_func_arg**/args;
+	dynp args;//owns arg*
 	codeblock code;
-}ci_func;
+}func;
 
-#define ci_func_def (ci_func){str_def,str_def,dynp_def,codeblock_def}
+#define func_def (func){str_def,str_def,dynp_def,codeblock_def}
 

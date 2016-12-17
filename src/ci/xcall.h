@@ -2,23 +2,23 @@
 #include"../lib.h"
 #include "expr.h"
 #include "toc.h"
-	inline static /*gives*/ci_expr*toc_next_expr_from_pp(
+	inline static /*gives*/xexpr*toc_next_expr_from_pp(
 		const char**pp,toc*tc);
 
 
 typedef struct xcall{
-	ci_expr super;
+	xexpr super;
 	str name;
 	dynp/*owns ci_expression*/args;
 }xcall;
 
-inline static void _xcall_compile_(const ci_expr*o,toc*tc){
+inline static void _xcall_compile_(const xexpr*o,toc*tc){
 	xcall*e=(xcall*)o;
 	toc_print_resolved_function_identifier_call(tc,
 			e->name.data,e->args.count);
 
 	for(unsigned i=0;i<e->args.count;i++){
-		ci_expr*a=(ci_expr*)dynp_get(&e->args,i);
+		xexpr*a=(xexpr*)dynp_get(&e->args,i);
 		a->compile(a,tc);
 		if(i!=e->args.count-1){
 			printf(",");
@@ -30,7 +30,7 @@ inline static void _xcall_compile_(const ci_expr*o,toc*tc){
 #define xcall_def (xcall){{str_def,_xcall_compile_,xexpr_call_free},\
 	str_def,dynp_def}
 
-inline static void xexpr_call_free(ci_expr*o){
+inline static void xexpr_call_free(xexpr*o){
 //	ci_expr_call*oo=(ci_expr_call*)o;
 //	ci_expr_free(&oo->super);
 //	for(unsigned i=0;i<oo->args.count;i++){
@@ -59,8 +59,8 @@ inline static xcall*xcall_read_next(
 			(*pp)++;
 			break;
 		}
-		ci_expr*a=toc_next_expr_from_pp(pp,tc);
-		if(ci_expr_is_empty(a)){
+		xexpr*a=toc_next_expr_from_pp(pp,tc);
+		if(expression_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			exit(1);
 		}

@@ -5,18 +5,18 @@
 #include "xassign.h"
 
 typedef struct xvar{
-	ci_expr super;
+	xexpr super;
 	str name;
 	xassign initval;
 }xvar;
 
-inline static void _xvar_free_(ci_expr*oo){
+inline static void _xvar_free_(xexpr*oo){
 	xvar*o=(xvar*)oo;
 	str_free(&o->name);
-	_xassign_free_((ci_expr*)&o->initval);
+	_xassign_free_((xexpr*)&o->initval);
 }
 
-inline static void _xvar_compile_(const ci_expr*oo,toc*tc){
+inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	xvar*o=(xvar*)oo;
 	const char idtype=toc_find_ident_scope_type(tc,o->name.data);
 	if(idtype){
@@ -30,7 +30,7 @@ inline static void _xvar_compile_(const ci_expr*oo,toc*tc){
 
 	printf("%s ",o->super.type.data);
 	if(o->initval.super.compile){
-		_xassign_compile_((ci_expr*)&o->initval,tc);
+		_xassign_compile_((xexpr*)&o->initval,tc);
 	}else{
 		printf("%s=%s_def",o->name.data,o->super.type.data);
 	}

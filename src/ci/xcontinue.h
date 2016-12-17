@@ -1,22 +1,19 @@
 #pragma once
 #include"../lib.h"
+#include "codeblock.h"
 #include "expr.h"
 #include "toc.h"
-#include"block.h"
+
 typedef struct xcontinue{
-	ci_expr super;
+	xexpr super;
 }xcontinue;
 
-inline static void _xcontinue_free_(ci_expr*oo){
-	ci_expr_free(oo);
-}
-
-inline static void _xcontinue_compile_(const ci_expr*oo,toc*tc){
+inline static void _xcontinue_compile_(const xexpr*oo,toc*tc){
 	printf("continue");
 }
 
 #define xcontinue_def (xcontinue){\
-	{str_def,_xcontinue_compile_,_xcontinue_free_}}
+	{str_def,_xcontinue_compile_,NULL}}
 
 inline static xcontinue*xcontinue_read_next(const char**pp,toc*tc){
 	if(**pp!=';'){

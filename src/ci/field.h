@@ -5,7 +5,7 @@
 typedef struct ci_field{
 	str type;
 	str name;
-	ci_expr*initval;
+	xexpr*initval;
 }ci_field;
 
 #define ci_field_def (ci_field){str_def,str_def,NULL}
