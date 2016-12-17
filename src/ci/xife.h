@@ -3,7 +3,30 @@
 #include "codeblk.h"
 #include "toc.h"
 #include "xbool.h"
-#include "xif.h"
+
+typedef struct xif{
+	xexpr super;
+	xbool cond;
+	codeblk code;
+}xif;
+
+inline static void _xif_compile_(const xexpr*oo,toc*tc){
+	xif*o=(xif*)oo;
+	printf("if ");
+	_xbool_compile_((xexpr*)&o->cond,tc);
+	printf(" ");
+	_codeblk_compile_((xexpr*)&o->code,tc);
+}
+
+#define xif_def (xif){{str_def,_xif_compile_,NULL},xbool_def,codeblk_def}
+
+inline static xif*xif_read_next(const char**pp,toc*tc){
+	xif*o=malloc(sizeof(xif));
+	*o=xif_def;
+	xbool_parse(&o->cond,pp,tc);
+	codeblk_read_next(&o->code,pp,tc);
+	return o;
+}
 
 typedef struct xife{
 	xexpr super;
