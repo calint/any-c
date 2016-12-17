@@ -15,7 +15,7 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	if(idtype){
 		printf("\n\n<file> <line:col> '%s' is already declared at ..."
 				,o->initval.name.data);
-		exit(1);
+		longjmp(_jmpbufenv,1);
 		return;
 	}
 
@@ -40,7 +40,7 @@ inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
 
 	if(!strcmp("o",e->name.data)){
 		printf("\n\n<file> <line:col> identifier 'o' is reserved");
-		exit(1);
+		longjmp(_jmpbufenv,1);
 	}
 
 	bool is_var=!strcmp(e->super.type.data,"var")||
@@ -58,7 +58,7 @@ inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
 						e->initval.name.data,
 						e->super.type.data,
 						e->initval.super.type.data);
-				exit(1);
+				longjmp(_jmpbufenv,1);
 			}
 		}
 	}else{

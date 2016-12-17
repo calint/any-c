@@ -5,9 +5,10 @@ typedef struct toc{
 	dynp types;
 	dynp scopes;
 	str src;
+	const char*srcp;
 }toc;
 
-#define toc_def {dynp_def,dynp_def,str_def}
+#define toc_def {dynp_def,dynp_def,str_def,NULL}
 
 inline static bool toc_can_assign(toc*o,const char*dst,const char*path,
 		const char*src);
@@ -117,12 +118,12 @@ inline static void toc_compile_for_xset(
 		const tocdecl*i=toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
-			exit(1);
+			longjmp(_jmpbufenv,1);
 		}
 		if(!toc_can_assign(tc,i->type.data,p+1,type)){
 			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
 					type,i->type.data);
-			exit(1);
+			longjmp(_jmpbufenv,1);
 		}
 		const char scopetype=toc_find_ident_scope_type(tc,sid.data);
 		if(scopetype){
@@ -145,8 +146,10 @@ inline static void toc_compile_for_xset(
 		return;
 	}
 
+//	tocloc tl=toc_get_line_number_from_pp(tc, p)
+
 	printf("<file> <line:col> could not find identifier: %s\n",id);
-	exit(1);
+	longjmp(_jmpbufenv,1);
 }
 
 inline static void toc_compile_for_call(
@@ -161,7 +164,7 @@ inline static void toc_compile_for_call(
 		const tocdecl*i=toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier not found: %s\n",sid.data);
-			exit(1);
+			longjmp(_jmpbufenv,1);
 		}
 		printf("%s_%s((%s*)&%s",
 				i->type.data,p+1,
@@ -194,6 +197,26 @@ inline static int xexpr_is_empty(xexpr*o){
 	return o->compile==NULL;
 }
 
+typedef struct tocloc{
+	unsigned line;
+	unsigned col;
+}tocloc;
+
+inline static tocloc toc_get_line_number_from_pp(toc*o,const char*p){
+	const char*pt=o->src.data;
+	int line=1,col=1;
+	if(pt>p){
+		//? sanity check
+	}
+	while(pt<p){
+		if(*p=='\n'){
+			line++;
+			col=1;
+		}
+		col++;
+	}
+	return (tocloc){line,col};
+}
 
 
 

@@ -33,7 +33,7 @@ inline static xcall*xcall_read_next(
 	o->name=name;
 	if(**pp!='('){// arguments
 		printf("<file> <line> <col> expected '(' followed by arguments and ')'");
-		exit(1);
+		longjmp(_jmpbufenv,1);
 	}
 	(*pp)++;
 	while(1){
@@ -44,7 +44,7 @@ inline static xcall*xcall_read_next(
 		xexpr*a=toc_read_next_xexpr(pp,tc);
 		if(xexpr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
-			exit(1);
+			longjmp(_jmpbufenv,1);
 		}
 		dynp_add(&o->args,a);
 		if(**pp==','){
@@ -56,7 +56,7 @@ inline static xcall*xcall_read_next(
 			break;
 		}
 		printf("<file> <line> <col> expected ',' followed by more arguments");
-		exit(1);
+		longjmp(_jmpbufenv,1);
 	}
 	return o;
 }

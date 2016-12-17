@@ -99,7 +99,7 @@ inline static void _xident_compile_(const xexpr*oo,toc*tc){
 		// not end of string
 		printf("\n\n<file> <line:col> '%s' is not found and could not "
 				"be parsed to a number\n\n",o->name.data);
-		exit(1);
+		longjmp(_jmpbufenv,1);
 
 	}
 

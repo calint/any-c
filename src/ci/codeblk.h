@@ -56,7 +56,7 @@ inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
 		}
 		if(**pp!='}'){
 			printf("<file> <line:col> expected '}' to end block\n");
-			exit(1);
+			longjmp(_jmpbufenv,1);
 		}
 		(*pp)++;
 		toc_pop_scope(tc);

@@ -1,4 +1,5 @@
 #pragma once
+#include <setjmp.h>
 #include"../lib.h"
 #include "codeblk.h"
 #include "type.h"
@@ -10,6 +11,7 @@
 #include "xloop.h"
 #include "xset.h"
 #include "xvar.h"
+
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
 	for(unsigned i=0;i<o->types.count;i++){
@@ -45,17 +47,7 @@ inline static bool toc_can_assign(toc*tc,
 		if(!c){
 			return !strcmp(dst,src);
 		}
-
 		bool found=false;
-		for(unsigned i=0;i<c->extends.count;i++){
-			str*ext=(str*)dynp_get(&c->extends,i);
-			if(!strcmp(ext->data,ident.data)){
-				c=toc_find_class_by_name(tc,ext->data);
-				found=true;
-				break;
-			}
-		}
-		if(found)continue;
 		for(unsigned i=0;i<c->fields.count;i++){
 			field*fld=(field*)dynp_get(&c->fields,i);
 			if(!strcmp(fld->name.data,ident.data)){
@@ -72,7 +64,7 @@ inline static bool toc_can_assign(toc*tc,
 		if(found)continue;
 		printf("<file> <line:col> cannot find '%s' in '%s'\n",
 				path,c->name.data);
-		exit(1);
+		longjmp(_jmpbufenv,1);
 	}
 }
 
@@ -99,12 +91,12 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(
 				if(c==0){
 					printf("<file> <line:col> did not find the "
 							" end of string\n");
-					exit(1);
+					longjmp(_jmpbufenv,1);
 				}
 				if(c=='\n'){
 					printf("<file> <line:col> did not find the "
 							" end of string on the same line\n");
-					exit(1);
+					longjmp(_jmpbufenv,1);
 				}
 				(*pp)++;
 				if(c=='\\'){
@@ -127,7 +119,7 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(
 			if(**pp!='\''){
 				printf("<file> <line:col> expected a character\n"
 						" example 'a'\n");
-				exit(1);
+				longjmp(_jmpbufenv,1);
 			}
 			(*pp)++;
 			tk.end=tk.content_end=*pp;
@@ -326,7 +318,7 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 			(*pp)++;
 		}else{
 			printf("<file> <line:col> expected ')' after arguments\n");
-			exit(1);
+			longjmp(_jmpbufenv,1);
 		}
 	}
 	codeblk_read_next(&f->code,pp,tc);
@@ -355,7 +347,7 @@ inline static void toc_parse_field(const char**pp,
 
 			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
 					e->type.data,f->type.data);
-			exit(1);
+			longjmp(_jmpbufenv,1);
 		}
 		f->type=e->type;//? assert types
 	}
@@ -373,26 +365,9 @@ inline static /*gives*/type*toc_parse_type(
 	toc_add_type(tc,c);
 	token_setz(&name,&c->name);
 	toc_push_scope(tc,'c',c->name.data);
-	if(**pp==':'){
-		(*pp)++;
-		while(1){
-			token extends_name=token_next(pp);
-			dynp_add(&c->extends,/*takes*/token_to_str(&extends_name));
-			if(**pp=='{'){
-				break;
-			}else if(**pp==','){
-				(*pp)++;
-				continue;
-			}
-			printf("<file> <line:col> expected '{' or ',' followed by "
-					"class name");
-			exit(1);
-
-		}
-	}
 	if(**pp!='{'){
 		printf("<file> <line:col> expected '{' to open class body");
-		exit(1);
+		longjmp(_jmpbufenv,1);
 	}
 	(*pp)++;
 	while(1){
@@ -400,7 +375,7 @@ inline static /*gives*/type*toc_parse_type(
 		if(token_is_empty(&type)){
 			if(**pp!='}'){
 				printf("<file> <line:col> expected '}' to close class body\n");
-				exit(1);
+				longjmp(_jmpbufenv,1);
 			}
 			(*pp)++;
 			break;
@@ -454,21 +429,15 @@ inline static void toc_compile_to_c(toc*tc){
 		// type
 		_print_right_aligned_comment(c->name.data);
 		printf("typedef struct %s{",c->name.data);
-		if(c->extends.count||c->fields.count)
-			printf("\n");
-		for(unsigned i=0;i<c->extends.count;i++){
-			str*s=(str*)dynp_get(&c->extends,i);
-			printf("    %s %s;\n",s->data,s->data);
-		}
-
 		// fields
+		if(c->fields.count)printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
 			field*f=(field*)dynp_get(&c->fields,i);
 			toc_add_ident(tc,f->type.data,f->name.data);
 			if(!strcmp(f->type.data,"auto")){
 				if(!f->initval){
 					printf("<file> <line:col> expected initializer with auto");
-					exit(1);
+					longjmp(_jmpbufenv,1);
 				}
 				f->initval->compile(f->initval,tc);
 				f->type=f->initval->type;
@@ -479,12 +448,6 @@ inline static void toc_compile_to_c(toc*tc){
 
 		// #define object_def {...}
 		printf("#define %s_def (%s){",c->name.data,c->name.data);
-		for(unsigned i=0;i<c->extends.count;i++){
-			str*s=(str*)dynp_get(&c->extends,i);
-			printf("%s_def",s->data);
-			if(i!=c->extends.count-1)
-				printf(",");
-		}
 		for(unsigned i=0;i<c->fields.count;i++){
 			field*s=(field*)dynp_get(&c->fields,i);
 			if(s->initval){
@@ -525,16 +488,24 @@ inline static void toc_compile_to_c(toc*tc){
 }
 
 inline static void toc_compile_file(const char*path){
-	str s=str_from_file(path);
-	const char*p=s.data;
-	toc tc=toc_def;
-	while(1){
-		token nmspc=token_next(&p);
-		if(token_is_empty(&nmspc))break;
-		toc_parse_type(&p,&tc,nmspc);
+	int val=setjmp(_jmpbufenv);
+	if(val==1){
+		printf(" * error occured ");
+		return;
 	}
+
+	toc tc=toc_def;
+	tc.src=str_from_file(path);
+	tc.srcp=tc.src.data;
+	while(1){
+		token nmspc=token_next(&tc.srcp);
+		if(token_is_empty(&nmspc))break;
+		toc_parse_type(&tc.srcp,&tc,nmspc);
+	}
+
 	toc_compile_to_c(&tc);
-	str_free(&s);
+
+	// free toc cascading
 }
 
 

@@ -28,7 +28,6 @@ typedef struct func{
 
 typedef struct type{
 	str name;
-	dynp extends;
 	dynp fields;
 	dynp funcs;
 }type;

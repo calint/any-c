@@ -1,5 +1,6 @@
 global{
 	main{
+		var a=2
 		printf("hello world")
 	}
 }
