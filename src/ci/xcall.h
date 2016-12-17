@@ -12,7 +12,7 @@ typedef struct xcall{
 
 inline static void _xcall_compile_(const xexpr*o,toc*tc){
 	xcall*e=(xcall*)o;
-	toc_print_resolved_function_identifier_call(tc,e->name.data,e->args.count);
+	toc_compile_for_call(tc,e->name.data,e->args.count);
 	for(unsigned i=0;i<e->args.count;i++){
 		xexpr*a=(xexpr*)dynp_get(&e->args,i);
 		a->compile(a,tc);

@@ -20,13 +20,13 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 	}
 	for(unsigned i=0;i<o->exprs.count;i++){
 		xexpr*e=dynp_get(&o->exprs,i);
-		toc_indent_for_source(tc);
+		toc_indent_for_compile(tc);
 		e->compile(e,tc);
 		printf(";\n");//? e->is_block
 	}
 	toc_pop_scope(tc);
 	if(o->is_encaps){
-		toc_indent_for_source(tc);
+		toc_indent_for_compile(tc);
 		printf("}");
 	}
 }

@@ -2,8 +2,8 @@
 #include"../lib.h"
 
 typedef struct toc{
-	dynp types;//owns
-	dynp scopes;//owns
+	dynp types;
+	dynp scopes;
 	str src;
 }toc;
 
@@ -105,7 +105,7 @@ inline static void toc_pop_scope(toc*o){
 	o->scopes.count--;//? pop
 }
 
-inline static void toc_print_resolved_identifier_for_assignment(
+inline static void toc_compile_for_xset(
 		toc*tc,const char*id,const char*type){
 
 	const char*p=strpbrk(id,".");
@@ -120,9 +120,6 @@ inline static void toc_print_resolved_identifier_for_assignment(
 			exit(1);
 		}
 		if(!toc_can_assign(tc,i->type.data,p+1,type)){
-//			const char*ft=ci_toc_meta_get_first_field_type_for_class_name(tc,
-//					i->type.data);
-
 			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
 					type,i->type.data);
 			exit(1);
@@ -138,7 +135,6 @@ inline static void toc_print_resolved_identifier_for_assignment(
 			return;
 		}
 	}
-//	const ci_toc_ident*i=ci_toc_find_ident(tc,id);
 	const char scopetype=toc_find_ident_scope_type(tc,id);
 	if(scopetype=='c'){// class member
 		printf("o->%s=",id);
@@ -153,7 +149,7 @@ inline static void toc_print_resolved_identifier_for_assignment(
 	exit(1);
 }
 
-inline static void toc_print_resolved_function_identifier_call(
+inline static void toc_compile_for_call(
 		toc*tc,const char*id,unsigned argcount){
 
 	const char*p=strpbrk(id,".");
@@ -176,11 +172,10 @@ inline static void toc_print_resolved_function_identifier_call(
 	}else{
 		printf("%s(",id);
 	}
-
 }
 
 
-inline static void toc_indent_for_source(toc*o){
+inline static void toc_indent_for_compile(toc*o){
 	for(unsigned i=2;i<o->scopes.count;i++){
 		printf("\t");
 	}
