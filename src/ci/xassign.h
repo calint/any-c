@@ -17,7 +17,7 @@ inline static void _xassign_free_(struct ci_expr*oo){
 
 inline static void _xassign_compile_(const ci_expr*oo,toc*tc){
 	xassign*o=(xassign*)oo;
-	_ci_toc_print_resolved_identifier_for_assignment(tc,
+	toc_print_resolved_identifier_for_assignment(tc,
 			o->name.data,o->expr->type.data);
 
 	o->expr->compile((ci_expr*)o->expr,tc);

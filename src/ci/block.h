@@ -25,15 +25,9 @@ inline static void _codeblock_free_(ci_expr*oo){
 //	dynp_free(&o->exprs);
 }
 
-inline static void toc_indent_for_source(toc*o){
-	for(unsigned i=2;i<o->scopes.count;i++){
-		printf("\t");
-	}
-}
-
 inline static void _codeblock_compile_(const ci_expr*oo,toc*tc){
 	codeblock*o=(codeblock*)oo;
-	_ci_toc_push_scope(tc,'b',"");
+	toc_push_scope(tc,'b',"");
 	if(o->is_encaps){
 		printf("{\n");
 	}
@@ -43,7 +37,7 @@ inline static void _codeblock_compile_(const ci_expr*oo,toc*tc){
 		e->compile(e,tc);
 		printf(";\n");//? e->is_block
 	}
-	_ci_toc_pop_scope(tc);
+	toc_pop_scope(tc);
 	if(o->is_encaps){
 		toc_indent_for_source(tc);
 		printf("}");
@@ -64,7 +58,7 @@ inline static void codeblock_read_next(codeblock*o,const char**pp,toc*tc){
 //	*o=ci_code_def;
 	token_skip_empty_space(pp);
 //	o->token_pre_block=token_next(pp);//? exclude { from delimiters
-	_ci_toc_push_scope(tc,'b',"");
+	toc_push_scope(tc,'b',"");
 	if(**pp=='{'){
 		(*pp)++;
 		o->is_encaps=1;
@@ -89,5 +83,5 @@ inline static void codeblock_read_next(codeblock*o,const char**pp,toc*tc){
 		}
 		(*pp)++;
 	}
-	_ci_toc_pop_scope(tc);
+	toc_pop_scope(tc);
 }

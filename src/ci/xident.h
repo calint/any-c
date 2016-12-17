@@ -75,7 +75,7 @@ inline static void _xcompile_(const ci_expr*oo,toc*tc){
 		str_add_list(&s,o->name.data,p-o->name.data);
 		str_add(&s,0);
 
-		const char idtype=_ci_toc_find_ident_scope_type(tc,s.data);
+		const char idtype=toc_find_ident_scope_type(tc,s.data);
 		if(idtype){
 			if(idtype=='c'){// class member
 				printf("%s->%s",s.data,o->name.data);
@@ -87,7 +87,7 @@ inline static void _xcompile_(const ci_expr*oo,toc*tc){
 			return;
 		}
 	}else{// localvar or member
-		const char idtype=_ci_toc_find_ident_scope_type(tc,o->name.data);
+		const char idtype=toc_find_ident_scope_type(tc,o->name.data);
 		if(idtype=='c'){// class member
 			printf("o->%s",o->name.data);
 			if(o->incdecbits&1)printf("++");

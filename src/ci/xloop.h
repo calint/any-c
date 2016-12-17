@@ -25,10 +25,10 @@ inline static void _xloop_compile_(const ci_expr*oo,toc*tc){
 
 
 inline static xloop*xloop_read_next(const char**pp,toc*tc){
-	_ci_toc_push_scope(tc,'l',"");
+	toc_push_scope(tc,'l',"");
 	xloop*o=malloc(sizeof(xloop));
 	*o=xloop_def;
 	codeblock_read_next(&o->code,pp,tc);
-	_ci_toc_pop_scope(tc);
+	toc_pop_scope(tc);
 	return o;
 }

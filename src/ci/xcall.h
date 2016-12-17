@@ -14,7 +14,7 @@ typedef struct xcall{
 
 inline static void _xcall_compile_(const ci_expr*o,toc*tc){
 	xcall*e=(xcall*)o;
-	_ci_toc_print_resolved_function_identifier_call(tc,
+	toc_print_resolved_function_identifier_call(tc,
 			e->name.data,e->args.count);
 
 	for(unsigned i=0;i<e->args.count;i++){

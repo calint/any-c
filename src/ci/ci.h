@@ -325,7 +325,7 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 		(*pp)++;
 	}
 
-	_ci_toc_push_scope(tc,'f',f->name.data);
+	toc_push_scope(tc,'f',f->name.data);
 	while(1){
 		token tkt=token_next(pp);
 		if(token_is_empty(&tkt)){
@@ -338,7 +338,7 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 		token_setz(&tkt,&fa->type);
 		token_setz(&tkn,&fa->name);
 
-		_ci_toc_add_ident(tc,fa->type.data,fa->name.data);
+		toc_add_ident(tc,fa->type.data,fa->name.data);
 
 		if(**pp==','){
 			(*pp)++;
@@ -353,7 +353,7 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 		}
 	}
 	codeblock_read_next(&f->code,pp,tc);
-	_ci_toc_pop_scope(tc);
+	toc_pop_scope(tc);
 }
 
 inline static void toc_parse_field(const char**pp,toc*tc,type*c,
@@ -368,7 +368,7 @@ inline static void toc_parse_field(const char**pp,toc*tc,type*c,
 		token_setz(name,&f->name);
 	}
 	dynp_add(&c->fields,f);
-	_ci_toc_add_ident(tc,f->type.data,f->name.data);
+	toc_add_ident(tc,f->type.data,f->name.data);
 	if(**pp=='='){
 		(*pp)++;
 		ci_expr*e=toc_next_expr_from_pp(pp,tc);
@@ -494,7 +494,7 @@ inline static /*gives*/type*toc_parse_class(
 	toc_add_class(tc,c);
 	token_setz(&name,&c->name);
 //	token_setz(&name,&c->name);
-	_ci_toc_push_scope(tc,'c',c->name.data);
+	toc_push_scope(tc,'c',c->name.data);
 	if(**pp==':'){
 		(*pp)++;
 		while(1){
@@ -545,7 +545,7 @@ inline static /*gives*/type*toc_parse_class(
 //			exit(1);
 		}
 	}
-	_ci_toc_pop_scope(tc);
+	toc_pop_scope(tc);
 	return/*gives*/c;
 }
 
@@ -562,7 +562,7 @@ inline static void toc_compile_to_c(toc*tc){
 	printf("#define bool_def false\n");
 	for(unsigned i=0;i<tc->ci_classes.count;i++){
 		type*c=dynp_get(&tc->ci_classes,i);
-		_ci_toc_push_scope(tc,'c',c->name.data);
+		toc_push_scope(tc,'c',c->name.data);
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		printf("typedef struct %s{",c->name.data);
 		if(c->extends.count||c->fields.count)
@@ -574,7 +574,7 @@ inline static void toc_compile_to_c(toc*tc){
 		// fields
 		for(unsigned i=0;i<c->fields.count;i++){
 			ci_field*f=(ci_field*)dynp_get(&c->fields,i);
-			_ci_toc_add_ident(tc,f->type.data,f->name.data);
+			toc_add_ident(tc,f->type.data,f->name.data);
 			if(!strcmp(f->type.data,"auto")){
 				if(!f->initval){
 					printf("<file> <line:col> expected initializer with auto");
@@ -626,7 +626,7 @@ inline static void toc_compile_to_c(toc*tc){
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		for(unsigned i=0;i<c->funcs.count;i++){
 			ci_func*f=(ci_func*)dynp_get(&c->funcs,i);
-			_ci_toc_push_scope(tc,'f',f->name.data);
+			toc_push_scope(tc,'f',f->name.data);
 			printf("inline static %s %s_%s(%s*o",
 					f->type.data,c->name.data,f->name.data,c->name.data);
 
@@ -634,13 +634,13 @@ inline static void toc_compile_to_c(toc*tc){
 				funcarg*a=(funcarg*)dynp_get(&f->args,j);
 				printf(",");
 				printf("%s %s",a->type.data,a->name.data);
-				_ci_toc_add_ident(tc,a->type.data,a->name.data);
+				toc_add_ident(tc,a->type.data,a->name.data);
 			}
 			printf(")");
 			f->code.super.compile((ci_expr*)&f->code,tc);
-			_ci_toc_pop_scope(tc);
+			toc_pop_scope(tc);
 		}
-		_ci_toc_pop_scope(tc);
+		toc_pop_scope(tc);
 	}
 	printf("\n//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("int main(int c,char** a){global_main(0,c,a);}\n");
