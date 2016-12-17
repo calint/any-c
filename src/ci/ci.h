@@ -12,8 +12,8 @@
 #include "xvar.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
-	for(unsigned i=0;i<o->ci_classes.count;i++){
-		type*c=dynp_get(&o->ci_classes,i);
+	for(unsigned i=0;i<o->types.count;i++){
+		type*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name.data,name)){
 			return c;
 		}
@@ -23,7 +23,7 @@ inline static type*toc_find_class_by_name(toc*o,const char*name){
 
 
 inline static void toc_add_class(toc*o,type*c){
-	dynp_add(&o->ci_classes,c);
+	dynp_add(&o->types,c);
 }
 
 inline static bool toc_is_assignable_from(toc*tc,
@@ -549,8 +549,8 @@ inline static void toc_compile_to_c(toc*tc){
 	printf("#define int_def 0\n");
 	printf("#define float_def 0.0f\n");
 	printf("#define bool_def false\n");
-	for(unsigned i=0;i<tc->ci_classes.count;i++){
-		type*c=dynp_get(&tc->ci_classes,i);
+	for(unsigned i=0;i<tc->types.count;i++){
+		type*c=dynp_get(&tc->types,i);
 		toc_push_scope(tc,'c',c->name.data);
 		printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 		printf("typedef struct %s{",c->name.data);

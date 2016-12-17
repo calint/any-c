@@ -2,7 +2,7 @@
 
 typedef struct xloop{
 	xexpr super;
-	codeblock code;
+	codeblk code;
 }xloop;
 
 inline static void _xloop_compile_(const xexpr*oo,toc*tc){
@@ -11,7 +11,7 @@ inline static void _xloop_compile_(const xexpr*oo,toc*tc){
 	o->code.super.compile((xexpr*)&o->code,tc);
 }
 
-#define xloop_def (xloop){{str_def,_xloop_compile_,NULL},codeblock_def}
+#define xloop_def (xloop){{str_def,_xloop_compile_,NULL},codeblk_def}
 
 inline static xloop*xloop_read_next(const char**pp,toc*tc){
 	toc_push_scope(tc,'l',"");

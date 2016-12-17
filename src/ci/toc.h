@@ -2,17 +2,15 @@
 #include"../lib.h"
 
 typedef struct toc{
-	dynp/*owns*/ci_classes;
-	dynp/*own ci_toc_scope*/scopes;
+	dynp types;//owns
+	dynp scopes;//owns
 	str src;
 }toc;
 
 #define toc_def {dynp_def,dynp_def,str_def}
 
-inline static bool toc_is_assignable_from(toc*o,
-		const char*dst,const char*path,const char*src);
-//inline static bool ci_toc_is_assignable_from(ci_toc*tc,
-//		const char*dst,const char*path,const char*src);
+inline static bool toc_is_assignable_from(toc*o,const char*dst,const char*path,
+		const char*src);
 
 typedef struct tocscope{
 	char type;

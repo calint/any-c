@@ -8,7 +8,7 @@
 typedef struct xife{
 	xexpr super;
 	dynp/*own&ci_expr_if*/ifs;
-	codeblock elsecode;
+	codeblk elsecode;
 }xife;
 
 inline static void _xife_compile_(const xexpr*oo,toc*tc){
@@ -27,7 +27,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define xife_def (xife){{str_def,_xife_compile_,NULL},dynp_def,codeblock_def}
+#define xife_def (xife){{str_def,_xife_compile_,NULL},dynp_def,codeblk_def}
 
 inline static xife*xife_read_next(const char**pp,toc*tc){
 	xife*o=malloc(sizeof(xife));

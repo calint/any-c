@@ -2,18 +2,16 @@
 #include"../lib.h"
 #include"toc.h"
 
-inline static /*gives*/xexpr*toc_next_expr_from_pp(
-		const char**pp,toc*o);
+inline static /*gives*/xexpr*toc_next_expr_from_pp(const char**pp,toc*o);
 
-typedef struct codeblock{
+typedef struct codeblk{
 	xexpr super;
 	int is_encaps;
 	dynp/*own expr*/exprs;
-	token token_pre_block;
-}codeblock;
+}codeblk;
 
 inline static void _codeblock_compile_(const xexpr*oo,toc*tc){
-	codeblock*o=(codeblock*)oo;
+	codeblk*o=(codeblk*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->is_encaps){
 		printf("{\n");
@@ -31,10 +29,9 @@ inline static void _codeblock_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define codeblock_def (codeblock){{str_def,_codeblock_compile_,NULL},0,\
-	dynp_def,token_def}
+#define codeblk_def (codeblk){{str_def,_codeblock_compile_,NULL},0,dynp_def}
 
-inline static void codeblock_read_next(codeblock*o,const char**pp,toc*tc){
+inline static void codeblock_read_next(codeblk*o,const char**pp,toc*tc){
 	token_skip_empty_space(pp);
 	toc_push_scope(tc,'b',"");
 	if(**pp=='{'){

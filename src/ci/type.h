@@ -21,10 +21,10 @@ typedef struct func{
 	str type;
 	str name;
 	dynp args;//owns arg*
-	codeblock code;
+	codeblk code;
 }func;
 
-#define func_def (func){str_def,str_def,dynp_def,codeblock_def}
+#define func_def (func){str_def,str_def,dynp_def,codeblk_def}
 
 typedef struct type{
 	str name;

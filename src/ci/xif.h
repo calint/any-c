@@ -6,7 +6,7 @@
 typedef struct xif{
 	xexpr super;
 	xbool cond;
-	codeblock code;
+	codeblk code;
 }xif;
 
 inline static void _xif_compile_(const xexpr*oo,toc*tc){
@@ -17,7 +17,7 @@ inline static void _xif_compile_(const xexpr*oo,toc*tc){
 	_codeblock_compile_((xexpr*)&o->code,tc);
 }
 
-#define xif_def (xif){{str_def,_xif_compile_,NULL},xbool_def,codeblock_def}
+#define xif_def (xif){{str_def,_xif_compile_,NULL},xbool_def,codeblk_def}
 
 inline static xif*xif_read_next(const char**pp,toc*tc){
 	xif*o=malloc(sizeof(xif));
