@@ -354,10 +354,12 @@ inline static type*toc_parse_type(toc*tc,token name){
 	type*c=malloc(sizeof(type));
 	*c=type_def;
 	toc_add_type(tc,c);
-	token_setz(&name,&c->name);
+	c->token=name;
+	token_setz(&c->token,&c->name);
 	toc_push_scope(tc,'c',c->name.data);
 	if(*tc->srcp!='{'){
-		printf("<file> <line:col> expected '{' to open class body");
+		toc_print_source_location(tc,c->token.content);
+		printf("expected '{' to open class body\n");
 		longjmp(_jmpbufenv,1);
 	}
 	tc->srcp++;
@@ -485,6 +487,7 @@ inline static void toc_compile_file(ccharp path){
 	}
 
 	toc tc=toc_def;
+	tc.filepth=path;
 	tc.src=str_from_file(path);
 	tc.srcp=tc.src.data;
 	while(1){

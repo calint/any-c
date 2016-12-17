@@ -6,9 +6,10 @@ typedef struct toc{
 	dynp scopes;
 	str src;
 	ccharp srcp;
+	ccharp filepth;
 }toc;
 
-#define toc_def {dynp_def,dynp_def,str_def,NULL}
+#define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
 
 inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,
 		ccharp src);
@@ -199,26 +200,28 @@ inline static int xexpr_is_empty(xexpr*o){
 }
 
 typedef struct tocloc{
+	ccharp filenm;
 	unsigned line;
 	unsigned col;
 }tocloc;
 
-inline static tocloc toc_get_line_number_from_pp(toc*o,ccharp p){
-	ccharp pt=o->src.data;
+inline static tocloc toc_get_line_number_from_pp(toc*o,const char*p){
+	const char*pt=o->src.data;
 	int line=1,col=1;
-	if(pt>p){
-		//? sanity check
-	}
 	while(pt<p){
-		if(*p=='\n'){
+		if(*pt=='\n'){
 			line++;
 			col=1;
 		}
 		col++;
+		pt++;
 	}
-	return (tocloc){line,col};
+	return (tocloc){o->filepth,line,col};
 }
-
+inline static void toc_print_source_location(toc*o,ccharp p){
+	tocloc tl=toc_get_line_number_from_pp(o,p);
+	printf("%s:%d:%d:",tl.filenm,tl.line,tl.col);
+}
 inline static token toc_next_token(toc*o){
 	return token_next(&o->srcp);
 }
