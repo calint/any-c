@@ -5,14 +5,13 @@
 #include "type.h"
 #include "xbreak.h"
 #include "xcall.h"
-#include "xcontinue.h"
 #include "xident.h"
 #include "xife.h"
 #include "xloop.h"
 #include "xset.h"
 #include "xvar.h"
 #include"toc.h"
-
+#include "xcont.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
 	for(unsigned i=0;i<o->types.count;i++){
@@ -80,7 +79,7 @@ inline static str const_str(const char*s){
 	return st;
 }
 
-inline static /*gives*/xexpr*toc_read_next_xexpr(toc*tc){
+inline static xexpr*toc_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
 		if(*tc->srcp=='"'){
@@ -274,9 +273,7 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(toc*tc){
 	e->incdecbits=incdecbits;
 	return(xexpr*)e;
 }
-//inline static str ci_abbreviate_func_arg_name_for_type(ci_toc*tc,const char*tp){
-//	return *tp;
-//}
+
 inline static void toc_parse_func(toc*tc,type*c,token*type){
 	func*f=malloc(sizeof(func));
 	*f=func_def;
@@ -400,7 +397,6 @@ inline static type*toc_parse_type(toc*tc,token name){
 }
 
 inline static void _print_right_aligned_comment(const char*comment){
-
 	const char*line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
 	const int maxlen=strlen(line);
 	const int ln=strlen(comment);
