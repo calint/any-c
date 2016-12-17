@@ -10,9 +10,9 @@ inline static void _xcont_compile_(const xexpr*oo,toc*tc){
 
 #define xcont_def (xcont){{_xcont_compile_,NULL,str_def,0}}
 
-inline static xcont*xcont_read_next(const char**pp,toc*tc){
-	if(**pp==';')
-		(*pp)++;
+inline static xcont*xcont_read_next(toc*tc){
+	if(*tc->srcp==';')
+		tc->srcp++;
 	xcont*e=malloc(sizeof(xcont));
 	*e=xcont_def;
 	return e;

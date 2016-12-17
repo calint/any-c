@@ -218,5 +218,7 @@ inline static tocloc toc_get_line_number_from_pp(toc*o,const char*p){
 	return (tocloc){line,col};
 }
 
-
+inline static token toc_next_token(toc*o){
+	return token_next(&o->srcp);
+}
 

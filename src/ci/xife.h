@@ -23,8 +23,8 @@ inline static void _xif_compile_(const xexpr*oo,toc*tc){
 inline static xif*xif_read_next(const char**pp,toc*tc){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
-	xbool_parse(&o->cond,pp,tc);
-	codeblk_read_next(&o->code,pp,tc);
+	xbool_parse(&o->cond,tc);
+	codeblk_read_next(&o->code,tc);
 	return o;
 }
 
@@ -58,7 +58,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 
 #define xife_def (xife){{_xife_compile_,NULL,str_def,0},dynp_def,codeblk_def}
 
-inline static xife*xife_read_next(const char*pp[],toc*tc){
+inline static xife*xife_read_next(toc*tc){
 	xife*o=malloc(sizeof(xife));
 	*o=xife_def;
 	o->super.bits|=1;
@@ -67,21 +67,21 @@ inline static xife*xife_read_next(const char*pp[],toc*tc){
 		*i=xif_def;
 		dynp_add(&o->ifs,i);
 
-		xbool_parse(&i->cond,pp,tc);
-		codeblk_read_next(&i->code,pp,tc);
+		xbool_parse(&i->cond,tc);
+		codeblk_read_next(&i->code,tc);
 
 		i->super.bits=i->code.super.bits; // encapsulation
 
-		token t=token_next(pp);
+		token t=toc_next_token(tc);
 		if(!token_equals(&t,"else")){
-			(*pp)=t.begin;
+			tc->srcp=t.begin;
 			return o;
 		}
 
-		token t2=token_next(pp);
+		token t2=toc_next_token(tc);
 		if(!token_equals(&t2,"if")){
-			*pp=t2.begin;
-			codeblk_read_next(&o->elsecode,pp,tc);
+			tc->srcp=t2.begin;
+			codeblk_read_next(&o->elsecode,tc);
 			return o;
 		}
 	}

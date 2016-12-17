@@ -13,11 +13,11 @@ inline static void _xloop_compile_(const xexpr*oo,toc*tc){
 
 #define xloop_def (xloop){{_xloop_compile_,NULL,str_def,0},codeblk_def}
 
-inline static xloop*xloop_read_next(const char**pp,toc*tc){
+inline static xloop*xloop_read_next(toc*tc){
 	toc_push_scope(tc,'l',"");
 	xloop*o=malloc(sizeof(xloop));
 	*o=xloop_def;
-	codeblk_read_next(&o->code,pp,tc);
+	codeblk_read_next(&o->code,tc);
 	toc_pop_scope(tc);
 	return o;
 }

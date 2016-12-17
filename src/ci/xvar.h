@@ -31,11 +31,11 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 
 #define xvar_def (xvar){{_xvar_compile_,NULL,str_def,0},str_def,xset_def}
 
-inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
+inline static xvar*xvar_read_next(toc*tc,str type){
 	xvar*e=malloc(sizeof(xvar));
 	*e=xvar_def;
 	e->super.type/*takes*/=type;
-	token tk=token_next(pp);
+	token tk=toc_next_token(tc);
 	token_setz(&tk,&e->name);
 
 	if(!strcmp("o",e->name.data)){
@@ -46,9 +46,9 @@ inline static xvar*xvar_read_next(const char**pp,toc*tc,str type){
 	bool is_var=!strcmp(e->super.type.data,"var")||
 			!strcmp(e->super.type.data,"auto");
 
-	if(**pp=='='){
-		(*pp)++;
-		xset_parse_next(&e->initval,pp,tc,/*shares*/e->name);
+	if(*tc->srcp=='='){
+		tc->srcp++;
+		xset_parse_next(&e->initval,tc,/*shares*/e->name);
 		if(is_var){
 			e->super.type=e->initval.super.type;
 		}else{

@@ -96,26 +96,22 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 	dynp_def,\
 	false,false}
 
-inline static void xbool_parse(xbool*o,
-		const char**pp,toc*tc){
-
+inline static void xbool_parse(xbool*o,toc*tc){
 	o->super.type=str_from_string("bool");
-
-	token_skip_empty_space(pp);
-
+	token_skip_empty_space(&tc->srcp);
 	bool neg=false;
-	if(**pp=='!'){// if(!ok){}
-		(*pp)++;
+	if(*tc->srcp=='!'){// if(!ok){}
+		tc->srcp++;
 		neg=true;
 	}
 
-	if(**pp!='('){//   keybits==1 && ok || (a&b!=0)
+	if(*tc->srcp!='('){//   keybits==1 && ok || (a&b!=0)
 		o->is_encapsulated=false;
 
-		if(!neg && **pp=='!'){// if(!ok){}
-			(*pp)++;
+		if(!neg && *tc->srcp=='!'){// if(!ok){}
+			tc->srcp++;
 			o->lh_negate=true;
-		}else if(neg && **pp=='!'){// if(!!ok){}
+		}else if(neg && *tc->srcp=='!'){// if(!!ok){}
 			printf("<file> <line:col> did not expect !!\n");
 			longjmp(_jmpbufenv,1);
 		}else{
@@ -123,36 +119,36 @@ inline static void xbool_parse(xbool*o,
 		}
 
 
-		o->lh=toc_read_next_xexpr(pp,tc);
+		o->lh=toc_read_next_xexpr(tc);
 
-		if(**pp=='='){
-			(*pp)++;
-			if(**pp!='='){
+		if(*tc->srcp=='='){
+			tc->srcp++;
+			if(*tc->srcp!='='){
 				printf("<file> <line:col> expected '=='\n");
 				longjmp(_jmpbufenv,1);
 			}
 			o->op='=';
-			(*pp)++;
-		}else if(**pp=='!'){
-			(*pp)++;
-			if(**pp!='='){
+			tc->srcp++;
+		}else if(*tc->srcp=='!'){
+			tc->srcp++;
+			if(*tc->srcp!='='){
 				printf("<file> <line:col> expected '!='\n");
 				longjmp(_jmpbufenv,1);
 			}
 			o->op='!';
-			(*pp)++;
-		}else if(**pp=='>'){
-			(*pp)++;
-			if(**pp=='='){
-				(*pp)++;
+			tc->srcp++;
+		}else if(*tc->srcp=='>'){
+			tc->srcp++;
+			if(*tc->srcp=='='){
+				tc->srcp++;
 				o->op='g';
 			}else{
 				o->op='>';
 			}
-		}else if(**pp=='<'){
-			(*pp)++;
-			if(**pp=='='){
-				(*pp)++;
+		}else if(*tc->srcp=='<'){
+			tc->srcp++;
+			if(*tc->srcp=='='){
+				tc->srcp++;
 				o->op='l';
 			}else{
 				o->op='<';
@@ -162,31 +158,31 @@ inline static void xbool_parse(xbool*o,
 			return;
 		}
 
-		if(**pp=='!'){// if(!ok){}
-			(*pp)++;
+		if(*tc->srcp=='!'){// if(!ok){}
+			tc->srcp++;
 			o->rh_negate=true;
 		}
 
-		o->rh=toc_read_next_xexpr(pp,tc);
+		o->rh=toc_read_next_xexpr(tc);
 
-		if(**pp==')'){
+		if(*tc->srcp==')'){
 			return;
 		}
 
 		//? keybits==1 && ok
-		if(**pp=='&'){
-			(*pp)++;
-			if(**pp=='&'){
-				(*pp)--;
+		if(*tc->srcp=='&'){
+			tc->srcp++;
+			if(*tc->srcp=='&'){
+				tc->srcp--;
 				return;
 			}else{
 				printf("<file> <line:col> expected &&\n");
 				longjmp(_jmpbufenv,1);
 			}
-		}else if(**pp=='|'){
-			(*pp)++;
-			if(**pp=='|'){
-				(*pp)--;
+		}else if(*tc->srcp=='|'){
+			tc->srcp++;
+			if(*tc->srcp=='|'){
+				tc->srcp--;
 				printf("<file> <line:col> expected ||\n");
 				longjmp(_jmpbufenv,1);
 			}
@@ -199,33 +195,33 @@ inline static void xbool_parse(xbool*o,
 	// example (a==b && c==d)
 	o->is_encapsulated=true;
 	o->is_negated=neg;
-	(*pp)++;
+	tc->srcp++;
 	str_add(&o->bool_op_list,0);
 	while(1){
 		xbool*e=malloc(sizeof(xbool));
 		*e=xbool_def;
-		xbool_parse(e,pp,tc);
+		xbool_parse(e,tc);
 		dynp_add(&o->bool_list,e);
-		token_skip_empty_space(pp);
-		if(**pp==')'){
-			(*pp)++;
+		token_skip_empty_space(&tc->srcp);
+		if(*tc->srcp==')'){
+			tc->srcp++;
 			return;
 		}
-		if(**pp=='&'){
-			(*pp)++;
-			if(**pp!='&'){
+		if(*tc->srcp=='&'){
+			tc->srcp++;
+			if(*tc->srcp!='&'){
 				printf("<file> <line:col> expected && \n");
 				longjmp(_jmpbufenv,1);
 			}
-			(*pp)++;
+			tc->srcp++;
 			str_add(&o->bool_op_list,'&');
-		}else if(**pp=='|'){
-			(*pp)++;
-			if(**pp!='|'){
+		}else if(*tc->srcp=='|'){
+			tc->srcp++;
+			if(*tc->srcp!='|'){
 				printf("<file> <line:col> expected || \n");
 				longjmp(_jmpbufenv,1);
 			}
-			(*pp)++;
+			tc->srcp++;
 			str_add(&o->bool_op_list,'|');
 		}else{
 			printf("<file> <line:col> expected && or ||\n");

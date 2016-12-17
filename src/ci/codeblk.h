@@ -2,7 +2,7 @@
 #include"../lib.h"
 #include"toc.h"
 
-inline static /*gives*/xexpr*toc_read_next_xexpr(const char**pp,toc*o);
+inline static /*gives*/xexpr*toc_read_next_xexpr(toc*o);
 
 typedef struct codeblk{
 	xexpr super;
@@ -38,35 +38,35 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 		printf("\n");
 }
 
-inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
-	token_skip_empty_space(pp);
+inline static void codeblk_read_next(codeblk*o,toc*tc){
+	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
-	if(**pp=='{'){
-		(*pp)++;
+	if(*tc->srcp=='{'){
+		tc->srcp++;
 		o->super.bits|=1;
 		while(1){
-			xexpr*e=toc_read_next_xexpr(pp,tc);
+			xexpr*e=toc_read_next_xexpr(tc);
 			if(xexpr_is_empty(e))
 				break;
 			dynp_add(&o->exprs,e);
-			if(**pp==';'){
-				(*pp)++;
+			if(*tc->srcp==';'){
+				tc->srcp++;
 				continue;
 			}
 		}
-		if(**pp!='}'){
+		if(*tc->srcp!='}'){
 			printf("<file> <line:col> expected '}' to end block\n");
 			longjmp(_jmpbufenv,1);
 		}
-		(*pp)++;
+		tc->srcp++;
 		toc_pop_scope(tc);
 		return;
 	}
 	o->super.bits&=~1;
-	xexpr*e=toc_read_next_xexpr(pp,tc);
+	xexpr*e=toc_read_next_xexpr(tc);
 	dynp_add(&o->exprs,e);
-	if(**pp==';'){
-		(*pp)++;
+	if(*tc->srcp==';'){
+		tc->srcp++;
 	}
 	toc_pop_scope(tc);
 }

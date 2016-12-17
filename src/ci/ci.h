@@ -11,6 +11,7 @@
 #include "xloop.h"
 #include "xset.h"
 #include "xvar.h"
+#include"toc.h"
 
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
@@ -79,15 +80,13 @@ inline static str const_str(const char*s){
 	return st;
 }
 
-inline static /*gives*/xexpr*toc_read_next_xexpr(
-		const char**pp,toc*tc){
-
-	token tk=token_next(pp);
+inline static /*gives*/xexpr*toc_read_next_xexpr(toc*tc){
+	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(**pp=='"'){
-			(*pp)++;
+		if(*tc->srcp=='"'){
+			tc->srcp++;
 			while(1){
-				const char c=**pp;
+				const char c=*tc->srcp;
 				if(c==0){
 					printf("<file> <line:col> did not find the "
 							" end of string\n");
@@ -98,14 +97,14 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(
 							" end of string on the same line\n");
 					longjmp(_jmpbufenv,1);
 				}
-				(*pp)++;
+				tc->srcp++;
 				if(c=='\\'){
-					(*pp)++;
+					tc->srcp++;
 					continue;
 				}
 				if(c=='"')break;
 			}
-			tk.end=tk.content_end=*pp;
+			tk.end=tk.content_end=tc->srcp;
 			xident*e=malloc(sizeof(xident));
 			*e=xident_def;
 			str name=str_def;
@@ -113,16 +112,16 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(
 			e->name=name;
 			e->super.type=str_from_string("ccharp");
 			return(xexpr*)e;
-		}else if(**pp=='\''){
-			(*pp)++;
-			(*pp)++;
-			if(**pp!='\''){
+		}else if(*tc->srcp=='\''){
+			tc->srcp++;
+			tc->srcp++;
+			if(*tc->srcp!='\''){
 				printf("<file> <line:col> expected a character\n"
 						" example 'a'\n");
 				longjmp(_jmpbufenv,1);
 			}
-			(*pp)++;
-			tk.end=tk.content_end=*pp;
+			tc->srcp++;
+			tk.end=tk.content_end=tc->srcp;
 			xident*e=malloc(sizeof(xident));
 			*e=xident_def;
 			str name=str_def;
@@ -194,73 +193,78 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(
 		}
 	}
 
+	// keywords
 	if(token_equals(&tk,"loop")){
-		xloop*e=xloop_read_next(pp,tc);
+		xloop*e=xloop_read_next(tc);
 		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"break")){
-		xbreak*e=xbreak_read_next(pp,tc);
+		xbreak*e=xbreak_read_next(tc);
 		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"continue")){
-		xcont*e=xcont_read_next(pp,tc);
+		xcont*e=xcont_read_next(tc);
 		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"if")){
-		xife*e=xife_read_next(pp,tc);
+		xife*e=xife_read_next(tc);
 		return (xexpr*)e;
 	}
 
+	// built in types
 	str name=str_def;
 	token_setz(&tk,&name);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char
-		xvar*e=xvar_read_next(pp,tc,name);
+		xvar*e=xvar_read_next(tc,name);
 		return(xexpr*)e;
 	}
 
+	//  class instance
 	type*c=toc_find_class_by_name(tc,name.data);
 	if(c){// instantiate
-		xvar*e=xvar_read_next(pp,tc,name);
+		xvar*e=xvar_read_next(tc,name);
 		return(xexpr*)e;
 	}
 
-	if(**pp=='('){// function call
-		xcall*e=xcall_read_next(pp,tc,/*gives*/name);
+	// function call
+	if(*tc->srcp=='('){
+		xcall*e=xcall_read_next(tc,/*gives*/name);
 		return(xexpr*)e;
 	}
 
-	if(**pp=='='){// assignment
-		(*pp)++;
-		if(**pp!='='){
-			xset*e=/*takes*/xset_read_next(pp,tc,/*gives*/name);
+	// assignment
+	if(*tc->srcp=='='){
+		tc->srcp++;
+		if(*tc->srcp!='='){
+			xset*e=/*takes*/xset_read_next(tc,/*gives*/name);
 			return(xexpr*)e;
 		}
-		(*pp)--;
+		tc->srcp--;
 	}
 
 	char incdecbits=0;
-	if(**pp=='+'){
-		(*pp)++;
-		if(**pp=='+'){
-			(*pp)++;
+	if(*tc->srcp=='+'){
+		tc->srcp++;
+		if(*tc->srcp=='+'){
+			tc->srcp++;
 			incdecbits|=1;
 		}else{
-			(*pp)--;
-			(*pp)--;
+			tc->srcp--;
+			tc->srcp--;
 		}
-	}else if(**pp=='-'){
-		(*pp)++;
-		if(**pp=='-'){
-			(*pp)++;
+	}else if(*tc->srcp=='-'){
+		tc->srcp++;
+		if(*tc->srcp=='-'){
+			tc->srcp++;
 			incdecbits|=2;
 		}else{
-			(*pp)--;
-			(*pp)--;
+			tc->srcp--;
+			tc->srcp--;
 		}
 	}
 
@@ -273,61 +277,58 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(
 //inline static str ci_abbreviate_func_arg_name_for_type(ci_toc*tc,const char*tp){
 //	return *tp;
 //}
-inline static void toc_parse_func(const char**pp,toc*tc,type*c,
-		token*type){
+inline static void toc_parse_func(toc*tc,type*c,token*type){
 	func*f=malloc(sizeof(func));
 	*f=func_def;
 	bool enclosed_args=false;
-	if(**pp=='{' || **pp=='('){
+	if(*tc->srcp=='{' || *tc->srcp=='('){
 		f->type=const_str("void");
 		token_setz(type,&f->name);
 	}else{
-		token tkname=token_next(pp);
+		token tkname=toc_next_token(tc);
 		token_setz(type,&f->type);
 		token_setz(&tkname,&f->name);
 	}
 
 	dynp_add(&c->funcs,f);
 
-	if(**pp=='('){
+	if(*tc->srcp=='('){
 		enclosed_args=true;
-		(*pp)++;
+		tc->srcp++;
 	}
 
 	toc_push_scope(tc,'f',f->name.data);
 	while(1){
-		token tkt=token_next(pp);
+		token tkt=toc_next_token(tc);
 		if(token_is_empty(&tkt)){
 			break;
 		}
 		funcarg*fa=malloc(sizeof(funcarg));
 		dynp_add(&f->args,fa);
 		*fa=funcarg_def;
-		token tkn=token_next(pp);
+		token tkn=toc_next_token(tc);
 		token_setz(&tkt,&fa->type);
 		token_setz(&tkn,&fa->name);
 
 		toc_add_ident(tc,fa->type.data,fa->name.data);
 
-		if(**pp==','){
-			(*pp)++;
+		if(*tc->srcp==','){
+			tc->srcp++;
 		}
 	}
 	if(enclosed_args){
-		if(**pp==')'){
-			(*pp)++;
+		if(*tc->srcp==')'){
+			tc->srcp++;
 		}else{
 			printf("<file> <line:col> expected ')' after arguments\n");
 			longjmp(_jmpbufenv,1);
 		}
 	}
-	codeblk_read_next(&f->code,pp,tc);
+	codeblk_read_next(&f->code,tc);
 	toc_pop_scope(tc);
 }
 
-inline static void toc_parse_field(const char**pp,
-		toc*tc,type*c,token*type,token*name){
-
+inline static void toc_parse_field(toc*tc,type*c,token*type,token*name){
 	field*f=malloc(sizeof(field));
 	*f=field_def;
 	token_setz(type,&f->type);
@@ -338,9 +339,9 @@ inline static void toc_parse_field(const char**pp,
 	}
 	dynp_add(&c->fields,f);
 	toc_add_ident(tc,f->type.data,f->name.data);
-	if(**pp=='='){
-		(*pp)++;
-		xexpr*e=toc_read_next_xexpr(pp,tc);
+	if(*tc->srcp=='='){
+		tc->srcp++;
+		xexpr*e=toc_read_next_xexpr(tc);
 		f->initval=e;
 		if(strcmp(f->type.data,"var") && !toc_can_assign(tc,
 				f->type.data,f->initval->type.data,e->type.data)){
@@ -351,47 +352,46 @@ inline static void toc_parse_field(const char**pp,
 		}
 		f->type=e->type;//? assert types
 	}
-	if(**pp==';'){
-		(*pp)++;
+	if(*tc->srcp==';'){
+		tc->srcp++;
 	}
 	return;
 }
 
-inline static /*gives*/type*toc_parse_type(
-		const char**pp,toc*tc,token name){
+inline static type*toc_parse_type(toc*tc,token name){
 
 	type*c=malloc(sizeof(type));
 	*c=type_def;
 	toc_add_type(tc,c);
 	token_setz(&name,&c->name);
 	toc_push_scope(tc,'c',c->name.data);
-	if(**pp!='{'){
+	if(*tc->srcp!='{'){
 		printf("<file> <line:col> expected '{' to open class body");
 		longjmp(_jmpbufenv,1);
 	}
-	(*pp)++;
+	tc->srcp++;
 	while(1){
-		token type=token_next(pp);
+		token type=toc_next_token(tc);
 		if(token_is_empty(&type)){
-			if(**pp!='}'){
+			if(*tc->srcp!='}'){
 				printf("<file> <line:col> expected '}' to close class body\n");
 				longjmp(_jmpbufenv,1);
 			}
-			(*pp)++;
+			tc->srcp++;
 			break;
 		}
-		if(**pp=='(' || **pp=='{'){
-			toc_parse_func(pp,tc,c,&type);
-		}else if(**pp=='=' || **pp==';'){
-			token name=token_next(pp);
-			toc_parse_field(pp,tc,c,&type,&name);
+		if(*tc->srcp=='(' || *tc->srcp=='{'){
+			toc_parse_func(tc,c,&type);
+		}else if(*tc->srcp=='=' || *tc->srcp==';'){
+			token name=toc_next_token(tc);
+			toc_parse_field(tc,c,&type,&name);
 		}else{
-			token nm=token_next(pp);
-			if(**pp=='(' || **pp=='{'){
-				*pp=nm.content;
-				toc_parse_func(pp,tc,c,&type);
+			token name=toc_next_token(tc);
+			if(*tc->srcp=='(' || *tc->srcp=='{'){
+				tc->srcp=name.content;
+				toc_parse_func(tc,c,&type);
 			}else{
-				toc_parse_field(pp,tc,c,&type,&nm);
+				toc_parse_field(tc,c,&type,&name);
 			}
 		}
 	}
@@ -498,9 +498,9 @@ inline static void toc_compile_file(const char*path){
 	tc.src=str_from_file(path);
 	tc.srcp=tc.src.data;
 	while(1){
-		token nmspc=token_next(&tc.srcp);
-		if(token_is_empty(&nmspc))break;
-		toc_parse_type(&tc.srcp,&tc,nmspc);
+		token typenm=toc_next_token(&tc);
+		if(token_is_empty(&typenm))break;
+		toc_parse_type(&tc,typenm);
 	}
 
 	toc_compile_to_c(&tc);
