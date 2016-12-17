@@ -2,17 +2,15 @@
 #include"../lib.h"
 #include "toc.h"
 
-//inline static ci_class*ci_find_class_by_name(const char*);
-
 typedef struct xident{
 	xexpr super;
 	str name;
 	char incdecbits;
 }xident;
 
-#define xident_def (xident){{str_def,_xcompile_,NULL},str_def,false}
+#define xident_def (xident){{str_def,_xident_compile_,NULL},str_def,false}
 
-inline static void _xcompile_(const xexpr*oo,toc*tc){
+inline static void _xident_compile_(const xexpr*oo,toc*tc){
 	const xident*o=(xident*)oo;
 
 	// test string or charachter

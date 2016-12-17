@@ -30,7 +30,7 @@ inline static xif*xif_read_next(const char**pp,toc*tc){
 
 typedef struct xife{
 	xexpr super;
-	dynp/*own&ci_expr_if*/ifs;
+	dynp ifs;
 	codeblk elsecode;
 }xife;
 
@@ -38,11 +38,11 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	xife*o=(xife*)oo;
 
 	for(unsigned i=0;i<o->ifs.count;i++){
-		xif*iff=(xif*)dynp_get(&o->ifs,i);
+		xif*fi=(xif*)dynp_get(&o->ifs,i);
 		if(i){
 			printf(" else ");
 		}
-		_xif_compile_((xexpr*)iff,tc);
+		_xif_compile_((xexpr*)fi,tc);
 	}
 	if(o->elsecode.exprs.count){
 		printf(" else ");
@@ -52,7 +52,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 
 #define xife_def (xife){{str_def,_xife_compile_,NULL},dynp_def,codeblk_def}
 
-inline static xife*xife_read_next(const char**pp,toc*tc){
+inline static xife*xife_read_next(const char*pp[],toc*tc){
 	xife*o=malloc(sizeof(xife));
 	*o=xife_def;
 
@@ -63,7 +63,6 @@ inline static xife*xife_read_next(const char**pp,toc*tc){
 
 		xbool_parse(&i->cond,pp,tc);
 		codeblk_read_next(&i->code,pp,tc);
-
 
 		token t=token_next(pp);
 		if(!token_equals(&t,"else")){
