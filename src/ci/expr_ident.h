@@ -19,7 +19,7 @@ inline static void _ci_expr_ident_free_(struct ci_expr*oo){
 #define ci_expr_ident_def (ci_expr_ident){\
 	{str_def,_ci_expr_ident_compile_,_ci_expr_ident_free_},str_def,false}
 
-inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _ci_expr_ident_compile_(const ci_expr*oo,toc*tc){
 	const ci_expr_ident*o=(ci_expr_ident*)oo;
 
 	// test string or charachter

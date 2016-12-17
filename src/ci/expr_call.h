@@ -2,8 +2,8 @@
 #include"../lib.h"
 #include "expr.h"
 #include "toc.h"
-inline static /*gives*/ci_expr*_ci_toc_next_expr_from_pp(
-		const char**pp,ci_toc*tc);
+	inline static /*gives*/ci_expr*toc_next_expr_from_pp(
+		const char**pp,toc*tc);
 
 
 typedef struct ci_expr_call{
@@ -12,7 +12,7 @@ typedef struct ci_expr_call{
 	dynp/*owns ci_expression*/args;
 }ci_expr_call;
 
-inline static void _ci_expr_call_compile_(const ci_expr*o,ci_toc*tc){
+inline static void _ci_expr_call_compile_(const ci_expr*o,toc*tc){
 	ci_expr_call*e=(ci_expr_call*)o;
 	_ci_toc_print_resolved_function_identifier_call(tc,
 			e->name.data,e->args.count);
@@ -45,7 +45,7 @@ inline static void ci_expr_call_free(ci_expr*o){
 }
 
 inline static ci_expr_call*ci_expr_call_next(
-		const char**pp,ci_toc*tc,str name){
+		const char**pp,toc*tc,str name){
 
 	ci_expr_call*o=malloc(sizeof(ci_expr_call));
 	*o=ci_expr_call_def;
@@ -60,7 +60,7 @@ inline static ci_expr_call*ci_expr_call_next(
 			(*pp)++;
 			break;
 		}
-		ci_expr*a=_ci_toc_next_expr_from_pp(pp,tc);
+		ci_expr*a=toc_next_expr_from_pp(pp,tc);
 		if(ci_expr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			exit(1);

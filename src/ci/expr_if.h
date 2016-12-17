@@ -10,7 +10,7 @@ typedef struct ci_expr_if{
 	ci_block code;
 }ci_expr_if;
 
-inline static void _ci_expr_if_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _ci_expr_if_compile_(const ci_expr*oo,toc*tc){
 	ci_expr_if*o=(ci_expr_if*)oo;
 	printf("if ");
 	_ci_expr_bool_compile_((ci_expr*)&o->cond,tc);
@@ -26,7 +26,7 @@ inline static void _ci_expr_if_free_(ci_expr*oo){
 	{str_def,_ci_expr_if_compile_,_ci_expr_if_free_},\
 	ci_expr_bool_def,ci_block_def}
 
-inline static ci_expr_if*ci_expr_if_next(const char**pp,ci_toc*tc){
+inline static ci_expr_if*ci_expr_if_next(const char**pp,toc*tc){
 	ci_expr_if*o=malloc(sizeof(ci_expr_if));
 	*o=ci_expr_if_def;
 	ci_expr_bool_parse(&o->cond,pp,tc);

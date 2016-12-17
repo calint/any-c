@@ -11,7 +11,7 @@ typedef struct ci_expr_ife{
 	ci_block elsecode;
 }ci_expr_ife;
 
-inline static void _ci_expr_ife_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _ci_expr_ife_compile_(const ci_expr*oo,toc*tc){
 	ci_expr_ife*o=(ci_expr_ife*)oo;
 
 	for(unsigned i=0;i<o->ifs.count;i++){
@@ -35,7 +35,7 @@ inline static void _ci_expr_ife_free_(ci_expr*oo){
 	{str_def,_ci_expr_ife_compile_,_ci_expr_ife_free_},\
 	dynp_def,ci_block_def}
 
-inline static ci_expr_ife*ci_expr_ife_next(const char**pp,ci_toc*tc){
+inline static ci_expr_ife*ci_expr_ife_next(const char**pp,toc*tc){
 	ci_expr_ife*o=malloc(sizeof(ci_expr_ife));
 	*o=ci_expr_ife_def;
 

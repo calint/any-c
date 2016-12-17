@@ -2,14 +2,14 @@
 #include"../lib.h"
 #include "field.h"
 #include "func.h"
-typedef struct ci_class{
+typedef struct type{
 	str name;
 	dynp/*owns str*/extends;
 	dynp/*owns field*/fields;
 	dynp/*owns func*/funcs;
-}ci_class;
+}type;
 
-#define ci_class_def (ci_class){str_def,dynp_def,dynp_def,dynp_def}
+#define type_def (type){str_def,dynp_def,dynp_def,dynp_def}
 
 //inline static void ci_class_free(ci_class*o){
 //

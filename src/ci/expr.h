@@ -4,7 +4,7 @@
 
 typedef struct ci_expr{
 	str type;
-	void (*compile)(const struct ci_expr*,struct ci_toc*);
+	void (*compile)(const struct ci_expr*,struct toc*);
 	void (*free)(struct ci_expr*);
 }ci_expr;
 

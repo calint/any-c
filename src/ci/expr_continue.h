@@ -11,14 +11,14 @@ inline static void _ci_expr_continue_free_(ci_expr*oo){
 	ci_expr_free(oo);
 }
 
-inline static void _cci_expr_continue_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _cci_expr_continue_compile_(const ci_expr*oo,toc*tc){
 	printf("continue");
 }
 
 #define ci_expr_continue_def (ci_expr_continue){\
 	{str_def,_cci_expr_continue_compile_,_ci_expr_continue_free_}}
 
-inline static ci_expr_continue*ci_expr_continue_next(const char**pp,ci_toc*tc){
+inline static ci_expr_continue*ci_expr_continue_next(const char**pp,toc*tc){
 	if(**pp!=';'){
 		printf("\n\n<file> <line:col> expected ';' after keyword 'break'");
 		exit(1);

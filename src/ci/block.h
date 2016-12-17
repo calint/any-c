@@ -3,8 +3,8 @@
 #include "expr.h"
 #include "toc.h"
 
-inline static /*gives*/ci_expr*_ci_toc_next_expr_from_pp(
-		const char**pp,ci_toc*tc);
+inline static /*gives*/ci_expr*toc_next_expr_from_pp(
+		const char**pp,toc*tc);
 
 typedef struct ci_block{
 	ci_expr super;
@@ -25,13 +25,13 @@ inline static void _ci_block_free_(ci_expr*oo){
 //	dynp_free(&o->exprs);
 }
 
-inline static void toc_indent_for_source(ci_toc*tc){
+inline static void toc_indent_for_source(toc*tc){
 	for(unsigned i=2;i<tc->scopes.count;i++){
 		printf("\t");
 	}
 }
 
-inline static void _ci_block_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _ci_block_compile_(const ci_expr*oo,toc*tc){
 	ci_block*o=(ci_block*)oo;
 	_ci_toc_push_scope(tc,'b',"");
 	if(o->is_encaps){
@@ -58,7 +58,7 @@ inline static void _ci_block_compile_(const ci_expr*oo,ci_toc*tc){
 //	free(o);
 //}
 
-inline static /*gives*/ci_block*ci_block_parse(ci_block*o,const char**pp,ci_toc*tc){
+inline static /*gives*/ci_block*ci_block_parse(ci_block*o,const char**pp,toc*tc){
 //	ci_code*c=malloc(sizeof(ci_code));
 //	*o=ci_code_def;
 	token_skip_empty_space(pp);
@@ -69,7 +69,7 @@ inline static /*gives*/ci_block*ci_block_parse(ci_block*o,const char**pp,ci_toc*
 		o->is_encaps=1;
 	}
 	while(1){
-		ci_expr*e=_ci_toc_next_expr_from_pp(pp,tc);
+		ci_expr*e=toc_next_expr_from_pp(pp,tc);
 		if(ci_expr_is_empty(e)){
 			break;
 		}

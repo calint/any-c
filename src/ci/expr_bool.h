@@ -29,7 +29,7 @@ typedef struct ci_expr_bool{
 
 }ci_expr_bool;
 
-inline static void _ci_expr_bool_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _ci_expr_bool_compile_(const ci_expr*oo,toc*tc){
 	ci_expr_bool*o=(ci_expr_bool*)oo;
 
 	if(o->bool_list.count){
@@ -112,7 +112,7 @@ inline static void _ci_expr_bool_free_(ci_expr*oo){
 	false,false}
 
 inline static void ci_expr_bool_parse(ci_expr_bool*o,
-		const char**pp,ci_toc*tc){
+		const char**pp,toc*tc){
 
 	o->super.type=str_from_string("bool");
 
@@ -138,7 +138,7 @@ inline static void ci_expr_bool_parse(ci_expr_bool*o,
 		}
 
 
-		o->lh=_ci_toc_next_expr_from_pp(pp,tc);
+		o->lh=toc_next_expr_from_pp(pp,tc);
 
 		if(**pp=='='){
 			(*pp)++;
@@ -182,7 +182,7 @@ inline static void ci_expr_bool_parse(ci_expr_bool*o,
 			o->rh_negate=true;
 		}
 
-		o->rh=_ci_toc_next_expr_from_pp(pp,tc);
+		o->rh=toc_next_expr_from_pp(pp,tc);
 
 		if(**pp==')'){
 			return;

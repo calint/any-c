@@ -14,7 +14,7 @@ inline static void _ci_expr_loop_free_(ci_expr*oo){
 	ci_expr_free(&o->super);
 }
 
-inline static void _ci_ci_expr_loop_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _ci_ci_expr_loop_compile_(const ci_expr*oo,toc*tc){
 	ci_expr_loop*o=(ci_expr_loop*)oo;
 	printf("while(1)");
 	o->code.super.compile((ci_expr*)&o->code,tc);
@@ -24,7 +24,7 @@ inline static void _ci_ci_expr_loop_compile_(const ci_expr*oo,ci_toc*tc){
 	{str_def,_ci_ci_expr_loop_compile_,_ci_expr_loop_free_},ci_block_def}
 
 
-inline static ci_expr_loop*ci_expr_loop_next(const char**pp,ci_toc*tc){
+inline static ci_expr_loop*ci_expr_loop_next(const char**pp,toc*tc){
 	_ci_toc_push_scope(tc,'l',"");
 	ci_expr_loop*o=malloc(sizeof(ci_expr_loop));
 	*o=ci_expr_loop_def;

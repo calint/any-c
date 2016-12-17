@@ -16,7 +16,7 @@ inline static void _ci_expr_var_free_(ci_expr*oo){
 	_ci_expr_assign_free_((ci_expr*)&o->initval);
 }
 
-inline static void _ci_expr_var_compile_(const ci_expr*oo,ci_toc*tc){
+inline static void _ci_expr_var_compile_(const ci_expr*oo,toc*tc){
 	ci_expr_var*o=(ci_expr_var*)oo;
 	const char idtype=_ci_toc_find_ident_scope_type(tc,o->name.data);
 	if(idtype){
@@ -41,7 +41,7 @@ inline static void _ci_expr_var_compile_(const ci_expr*oo,ci_toc*tc){
 	str_def,ci_expr_assign_def}
 
 inline static /*gives*/ci_expr_var*ci_expr_var_next(
-		const char**pp,ci_toc*tc,/*takes*/str type){
+		const char**pp,toc*tc,/*takes*/str type){
 
 	ci_expr_var*e=malloc(sizeof(ci_expr_var));
 	*e=ci_expr_var_def;
