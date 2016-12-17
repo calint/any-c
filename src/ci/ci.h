@@ -32,7 +32,7 @@ inline static ci_class*ci_find_class_by_name(ci_toc*tc,const char*name){
 //	}
 //}
 
-inline static bool ci_is_assignable_from(ci_toc*tc,
+inline static bool _ci_toc_is_assignable_from(ci_toc*tc,
 		const char*dst,const char*path,const char*src){
 
 	ci_class*c=ci_find_class_by_name(tc,dst);
@@ -93,14 +93,14 @@ inline static void ci_free(){
 //	dynp_free(&ci_classes);
 }
 
-inline static str str_const(const char*s){
+inline static str const_str(const char*s){
 	str st=str_def;
 	st.data=s;
 	st.cap=st.count=strlen(s)+1;
 	return st;
 }
 
-inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
+inline static /*gives*/ci_expr*_ci_toc_next_expr_from_pp(
 		const char**pp,ci_toc*tc){
 
 	token tk=token_next(pp);
@@ -168,7 +168,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 		*e=ci_expr_ident_def;
 		e->name=tks;
-		e->super.type=str_const("bool");
+		e->super.type=const_str("bool");
 		return(ci_expr*)e;
 	}
 
@@ -180,7 +180,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 		*e=ci_expr_ident_def;
 		e->name=tks;
-		e->super.type=str_const("int");
+		e->super.type=const_str("int");
 		return(ci_expr*)e;
 	}
 
@@ -190,7 +190,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 		*e=ci_expr_ident_def;
 		e->name=tks;
-		e->super.type=str_const("float");
+		e->super.type=const_str("float");
 		return(ci_expr*)e;
 	}
 //
@@ -204,7 +204,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 				ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 				*e=ci_expr_ident_def;
 				e->name=tks;
-				e->super.type=str_const("int");
+				e->super.type=const_str("int");
 				return(ci_expr*)e;
 			}
 		}
@@ -214,7 +214,7 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 				ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
 				*e=ci_expr_ident_def;
 				e->name=tks;
-				e->super.type=str_const("int");
+				e->super.type=const_str("int");
 				return(ci_expr*)e;
 			}
 		}
@@ -299,13 +299,13 @@ inline static /*gives*/ci_expr*_ci_expr_new_from_pp(
 //inline static str ci_abbreviate_func_arg_name_for_type(ci_toc*tc,const char*tp){
 //	return *tp;
 //}
-inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
+inline static void _toc_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 		token*type){
 	ci_func*f=malloc(sizeof(ci_func));
 	*f=ci_func_def;
 	bool enclosed_args=false;
 	if(**pp=='{' || **pp=='('){
-		f->type=str_const("void");
+		f->type=const_str("void");
 		token_setz(type,&f->name);
 	}else{
 		token tkname=token_next(pp);
@@ -351,7 +351,7 @@ inline static void _ci_parse_func(const char**pp,ci_toc*tc,ci_class*c,
 	ci_toc_pop_scope(tc);
 }
 
-inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
+inline static void _ci_toc_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 		token*type,token*name){
 
 	ci_field*f=malloc(sizeof(ci_field));
@@ -366,9 +366,9 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 	ci_toc_add_ident(tc,f->type.data,f->name.data);
 	if(**pp=='='){
 		(*pp)++;
-		ci_expr*e=_ci_expr_new_from_pp(pp,tc);
+		ci_expr*e=_ci_toc_next_expr_from_pp(pp,tc);
 		f->initval=e;
-		if(strcmp(f->type.data,"var") && !ci_is_assignable_from(tc,
+		if(strcmp(f->type.data,"var") && !_ci_toc_is_assignable_from(tc,
 				f->type.data,f->initval->type.data,e->type.data)){
 
 			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
@@ -481,7 +481,7 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 //	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 //}
 
-inline static /*gives*/ci_class*_ci_parse_class(
+inline static /*gives*/ci_class*_toc_parse_class(
 		const char**pp,ci_toc*tc,token name){
 
 	ci_class*c=malloc(sizeof(ci_class));
@@ -523,17 +523,17 @@ inline static /*gives*/ci_class*_ci_parse_class(
 		}
 		if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
 //			(*pp)++;
-			_ci_parse_func(pp,tc,c,&type);
+			_toc_parse_func(pp,tc,c,&type);
 		}else if(**pp=='=' || **pp==';'){
 			token name=token_next(pp);
-			_ci_parse_field(pp,tc,c,&type,&name);
+			_ci_toc_parse_field(pp,tc,c,&type,&name);
 		}else{
 			token nm=token_next(pp);
 			if(**pp=='(' || **pp=='{'){//  player{print{puts "hello"}}
 				*pp=nm.content;
-				_ci_parse_func(pp,tc,c,&type);
+				_toc_parse_func(pp,tc,c,&type);
 			}else{
-				_ci_parse_field(pp,tc,c,&type,&nm);
+				_ci_toc_parse_field(pp,tc,c,&type,&nm);
 			}
 //			printf("<file> <line:col> expected ';'\n");
 //			exit(1);
@@ -543,7 +543,7 @@ inline static /*gives*/ci_class*_ci_parse_class(
 	return/*gives*/c;
 }
 
-inline static void toc_compile_to_c(ci_toc*tc){
+inline static void _toc_compile_to_c(ci_toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
@@ -641,15 +641,16 @@ inline static void toc_compile_to_c(ci_toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
-inline static void ci_compile_file(const char*path){
+inline static void toc_compile_file(const char*path){
 	str s=str_from_file(path);
 	const char*p=s.data;
 	ci_toc tc=ci_toc_def;
 	while(1){
 		token nmspc=token_next(&p);
 		if(token_is_empty(&nmspc))break;
-		_ci_parse_class(&p,&tc,nmspc);
+		_toc_parse_class(&p,&tc,nmspc);
 	}
-	toc_compile_to_c(&tc);
+	_toc_compile_to_c(&tc);
+	str_free(&s);
 }
 

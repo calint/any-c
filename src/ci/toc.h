@@ -1,6 +1,5 @@
 #pragma once
 #include"../lib.h"
-//#include"class.h"
 
 typedef struct ci_toc{
 	dynp/*owns*/ci_classes;
@@ -10,15 +9,11 @@ typedef struct ci_toc{
 
 #define ci_toc_def {dynp_def,dynp_def,str_def}
 
-//inline static void ci_toc_free(ci_toc*o){
-//	for(unsigned i=0;i<o->scopes.count;i++){
-//
-//	}
-//	dynp_foa(&o->scopes,{free(o);});
-//	dynp_free(&o->scopes);
-//	free(o);
-//}
-//
+inline static bool _ci_toc_is_assignable_from(ci_toc*tc,
+		const char*dst,const char*path,const char*src);
+//inline static bool ci_toc_is_assignable_from(ci_toc*tc,
+//		const char*dst,const char*path,const char*src);
+
 typedef struct ci_toc_scope{
 	char type;
 	const char*name;
@@ -112,9 +107,6 @@ inline static void ci_toc_pop_scope(ci_toc*o){
 	o->scopes.count--;//? pop
 }
 
-inline static bool ci_is_assignable_from(ci_toc*tc,
-		const char*dst,const char*path,const char*src);
-
 inline static void ci_toc_print_resolved_identifier_for_assignment(
 		ci_toc*tc,const char*id,const char*type){
 
@@ -129,7 +121,7 @@ inline static void ci_toc_print_resolved_identifier_for_assignment(
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			exit(1);
 		}
-		if(!ci_is_assignable_from(tc,i->type.data,p+1,type)){
+		if(!_ci_toc_is_assignable_from(tc,i->type.data,p+1,type)){
 //			const char*ft=ci_toc_meta_get_first_field_type_for_class_name(tc,
 //					i->type.data);
 

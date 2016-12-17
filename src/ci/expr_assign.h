@@ -32,7 +32,7 @@ inline static/*gives*/ci_expr_assign*ci_expr_assign_next(
 	ci_expr_assign*e=malloc(sizeof(ci_expr_assign));
 	*e=ci_expr_assign_def;
 	e->name=/*gives*/name;
-	e->expr=_ci_expr_new_from_pp(pp,tc);
+	e->expr=_ci_toc_next_expr_from_pp(pp,tc);
 	e->super.type=e->expr->type;//? str shares buffer
 	return e;
 }
@@ -41,6 +41,6 @@ inline static void ci_expr_assign_parse(ci_expr_assign*o,
 		const char**pp,ci_toc*tc,/*takes*/str name){
 
 	o->name=/*gives*/name;
-	o->expr=_ci_expr_new_from_pp(pp,tc);
+	o->expr=_ci_toc_next_expr_from_pp(pp,tc);
 	o->super.type=o->expr->type;//? str shares buffer
 }

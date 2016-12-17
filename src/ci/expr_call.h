@@ -2,7 +2,8 @@
 #include"../lib.h"
 #include "expr.h"
 #include "toc.h"
-inline static /*gives*/ci_expr*_ci_expr_new_from_pp(const char**pp,ci_toc*tc);
+inline static /*gives*/ci_expr*_ci_toc_next_expr_from_pp(
+		const char**pp,ci_toc*tc);
 
 
 typedef struct ci_expr_call{
@@ -59,7 +60,7 @@ inline static ci_expr_call*ci_expr_call_next(
 			(*pp)++;
 			break;
 		}
-		ci_expr*a=_ci_expr_new_from_pp(pp,tc);
+		ci_expr*a=_ci_toc_next_expr_from_pp(pp,tc);
 		if(ci_expr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			exit(1);
