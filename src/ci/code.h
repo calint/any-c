@@ -9,7 +9,7 @@ typedef struct code{
 	dynp exprs;
 }code;
 
-#define code_def (code){{_code_compile_,NULL,str_def,1},dynp_def}
+#define code_def (code){{_code_compile_,NULL,str_def,token_def,1},dynp_def}
 
 inline static void _code_compile_(const xexpr*oo,toc*tc){
 	code*o=(code*)oo;

@@ -188,10 +188,11 @@ typedef struct xexpr{
 	void (*compile)(const struct xexpr*,struct toc*);
 	void (*free)(struct xexpr*);
 	str type;
+	token token;
 	char bits;
 }xexpr;
 
-#define xexpr_def (xexpr){NULL,NULL,str_def,0}
+#define xexpr_def (xexpr){NULL,NULL,str_def,token_def,0}
 
 inline static int xexpr_is_empty(xexpr*o){
 	return o->compile==NULL;

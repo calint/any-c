@@ -23,7 +23,7 @@ inline static void _xcall_compile_(const xexpr*o,toc*tc){
 	printf(")");
 }
 
-#define xcall_def (xcall){{_xcall_compile_,NULL,str_def,0},str_def,dynp_def}
+#define xcall_def (xcall){{_xcall_compile_,NULL,str_def,token_def,0},str_def,dynp_def}
 
 inline static xcall*xcall_read_next(toc*tc,str name){
 	xcall*o=malloc(sizeof(xcall));

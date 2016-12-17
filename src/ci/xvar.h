@@ -14,7 +14,7 @@ inline static void _xset_compile_(const xexpr*oo,toc*tc){
 	o->expr->compile((xexpr*)o->expr,tc);
 }
 
-#define xset_def (xset){{_xset_compile_,NULL,str_def,0},str_def,0}
+#define xset_def (xset){{_xset_compile_,NULL,str_def,token_def,0},str_def,0}
 
 inline static/*gives*/xset*xset_read_next(toc*tc,/*takes*/str name){
 	xset*e=malloc(sizeof(xset));
@@ -58,7 +58,8 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define xvar_def (xvar){{_xvar_compile_,NULL,str_def,0},str_def,xset_def}
+#define xvar_def (xvar){{_xvar_compile_,NULL,str_def,token_def,0},\
+						str_def,xset_def}
 
 inline static xvar*xvar_read_next(toc*tc,str type){
 	xvar*e=malloc(sizeof(xvar));

@@ -351,7 +351,6 @@ inline static void toc_parse_field(toc*tc,type*c,token*type,token*name){
 }
 
 inline static type*toc_parse_type(toc*tc,token name){
-
 	type*c=malloc(sizeof(type));
 	*c=type_def;
 	toc_add_type(tc,c);

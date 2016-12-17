@@ -11,7 +11,7 @@ inline static void _xloop_compile_(const xexpr*oo,toc*tc){
 	o->code.super.compile((xexpr*)&o->code,tc);
 }
 
-#define xloop_def (xloop){{_xloop_compile_,NULL,str_def,0},code_def}
+#define xloop_def (xloop){{_xloop_compile_,NULL,str_def,token_def,0},code_def}
 
 inline static xloop*xloop_read_next(toc*tc){
 	toc_push_scope(tc,'l',"");
@@ -30,7 +30,7 @@ inline static void _xbreak_compile_(const xexpr*oo,toc*tc){
 	printf("break");
 }
 
-#define xbreak_def (xbreak){{_xbreak_compile_,NULL,str_def,0}}
+#define xbreak_def (xbreak){{_xbreak_compile_,NULL,str_def,token_def,0}}
 
 inline static xbreak*xbreak_read_next(toc*tc){
 	if(*tc->srcp==';')
@@ -49,7 +49,7 @@ inline static void _xcont_compile_(const xexpr*oo,toc*tc){
 	printf("continue");
 }
 
-#define xcont_def (xcont){{_xcont_compile_,NULL,str_def,0}}
+#define xcont_def (xcont){{_xcont_compile_,NULL,str_def,token_def,0}}
 
 inline static xcont*xcont_read_next(toc*tc){
 	if(*tc->srcp==';')
