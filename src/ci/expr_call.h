@@ -13,36 +13,16 @@ typedef struct ci_expr_call{
 
 inline static void _ci_expr_call_compile_(const ci_expr*o,ci_toc*tc){
 	ci_expr_call*e=(ci_expr_call*)o;
+	ci_toc_print_resolved_function_identifier_call(tc,
+			e->name.data,e->args.count);
 
-	const char*p=strpbrk(e->name.data,".");
-	if(p){
-		str s=str_def;
-		str_add_list(&s,e->name.data,p-e->name.data);
-		str_add(&s,0);
-
-		const ci_toc_ident*id=ci_toc_find_ident(tc,s.data);
-		if(!id){
-			printf("<file> <line:col> identifier not found: %s\n",
-					s.data);
-			exit(1);
-		}
-		printf("%s_%s((%s*)&%s",
-				id->type.data,p+1,
-				id->type.data,s.data);
-		if(e->args.count){
-			printf(",");
-		}
-	}else{
-		printf("%s",e->name.data);
-		printf("(");
-	}
-	dynp_foac(&e->args,{
-		ci_expr*a=(ci_expr*)o;
+	for(unsigned i=0;i<e->args.count;i++){
+		ci_expr*a=(ci_expr*)dynp_get(&e->args,i);
 		a->compile(a,tc);
 		if(i!=e->args.count-1){
 			printf(",");
 		}
-	});
+	}
 	printf(")");
 }
 

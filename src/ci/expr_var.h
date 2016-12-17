@@ -52,8 +52,15 @@ inline static /*gives*/ci_expr_var*ci_expr_var_next(
 	e->super.type/*takes*/=type;
 	token tk=token_next(pp);
 	token_setz(&tk,&e->name);
+
+	if(!strcmp("o",e->name.data)){
+		printf("\n\n<file> <line:col> identifier 'o' is reserved");
+		exit(1);
+	}
+
 	bool is_var=!strcmp(e->super.type.data,"var")||
 			!strcmp(e->super.type.data,"auto");
+
 	if(**pp=='='){
 		(*pp)++;
 		ci_expr_assign_parse(&e->initval,pp,tc,/*shares*/e->name);

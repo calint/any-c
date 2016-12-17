@@ -86,3 +86,70 @@ inline static void ci_toc_pop_scope(ci_toc*o){
 	ci_toc_scope_free(s);
 	o->scopes.count--;//? pop
 }
+
+
+inline static void ci_toc_print_resolved_identifier_for_assignment(
+		ci_toc*tc,const char*id){
+
+	const char*p=strpbrk(id,".");
+	if(p){
+		str sid=str_def;
+		str_add_list(&sid,id,p-id);
+		str_add(&sid,0);
+
+		const ci_toc_ident*i=ci_toc_find_ident(tc,sid.data);
+		if(!i){
+			printf("<file> <line:col> identifier '%s' not found\n",id);
+			exit(1);
+		}
+		const char scopetype=ci_toc_find_ident_scope_type(tc,sid.data);
+		if(scopetype){
+			if(scopetype=='c'){// class member
+				printf("o->%s",id);
+			}else{// local identifier
+				printf("%s",id);
+			}
+			printf("=");
+			return;
+		}
+	}
+//	const ci_toc_ident*i=ci_toc_find_ident(tc,id);
+	const char scopetype=ci_toc_find_ident_scope_type(tc,id);
+	if(scopetype=='c'){// class member
+		printf("o->%s=",id);
+		return;
+	}
+	if(scopetype){// local identifier
+		printf("%s=",id);
+		return;
+	}
+
+	printf("<file> <line:col> could not find identifier: %s\n",id);
+	exit(1);
+}
+
+inline static void ci_toc_print_resolved_function_identifier_call(
+		ci_toc*tc,const char*id,unsigned argcount){
+
+	const char*p=strpbrk(id,".");
+	if(p){
+		str sid=str_def;
+		str_add_list(&sid,id,p-id);
+		str_add(&sid,0);
+
+		const ci_toc_ident*i=ci_toc_find_ident(tc,sid.data);
+		if(!i){
+			printf("<file> <line:col> identifier not found: %s\n",sid.data);
+			exit(1);
+		}
+		printf("%s_%s((%s*)&%s",
+				i->type.data,p+1,
+				i->type.data,sid.data);
+		if(argcount){
+			printf(",");
+		}
+	}else{
+		printf("%s(",id);
+	}
+
+}

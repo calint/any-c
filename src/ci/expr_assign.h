@@ -17,60 +17,8 @@ inline static void _ci_expr_assign_free_(struct ci_expr*oo){
 
 inline static void _ci_expr_assign_compile_(const ci_expr*oo,ci_toc*tc){
 	ci_expr_assign*o=(ci_expr_assign*)oo;
-
-	const char*p=strpbrk(o->name.data,".");
-	if(p){
-		str s=str_def;
-		str_add_list(&s,o->name.data,p-o->name.data);
-		str_add(&s,0);
-
-		const ci_toc_ident*id=ci_toc_find_ident(tc,s.data);
-		if(!id){
-			printf("<file> <line:col> identifier '%s' not found\n",s.data);
-			exit(1);
-		}
-		const char scopetype=ci_toc_find_ident_scope_type(tc,s.data);
-		if(scopetype){
-			if(scopetype=='c'){// class member
-				printf("%s->%s",s.data,o->name.data);
-			}else{// local identifier
-				printf("%s",o->name.data);
-			}
-			printf("=");
-			o->expr->compile(o->expr,tc);
-//			printf(";\n");
-			return;
-		}
-	}
-
-
-
-	const char idtype=ci_toc_find_ident_scope_type(tc,o->name.data);
-	if(idtype=='c'){// class member
-		printf("o->%s=",o->name.data);
-		o->expr->compile(o->expr,tc);
-//		printf(";\n");
-		return;
-	}
-	if(idtype){// local identifier
-		printf("%s=",o->name.data);
-		o->expr->compile(o->expr,tc);
-		return;
-	}
-//	// constant
-//	char* endptr;
-//	strtol(o->name.data,&endptr,10);
-//	if(*endptr!=0){
-//		// not end of string
-//		printf("\n\n<file> <line:col> '%s' is not found and could not "
-//				"be parsed to a number\n\n",o->name.data);
-//		exit(1);
-//
-//	}
-//	str_setz(&o->super.type,"int");
-	printf("%s=",o->name.data);
-	o->expr->compile((ci_expr*)o,tc);
-	printf(";\n");
+	ci_toc_print_resolved_identifier_for_assignment(tc,o->name.data);
+	o->expr->compile((ci_expr*)o->expr,tc);
 }
 
 #define ci_expr_assign_def (ci_expr_assign){\

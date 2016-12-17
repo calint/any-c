@@ -22,42 +22,36 @@ inline static void _ci_expr_ident_free_(struct ci_expr*oo){
 inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 	const ci_expr_ident*o=(ci_expr_ident*)oo;
 
-	// constant
-
-	// string or character
+	// test string or charachter
 	if(o->name.data[0]=='"' || o->name.data[0]=='\''){
 		printf("%s",o->name.data);
 		return;
 	}
-
-	// boolean
+	// test boolean
 	if(!strcmp("true",o->name.data)){
 		printf("true");
 		return;
 	}
-
 	if(!strcmp("false",o->name.data)){
 		printf("false");
 		return;
 	}
 
+	// test number
 	char*endptr;
-
-	// float
+	//   float
 	strtof(o->name.data,&endptr);
 	if(*endptr=='f' && endptr!=o->name.data){
 		printf("%s",o->name.data);
 		return;
 	}
-
-	// int
+	//   int
 	strtol(o->name.data,&endptr,10);
 	if(endptr==o->name.data+o->name.count-1){
 		printf("%s",o->name.data);
 		return;
 	}
-
-	// hex
+	//   hex or binary
 	if(o->name.count>1){
 		if((o->name.data[0]=='0' && o->name.data[1]=='x')){
 			strtol(o->name.data+2,&endptr,16);
@@ -75,9 +69,9 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 		}
 	}
 
-
+	// identifier ie  p.member  vs  localvar;
 	const char*p=strpbrk(o->name.data,".");
-	if(p){
+	if(p){// p.member
 		str s=str_def;
 		str_add_list(&s,o->name.data,p-o->name.data);
 		str_add(&s,0);
@@ -93,7 +87,7 @@ inline static void _ci_expr_ident_compile_(const ci_expr*oo,ci_toc*tc){
 			if(o->incdecbits&2)printf("--");
 			return;
 		}
-	}else{
+	}else{// localvar or member
 		const char idtype=ci_toc_find_ident_scope_type(tc,o->name.data);
 		if(idtype=='c'){// class member
 			printf("o->%s",o->name.data);
