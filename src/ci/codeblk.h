@@ -39,23 +39,27 @@ inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
 	if(**pp=='{'){
 		(*pp)++;
 		o->is_encaps=1;
-	}
-	while(1){
-		xexpr*e=toc_read_next_xexpr(pp,tc);
-		if(xexpr_is_empty(e)){
-			break;
+		while(1){
+			xexpr*e=toc_read_next_xexpr(pp,tc);
+			if(xexpr_is_empty(e))
+				break;
+			dynp_add(&o->exprs,e);
+			if(**pp==';'){
+				(*pp)++;
+				continue;
+			}
 		}
-		dynp_add(&o->exprs,e);
-		if(**pp==';'){
-			(*pp)++;
-			continue;
-		}
-	}
-	if(o->is_encaps){
 		if(**pp!='}'){
 			printf("<file> <line:col> expected '}' to end block\n");
 			exit(1);
 		}
+		(*pp)++;
+		toc_pop_scope(tc);
+		return;
+	}
+	xexpr*e=toc_read_next_xexpr(pp,tc);
+	dynp_add(&o->exprs,e);
+	if(**pp==';'){
 		(*pp)++;
 	}
 	toc_pop_scope(tc);
