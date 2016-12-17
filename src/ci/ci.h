@@ -3,15 +3,12 @@
 #include"../lib.h"
 #include "codeblk.h"
 #include "type.h"
-#include "xbreak.h"
 #include "xcall.h"
 #include "xident.h"
 #include "xife.h"
 #include "xloop.h"
-#include "xset.h"
 #include "xvar.h"
 #include"toc.h"
-#include "xcont.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
 	for(unsigned i=0;i<o->types.count;i++){
