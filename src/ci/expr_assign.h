@@ -3,33 +3,33 @@
 #include "expr.h"
 #include "toc.h"
 
-typedef struct ci_expr_assign{
+typedef struct xassign{
 	ci_expr super;
 	str name;
 	ci_expr*expr;
-}ci_expr_assign;
+}xassign;
 
-inline static void _ci_expr_assign_free_(struct ci_expr*oo){
+inline static void _xassign_free_(struct ci_expr*oo){
 //	ci_expr_assign*o=(ci_expr_assign*)oo;
 //	str_free(&o->name);
 //	ci_expr_free(o->expr);
 }
 
-inline static void _ci_expr_assign_compile_(const ci_expr*oo,toc*tc){
-	ci_expr_assign*o=(ci_expr_assign*)oo;
+inline static void _xassign_compile_(const ci_expr*oo,toc*tc){
+	xassign*o=(xassign*)oo;
 	_ci_toc_print_resolved_identifier_for_assignment(tc,
 			o->name.data,o->expr->type.data);
 
 	o->expr->compile((ci_expr*)o->expr,tc);
 }
 
-#define ci_expr_assign_def (ci_expr_assign){\
-	{str_def,_ci_expr_assign_compile_,_ci_expr_assign_free_},str_def,0}
+#define ci_expr_assign_def (xassign){\
+	{str_def,_xassign_compile_,_xassign_free_},str_def,0}
 
-inline static/*gives*/ci_expr_assign*ci_expr_assign_next(
+inline static/*gives*/xassign*xassign_next(
 		const char**pp,toc*tc,/*takes*/str name){
 
-	ci_expr_assign*e=malloc(sizeof(ci_expr_assign));
+	xassign*e=malloc(sizeof(xassign));
 	*e=ci_expr_assign_def;
 	e->name=/*gives*/name;
 	e->expr=toc_next_expr_from_pp(pp,tc);
@@ -37,7 +37,7 @@ inline static/*gives*/ci_expr_assign*ci_expr_assign_next(
 	return e;
 }
 
-inline static void ci_expr_assign_parse(ci_expr_assign*o,
+inline static void xassign_parse(xassign*o,
 		const char**pp,toc*tc,/*takes*/str name){
 
 	o->name=/*gives*/name;

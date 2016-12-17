@@ -7,13 +7,13 @@
 typedef struct ci_expr_var{
 	ci_expr super;
 	str name;
-	ci_expr_assign initval;
+	xassign initval;
 }ci_expr_var;
 
 inline static void _ci_expr_var_free_(ci_expr*oo){
 	ci_expr_var*o=(ci_expr_var*)oo;
 	str_free(&o->name);
-	_ci_expr_assign_free_((ci_expr*)&o->initval);
+	_xassign_free_((ci_expr*)&o->initval);
 }
 
 inline static void _ci_expr_var_compile_(const ci_expr*oo,toc*tc){
@@ -30,7 +30,7 @@ inline static void _ci_expr_var_compile_(const ci_expr*oo,toc*tc){
 
 	printf("%s ",o->super.type.data);
 	if(o->initval.super.compile){
-		_ci_expr_assign_compile_((ci_expr*)&o->initval,tc);
+		_xassign_compile_((ci_expr*)&o->initval,tc);
 	}else{
 		printf("%s=%s_def",o->name.data,o->super.type.data);
 	}
@@ -59,7 +59,7 @@ inline static /*gives*/ci_expr_var*ci_expr_var_next(
 
 	if(**pp=='='){
 		(*pp)++;
-		ci_expr_assign_parse(&e->initval,pp,tc,/*shares*/e->name);
+		xassign_parse(&e->initval,pp,tc,/*shares*/e->name);
 		if(is_var){
 			e->super.type=e->initval.super.type;
 		}else{

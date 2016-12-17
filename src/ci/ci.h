@@ -268,7 +268,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	if(**pp=='='){// assignment
 		(*pp)++;
 		if(**pp!='='){
-			ci_expr_assign*e=/*takes*/ci_expr_assign_next(pp,tc,/*gives*/name);
+			xassign*e=/*takes*/xassign_next(pp,tc,/*gives*/name);
 			return(ci_expr*)e;
 		}
 		(*pp)--;
