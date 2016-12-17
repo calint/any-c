@@ -9,5 +9,6 @@ cd qa &&
 ./do-test 4 &&
 ./do-test 5 &&
 ./do-test 6 &&
+./do-test 7 &&
 date &&
 echo done. ok
