@@ -10,9 +10,9 @@ typedef struct ci_expr_assign{
 }ci_expr_assign;
 
 inline static void _ci_expr_assign_free_(struct ci_expr*oo){
-	ci_expr_assign*o=(ci_expr_assign*)oo;
+//	ci_expr_assign*o=(ci_expr_assign*)oo;
 //	str_free(&o->name);
-	ci_expr_free(o->expr);
+//	ci_expr_free(o->expr);
 }
 
 inline static void _ci_expr_assign_compile_(const ci_expr*oo,ci_toc*tc){

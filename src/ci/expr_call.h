@@ -31,16 +31,16 @@ inline static void _ci_expr_call_compile_(const ci_expr*o,ci_toc*tc){
 	str_def,dynp_def}
 
 inline static void ci_expr_call_free(ci_expr*o){
-	ci_expr_call*oo=(ci_expr_call*)o;
-	ci_expr_free(&oo->super);
-	dynp_foa(&oo->args,{
-			ci_expr*e=(ci_expr*)o;
-			if(e->free)
-				e->free(e);
-			else
-				ci_expr_free(e);
-	});
-	free(o);
+//	ci_expr_call*oo=(ci_expr_call*)o;
+//	ci_expr_free(&oo->super);
+//	for(unsigned i=0;i<oo->args.count;i++){
+//		ci_expr*e=(ci_expr*)dynp_get(&oo->args,i);
+//		if(e->free)
+//			e->free(e);
+//		else
+//			ci_expr_free(e);
+//	}
+//	free(o);
 }
 
 inline static ci_expr_call*ci_expr_call_next(

@@ -1,10 +1,25 @@
-type{var i=0}
-object{type}
-player{object}
+player{
+	int c=2
+	print{
+		printf(" player: %d\n",c);
+	}
+}
+
 global{
-	main(int i,char**c){
-		player p
-		p.object.type.i=3
-		printf("3=%d\n",p.object.type)
+	void main(int argc,char** arga){
+		player p1
+		player p2
+		p1.print()
+		p2.print()
+		
+		p1.c=1
+		p2.c=p1.c
+		p1.print()
+		p2.print()
+		
+		
+		p2.c=4
+		p1.print()
+		p2.print()
 	}
 }

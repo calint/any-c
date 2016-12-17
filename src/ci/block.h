@@ -12,15 +12,15 @@ typedef struct ci_block{
 }ci_block;
 
 inline static void _ci_block_free_(ci_expr*oo){
-	ci_block*o=(ci_block*)oo;
-	dynp_foa(&o->exprs,{
-		ci_expr*oo=(ci_expr*)o;
-		if(oo->free)
-			oo->free(oo);
-		else
-			ci_expr_free(oo);
-	});
-	dynp_free(&o->exprs);
+//	ci_block*o=(ci_block*)oo;
+//	for(unsigned i=0;i<o->exprs.count;i++){
+//		ci_expr*e=(ci_expr*)dynp_get(&o->exprs,i);
+//		if(e->free)
+//			e->free(e);
+//		else
+//			ci_expr_free(e);
+//	}
+//	dynp_free(&o->exprs);
 }
 
 inline static void toc_indent_for_source(ci_toc*tc){

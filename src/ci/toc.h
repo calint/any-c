@@ -8,12 +8,15 @@ typedef struct ci_toc{
 
 #define ci_toc_def {dynp_def}
 
-inline static void ci_toc_free(ci_toc*o){
-	dynp_foa(&o->scopes,{free(o);});
-	dynp_free(&o->scopes);
-	free(o);
-}
-
+//inline static void ci_toc_free(ci_toc*o){
+//	for(unsigned i=0;i<o->scopes.count;i++){
+//
+//	}
+//	dynp_foa(&o->scopes,{free(o);});
+//	dynp_free(&o->scopes);
+//	free(o);
+//}
+//
 typedef struct ci_toc_scope{
 	char type;
 	const char*name;
@@ -42,16 +45,35 @@ inline static void ci_toc_push_scope(ci_toc*o,char type,const char*name){
 	dynp_add(&o->scopes,s);
 
 //	printf("//");
-//	dynp_foa(&o->scopes,{
-//			ci_toc_scope*s=(ci_toc_scope*)o;
+//	for(unsigned i=0;i<o->scopes.count;i++){
+//			ci_toc_scope*s=(ci_toc_scope*)dynp_get(&o->scopes,i);
 //			printf(" %s :: ",s->name);
-//	});
+//	}
 //	printf("\n");
 }
 
-inline static void ci_toc_add_ident(ci_toc*o,ci_toc_ident*i){
+inline static void ci_toc_print(ci_toc*o){
+	for(unsigned j=0;j<o->scopes.count;j++){
+		ci_toc_scope*s=dynp_get(&o->scopes,j);
+		printf("%c %s\n",s->type,s->name);
+		for(unsigned i=0;i<s->idents.count;i++){
+			ci_toc_ident*id=(ci_toc_ident*)dynp_get(&s->idents,i);
+			for(unsigned k=0;k<=j;k++){
+				printf("    ");
+			}
+			printf("%s %s\n",id->type.data,id->name.data);
+		}
+	}
+}
+
+inline static void ci_toc_add_ident(ci_toc*o,const char*type,const char*name){
+	ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
+	*id=ci_toc_ident_def;
+	str_setz(&id->type,type);
+	str_setz(&id->name,name);
 	ci_toc_scope*s=dynp_get_last(&o->scopes);
-	dynp_add(&s->idents,i);
+	dynp_add(&s->idents,id);
+//	ci_toc_print(o);
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
 }
 

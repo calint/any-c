@@ -26,11 +26,7 @@ inline static void _ci_expr_var_compile_(const ci_expr*oo,ci_toc*tc){
 		return;
 	}
 
-	ci_toc_ident*id=(ci_toc_ident*)malloc(sizeof(ci_toc_ident));
-	*id=ci_toc_ident_def;
-	str_setz(&id->type,o->super.type.data);
-	str_setz(&id->name,o->name.data);
-	ci_toc_add_ident(tc,id);
+	ci_toc_add_ident(tc,o->super.type.data,o->name.data);
 
 	printf("%s ",o->super.type.data);
 	if(o->initval.super.compile){
