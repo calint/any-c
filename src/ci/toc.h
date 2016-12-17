@@ -1,5 +1,6 @@
 #pragma once
 #include"../lib.h"
+//#include"class.h"
 
 typedef struct ci_toc{
 	dynp/*own ci_toc_scope*/scopes;
@@ -87,9 +88,11 @@ inline static void ci_toc_pop_scope(ci_toc*o){
 	o->scopes.count--;//? pop
 }
 
+inline static bool ci_is_assignable_from(ci_toc*tc,
+		const char*dst,const char*path,const char*src);
 
 inline static void ci_toc_print_resolved_identifier_for_assignment(
-		ci_toc*tc,const char*id){
+		ci_toc*tc,const char*id,const char*type){
 
 	const char*p=strpbrk(id,".");
 	if(p){
@@ -100,6 +103,14 @@ inline static void ci_toc_print_resolved_identifier_for_assignment(
 		const ci_toc_ident*i=ci_toc_find_ident(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
+			exit(1);
+		}
+		if(!ci_is_assignable_from(tc,i->type.data,p+1,type)){
+//			const char*ft=ci_toc_meta_get_first_field_type_for_class_name(tc,
+//					i->type.data);
+
+			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
+					type,i->type.data);
 			exit(1);
 		}
 		const char scopetype=ci_toc_find_ident_scope_type(tc,sid.data);

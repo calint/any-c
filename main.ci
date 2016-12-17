@@ -1,13 +1,10 @@
-type{int i=0}
-
-object{
-	type
-}
-
+type{var i=0}
+object{type}
+player{object}
 global{
 	main(int i,char**c){
-		object o1
-		o1.type.i=3
-		printf("3=%d\n",o1.type.i)
+		player p
+		p.object.type.i=3
+		printf("3=%d\n",p.object.type)
 	}
 }

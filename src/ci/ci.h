@@ -24,6 +24,65 @@ inline static ci_class*ci_find_class_by_name(const char*name){
 	return NULL;
 }
 
+//inline static ci_field*ci_class_find_field_for_name(const ci_class*o,
+//		const char*nm){
+//
+//	for(unsigned i=0;i<o->extends.count;i++){
+//		str*ext=(str*)dynp_get(&o->extends,i);
+//		if(!strcmp(ext->name.data,nm))
+//			return ext
+//	}
+//}
+
+inline static bool ci_is_assignable_from(ci_toc*tc,
+		const char*dst,const char*path,const char*src){
+
+	ci_class*c=ci_find_class_by_name(dst);
+	const char*endptr=path;
+	while(1){
+		const char*p=strpbrk(endptr,".");
+		str ident=str_def;
+		if(p){
+			str_add_list(&ident,endptr,p-endptr);
+			str_add(&ident,0);
+			endptr=p+1;
+		}else{
+			str_add_list(&ident,endptr,strlen(endptr));
+			str_add(&ident,0);
+		}
+
+		if(!c){
+			return !strcmp(dst,src);
+		}
+
+		bool found=false;
+		for(unsigned i=0;i<c->extends.count;i++){
+			str*ext=(str*)dynp_get(&c->extends,i);
+			if(!strcmp(ext->data,ident.data)){
+				c=ci_find_class_by_name(ext->data);
+				found=true;
+				break;
+			}
+		}
+		if(found)continue;
+		for(unsigned i=0;i<c->fields.count;i++){
+			ci_field*fld=(ci_field*)dynp_get(&c->fields,i);
+			if(!strcmp(fld->name.data,ident.data)){
+				c=ci_find_class_by_name(fld->type.data);
+				if(!c){
+					return !strcmp(fld->type.data,src);
+				}
+				found=true;
+				break;
+			}
+		}
+		if(found)continue;
+		printf("<file> <line:col> cannot find '%s' in '%s'\n",
+				path,c->name.data);
+		exit(1);
+	}
+}
+
 
 inline static void ci_init(){}
 
@@ -317,6 +376,13 @@ inline static void _ci_parse_field(const char**pp,ci_toc*tc,ci_class*c,
 		(*pp)++;
 		ci_expr*e=_ci_expr_new_from_pp(pp,tc);
 		f->initval=e;
+		if(strcmp(f->type.data,"var") && !ci_is_assignable_from(tc,
+				f->type.data,f->name.data,e->type.data)){
+
+			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
+					e->type.data,f->type.data);
+			exit(1);
+		}
 		f->type=e->type;//? assert types
 	}
 	if(**pp==';'){
