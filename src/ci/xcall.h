@@ -1,6 +1,5 @@
 #pragma once
 #include"../lib.h"
-#include "expr.h"
 #include "toc.h"
 	inline static /*gives*/xexpr*toc_next_expr_from_pp(
 		const char**pp,toc*tc);
@@ -60,7 +59,7 @@ inline static xcall*xcall_read_next(
 			break;
 		}
 		xexpr*a=toc_next_expr_from_pp(pp,tc);
-		if(expression_is_empty(a)){
+		if(xexpr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			exit(1);
 		}

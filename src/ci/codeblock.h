@@ -1,7 +1,6 @@
 #pragma once
 #include"../lib.h"
-#include "expr.h"
-#include "toc.h"
+#include"toc.h"
 
 inline static /*gives*/xexpr*toc_next_expr_from_pp(
 		const char**pp,toc*o);
@@ -12,18 +11,6 @@ typedef struct codeblock{
 	dynp/*own expr*/exprs;
 	token token_pre_block;
 }codeblock;
-
-inline static void _codeblock_free_(xexpr*oo){
-//	ci_block*o=(ci_block*)oo;
-//	for(unsigned i=0;i<o->exprs.count;i++){
-//		ci_expr*e=(ci_expr*)dynp_get(&o->exprs,i);
-//		if(e->free)
-//			e->free(e);
-//		else
-//			ci_expr_free(e);
-//	}
-//	dynp_free(&o->exprs);
-}
 
 inline static void _codeblock_compile_(const xexpr*oo,toc*tc){
 	codeblock*o=(codeblock*)oo;
@@ -44,20 +31,11 @@ inline static void _codeblock_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
-#define codeblock_def (codeblock){\
-	{str_def,_codeblock_compile_,_codeblock_free_},\
-	0,dynp_def,token_def}
-
-//inline static void ci_expr_ident_free(ci_expr_ident*o){
-//	ci_expression_free(&o->super);
-//	free(o);
-//}
+#define codeblock_def (codeblock){{str_def,_codeblock_compile_,NULL},0,\
+	dynp_def,token_def}
 
 inline static void codeblock_read_next(codeblock*o,const char**pp,toc*tc){
-//	ci_code*c=malloc(sizeof(ci_code));
-//	*o=ci_code_def;
 	token_skip_empty_space(pp);
-//	o->token_pre_block=token_next(pp);//? exclude { from delimiters
 	toc_push_scope(tc,'b',"");
 	if(**pp=='{'){
 		(*pp)++;
@@ -65,7 +43,7 @@ inline static void codeblock_read_next(codeblock*o,const char**pp,toc*tc){
 	}
 	while(1){
 		xexpr*e=toc_next_expr_from_pp(pp,tc);
-		if(expression_is_empty(e)){
+		if(xexpr_is_empty(e)){
 			break;
 		}
 		dynp_add(&o->exprs,e);
@@ -73,8 +51,6 @@ inline static void codeblock_read_next(codeblock*o,const char**pp,toc*tc){
 			(*pp)++;
 			continue;
 		}
-//		printf("<file> <line:col> expected ';'\n");
-//		exit(1);
 	}
 	if(o->is_encaps){
 		if(**pp!='}'){
