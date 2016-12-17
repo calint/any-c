@@ -497,6 +497,7 @@ inline static void toc_compile_to_c(toc*tc){
 		}
 		printf("}\n");
 
+		// functions
 		if(c->funcs.count){
 			_print_right_aligned_comment("funcs");
 			for(unsigned i=0;i<c->funcs.count;i++){

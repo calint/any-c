@@ -5,27 +5,18 @@
 typedef struct xbool{
 	xexpr super;
 
-	// element
+	// leaf
 	bool lh_negate;
-
 	struct xexpr*lh;
-
 	char op;
-
 	bool rh_negate;
-
 	struct xexpr*rh;
-
 
 	// list
 	str bool_op_list;
-
-	dynp/*owns &expr_bool*/bool_list;
-
+	dynp bool_list;
 	bool is_encapsulated;
-
 	bool is_negated;
-
 }xbool;
 
 inline static void _xbool_compile_(const xexpr*oo,toc*tc){

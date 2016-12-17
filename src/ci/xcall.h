@@ -7,7 +7,7 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(const char**pp,toc*tc);
 typedef struct xcall{
 	xexpr super;
 	str name;
-	dynp/*owns ci_expression*/args;
+	dynp args;
 }xcall;
 
 inline static void _xcall_compile_(const xexpr*o,toc*tc){

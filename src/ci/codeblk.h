@@ -15,10 +15,11 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 	codeblk*o=(codeblk*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->super.bits&1){
-		printf("{\n");
-	}else{
-		printf("\n");
+		printf("{");
 	}
+	if(o->exprs.count)
+		printf("\n");
+
 	for(unsigned i=0;i<o->exprs.count;i++){
 		xexpr*e=dynp_get(&o->exprs,i);
 		toc_indent_for_compile(tc);
@@ -33,6 +34,8 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 		toc_indent_for_compile(tc);
 		printf("}");
 	}
+	if(!o->exprs.count)
+		printf("\n");
 }
 
 inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){

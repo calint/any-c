@@ -28,9 +28,9 @@ typedef struct func{
 
 typedef struct type{
 	str name;
-	dynp/*owns str*/extends;
-	dynp/*owns field*/fields;
-	dynp/*owns func*/funcs;
+	dynp extends;
+	dynp fields;
+	dynp funcs;
 }type;
 
 #define type_def (type){str_def,dynp_def,dynp_def,dynp_def}

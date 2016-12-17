@@ -1,8 +1,5 @@
 global{
-	int main(int argc,char** arga){
-		if(argc==1 && argc=0)
-			break
-		else
-			continue
-	}	
+	main{
+		printf("hello world")
+	}
 }
