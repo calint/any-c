@@ -344,7 +344,7 @@ inline static void toc_parse_field(toc*tc,type*c,token*type,token*name){
 					e->type.data,f->type.data);
 			longjmp(_jmpbufenv,1);
 		}
-		f->type=e->type;//? assert types
+		f->type=e->type;
 	}
 	if(*tc->srcp==';'){
 		tc->srcp++;

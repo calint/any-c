@@ -20,11 +20,11 @@ typedef struct funcarg{
 typedef struct func{
 	str type;
 	str name;
-	dynp args;//owns arg*
-	codeblk code;
+	dynp args;
+	code code;
 }func;
 
-#define func_def (func){str_def,str_def,dynp_def,codeblk_def}
+#define func_def (func){str_def,str_def,dynp_def,code_def}
 
 typedef struct type{
 	str name;

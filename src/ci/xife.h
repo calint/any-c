@@ -7,7 +7,7 @@
 typedef struct xif{
 	xexpr super;
 	xbool cond;
-	codeblk code;
+	code code;
 }xif;
 
 inline static void _xif_compile_(const xexpr*oo,toc*tc){
@@ -15,10 +15,10 @@ inline static void _xif_compile_(const xexpr*oo,toc*tc){
 	printf("if ");
 	_xbool_compile_((xexpr*)&o->cond,tc);
 	printf(" ");
-	_codeblk_compile_((xexpr*)&o->code,tc);
+	_code_compile_((xexpr*)&o->code,tc);
 }
 
-#define xif_def (xif){{_xif_compile_,NULL,str_def,0},xbool_def,codeblk_def}
+#define xif_def (xif){{_xif_compile_,NULL,str_def,0},xbool_def,code_def}
 
 inline static xif*xif_read_next(const char**pp,toc*tc){
 	xif*o=malloc(sizeof(xif));
@@ -31,7 +31,7 @@ inline static xif*xif_read_next(const char**pp,toc*tc){
 typedef struct xife{
 	xexpr super;
 	dynp ifs;
-	codeblk elsecode;
+	code elsecode;
 }xife;
 
 inline static void _xife_compile_(const xexpr*oo,toc*tc){
@@ -52,11 +52,11 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 			toc_indent_for_compile(tc);
 			printf("else ");
 		}
-		_codeblk_compile_((xexpr*)&o->elsecode,tc);
+		_code_compile_((xexpr*)&o->elsecode,tc);
 	}
 }
 
-#define xife_def (xife){{_xife_compile_,NULL,str_def,0},dynp_def,codeblk_def}
+#define xife_def (xife){{_xife_compile_,NULL,str_def,0},dynp_def,code_def}
 
 inline static xife*xife_read_next(toc*tc){
 	xife*o=malloc(sizeof(xife));

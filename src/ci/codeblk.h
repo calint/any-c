@@ -4,15 +4,15 @@
 
 inline static /*gives*/xexpr*toc_read_next_xexpr(toc*o);
 
-typedef struct codeblk{
+typedef struct code{
 	xexpr super;
-	dynp/*own expr*/exprs;
-}codeblk;
+	dynp exprs;
+}code;
 
-#define codeblk_def (codeblk){{_codeblk_compile_,NULL,str_def,1},dynp_def}
+#define code_def (code){{_code_compile_,NULL,str_def,1},dynp_def}
 
-inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
-	codeblk*o=(codeblk*)oo;
+inline static void _code_compile_(const xexpr*oo,toc*tc){
+	code*o=(code*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->super.bits&1){
 		printf("{");
@@ -38,7 +38,7 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 		printf("\n");
 }
 
-inline static void codeblk_read_next(codeblk*o,toc*tc){
+inline static void codeblk_read_next(code*o,toc*tc){
 	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
 	if(*tc->srcp=='{'){
