@@ -4,6 +4,8 @@
 #define true 1
 #define false 0
 
+typedef const char* ccharp;
+
 #include"lib/str.h"
 #include"lib/dynp.h"
 #include"lib/token.h"

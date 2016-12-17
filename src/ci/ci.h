@@ -1,7 +1,7 @@
 #pragma once
 #include <setjmp.h>
 #include"../lib.h"
-#include "codeblk.h"
+#include "code.h"
 #include "type.h"
 #include "xcall.h"
 #include "xident.h"
@@ -10,7 +10,7 @@
 #include "xvar.h"
 #include"toc.h"
 
-inline static type*toc_find_class_by_name(toc*o,const char*name){
+inline static type*toc_find_class_by_name(toc*o,ccharp name){
 	for(unsigned i=0;i<o->types.count;i++){
 		type*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name.data,name)){
@@ -24,13 +24,11 @@ inline static void toc_add_type(toc*o,type*c){
 	dynp_add(&o->types,c);
 }
 
-inline static bool toc_can_assign(toc*tc,
-		const char*dst,const char*path,const char*src){
-
+inline static bool toc_can_assign(toc*tc,ccharp dst,ccharp path,ccharp src){
 	type*c=toc_find_class_by_name(tc,dst);
-	const char*endptr=path;
+	ccharp endptr=path;
 	while(1){
-		const char*p=strpbrk(endptr,".");
+		ccharp p=strpbrk(endptr,".");
 		str ident=str_def;
 		if(p){
 			str_add_list(&ident,endptr,p-endptr);
@@ -69,7 +67,7 @@ inline static void ci_init(){}
 
 inline static void ci_free(){}
 
-inline static str const_str(const char*s){
+inline static str const_str(ccharp s){
 	str st=str_def;
 	st.data=s;
 	st.cap=st.count=strlen(s)+1;
@@ -393,8 +391,8 @@ inline static type*toc_parse_type(toc*tc,token name){
 	return c;
 }
 
-inline static void _print_right_aligned_comment(const char*comment){
-	const char*line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
+inline static void _print_right_aligned_comment(ccharp comment){
+	ccharp line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
 	const int maxlen=strlen(line);
 	const int ln=strlen(comment);
 	int start_at=maxlen-ln-4;
@@ -480,7 +478,7 @@ inline static void toc_compile_to_c(toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
-inline static void toc_compile_file(const char*path){
+inline static void toc_compile_file(ccharp path){
 	int val=setjmp(_jmpbufenv);
 	if(val==1){
 		printf(" * error occured ");

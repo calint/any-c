@@ -5,18 +5,18 @@ typedef struct toc{
 	dynp types;
 	dynp scopes;
 	str src;
-	const char*srcp;
+	ccharp srcp;
 }toc;
 
 #define toc_def {dynp_def,dynp_def,str_def,NULL}
 
-inline static bool toc_can_assign(toc*o,const char*dst,const char*path,
-		const char*src);
+inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,
+		ccharp src);
 
 typedef struct tocscope{
 	char type;
-	const char*name;
-	dynp/*const char**/idents;
+	ccharp name;
+	dynp/*ccharp */idents;
 }tocscope;
 
 #define ci_toc_scope_def (tocscope){0,NULL,dynp_def}
@@ -33,7 +33,7 @@ inline static void toc_scope_free(tocscope*o){
 	free(o);
 }
 
-inline static void toc_push_scope(toc*o,char type,const char*name){
+inline static void toc_push_scope(toc*o,char type,ccharp name){
 	tocscope*s=malloc(sizeof(tocscope));
 	*s=ci_toc_scope_def;
 	s->type=type;
@@ -62,7 +62,7 @@ inline static void toc_print(toc*o){
 	}
 }
 
-inline static void toc_add_ident(toc*o,const char*type,const char*name){
+inline static void toc_add_ident(toc*o,ccharp type,ccharp name){
 	tocdecl*id=(tocdecl*)malloc(sizeof(tocdecl));
 	*id=toctn_def;
 	str_setz(&id->type,type);
@@ -74,7 +74,7 @@ inline static void toc_add_ident(toc*o,const char*type,const char*name){
 }
 
 
-inline static char toc_find_ident_scope_type(toc*oo,const char*name){
+inline static char toc_find_ident_scope_type(toc*oo,ccharp name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
@@ -87,7 +87,7 @@ inline static char toc_find_ident_scope_type(toc*oo,const char*name){
 }
 
 
-inline static const tocdecl*toc_find_ident(toc*oo,const char*name){
+inline static const tocdecl*toc_find_ident(toc*oo,ccharp name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
@@ -107,9 +107,9 @@ inline static void toc_pop_scope(toc*o){
 }
 
 inline static void toc_compile_for_xset(
-		toc*tc,const char*id,const char*type){
+		toc*tc,ccharp id,ccharp type){
 
-	const char*p=strpbrk(id,".");
+	ccharp p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
 		str_add_list(&sid,id,p-id);
@@ -153,9 +153,9 @@ inline static void toc_compile_for_xset(
 }
 
 inline static void toc_compile_for_call(
-		toc*tc,const char*id,unsigned argcount){
+		toc*tc,ccharp id,unsigned argcount){
 
-	const char*p=strpbrk(id,".");
+	ccharp p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
 		str_add_list(&sid,id,p-id);
@@ -202,8 +202,8 @@ typedef struct tocloc{
 	unsigned col;
 }tocloc;
 
-inline static tocloc toc_get_line_number_from_pp(toc*o,const char*p){
-	const char*pt=o->src.data;
+inline static tocloc toc_get_line_number_from_pp(toc*o,ccharp p){
+	ccharp pt=o->src.data;
 	int line=1,col=1;
 	if(pt>p){
 		//? sanity check

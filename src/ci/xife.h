@@ -1,6 +1,6 @@
 #pragma once
 #include"../lib.h"
-#include "codeblk.h"
+#include "code.h"
 #include "toc.h"
 #include "xbool.h"
 
@@ -20,7 +20,7 @@ inline static void _xif_compile_(const xexpr*oo,toc*tc){
 
 #define xif_def (xif){{_xif_compile_,NULL,str_def,0},xbool_def,code_def}
 
-inline static xif*xif_read_next(const char**pp,toc*tc){
+inline static xif*xif_read_next(ccharp *pp,toc*tc){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
 	xbool_parse(&o->cond,tc);
