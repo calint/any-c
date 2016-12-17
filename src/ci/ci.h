@@ -2,15 +2,15 @@
 #include"../lib.h"
 #include "block.h"
 #include "expr.h"
-#include "expr_call.h"
 #include "expr_ident.h"
 #include "expr_loop.h"
-#include "expr_break.h"
-#include "expr_continue.h"
 #include "expr_var.h"
 #include "expr_ife.h"
 #include "type.h"
 #include "xassign.h"
+#include "xbreak.h"
+#include "xcall.h"
+#include "xcontinue.h"
 
 inline static type*toc_find_class_by_name(toc*o,const char*name){
 	for(unsigned i=0;i<o->ci_classes.count;i++){
@@ -132,8 +132,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 				if(c=='"')break;
 			}
 			tk.end=tk.content_end=*pp;
-			ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-			*e=ci_expr_ident_def;
+			xident*e=malloc(sizeof(xident));
+			*e=xident_def;
 			str name=str_def;
 			token_setz(&tk,&name);
 			e->name=name;
@@ -149,8 +149,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 			}
 			(*pp)++;
 			tk.end=tk.content_end=*pp;
-			ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-			*e=ci_expr_ident_def;
+			xident*e=malloc(sizeof(xident));
+			*e=xident_def;
 			str name=str_def;
 			token_setz(&tk,&name);
 			e->name=name;
@@ -170,8 +170,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 
 	// boolean
 	if(!strcmp("true",tks.data) || !strcmp("false",tks.data)){
-		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-		*e=ci_expr_ident_def;
+		xident*e=malloc(sizeof(xident));
+		*e=xident_def;
 		e->name=tks;
 		e->super.type=const_str("bool");
 		return(ci_expr*)e;
@@ -182,8 +182,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	// int
 	strtol(tks.data,&endptr,10);
 	if(endptr==tks.data+tks.count-1){
-		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-		*e=ci_expr_ident_def;
+		xident*e=malloc(sizeof(xident));
+		*e=xident_def;
 		e->name=tks;
 		e->super.type=const_str("int");
 		return(ci_expr*)e;
@@ -192,8 +192,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	// float
 	strtof(tks.data,&endptr);
 	if(*endptr=='f' && tks.count>2){
-		ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-		*e=ci_expr_ident_def;
+		xident*e=malloc(sizeof(xident));
+		*e=xident_def;
 		e->name=tks;
 		e->super.type=const_str("float");
 		return(ci_expr*)e;
@@ -206,8 +206,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 		if((tks.data[0]=='0' && tks.data[1]=='x')){
 			strtol(tks.data+2,&endptr,16);
 			if(endptr==tks.data+tks.count-2+1){
-				ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-				*e=ci_expr_ident_def;
+				xident*e=malloc(sizeof(xident));
+				*e=xident_def;
 				e->name=tks;
 				e->super.type=const_str("int");
 				return(ci_expr*)e;
@@ -216,8 +216,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 		if((tks.data[0]=='0' && tks.data[1]=='b')){
 			strtol(tks.data+2,&endptr,2);
 			if(endptr==tks.data+tks.count-2+1){
-				ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-				*e=ci_expr_ident_def;
+				xident*e=malloc(sizeof(xident));
+				*e=xident_def;
 				e->name=tks;
 				e->super.type=const_str("int");
 				return(ci_expr*)e;
@@ -231,12 +231,12 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	}
 
 	if(token_equals(&tk,"break")){
-		ci_expr_break*e=ci_expr_break_next(pp,tc);
+		xbreak*e=xbreak_read_next(pp,tc);
 		return (ci_expr*)e;
 	}
 
 	if(token_equals(&tk,"continue")){
-		ci_expr_continue*e=ci_expr_continue_next(pp,tc);
+		xcontinue*e=xcontinue_read_next(pp,tc);
 		return (ci_expr*)e;
 	}
 
@@ -261,7 +261,7 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 	}
 
 	if(**pp=='('){// function call
-		ci_expr_call*e=ci_expr_call_next(pp,tc,/*gives*/name);
+		xcall*e=xcall_read_next(pp,tc,/*gives*/name);
 		return(ci_expr*)e;
 	}
 
@@ -295,8 +295,8 @@ inline static /*gives*/ci_expr*toc_next_expr_from_pp(
 		}
 	}
 
-	ci_expr_ident*e=malloc(sizeof(ci_expr_ident));
-	*e=ci_expr_ident_def;
+	xident*e=malloc(sizeof(xident));
+	*e=xident_def;
 	e->name=name;
 	e->incdecbits=incdecbits;
 	return(ci_expr*)e;

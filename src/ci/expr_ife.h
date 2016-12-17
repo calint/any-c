@@ -3,8 +3,8 @@
 #include "expr.h"
 #include "toc.h"
 #include"block.h"
-#include "expr_bool.h"
 #include"expr_if.h"
+#include "xbool.h"
 typedef struct ci_expr_ife{
 	ci_expr super;
 	dynp/*own&ci_expr_if*/ifs;

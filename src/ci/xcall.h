@@ -6,14 +6,14 @@
 		const char**pp,toc*tc);
 
 
-typedef struct ci_expr_call{
+typedef struct xcall{
 	ci_expr super;
 	str name;
 	dynp/*owns ci_expression*/args;
-}ci_expr_call;
+}xcall;
 
-inline static void _ci_expr_call_compile_(const ci_expr*o,toc*tc){
-	ci_expr_call*e=(ci_expr_call*)o;
+inline static void _xcall_compile_(const ci_expr*o,toc*tc){
+	xcall*e=(xcall*)o;
 	_ci_toc_print_resolved_function_identifier_call(tc,
 			e->name.data,e->args.count);
 
@@ -27,11 +27,10 @@ inline static void _ci_expr_call_compile_(const ci_expr*o,toc*tc){
 	printf(")");
 }
 
-#define ci_expr_call_def (ci_expr_call){\
-	{str_def,_ci_expr_call_compile_,ci_expr_call_free},\
+#define xcall_def (xcall){{str_def,_xcall_compile_,xexpr_call_free},\
 	str_def,dynp_def}
 
-inline static void ci_expr_call_free(ci_expr*o){
+inline static void xexpr_call_free(ci_expr*o){
 //	ci_expr_call*oo=(ci_expr_call*)o;
 //	ci_expr_free(&oo->super);
 //	for(unsigned i=0;i<oo->args.count;i++){
@@ -44,11 +43,11 @@ inline static void ci_expr_call_free(ci_expr*o){
 //	free(o);
 }
 
-inline static ci_expr_call*ci_expr_call_next(
+inline static xcall*xcall_read_next(
 		const char**pp,toc*tc,str name){
 
-	ci_expr_call*o=malloc(sizeof(ci_expr_call));
-	*o=ci_expr_call_def;
+	xcall*o=malloc(sizeof(xcall));
+	*o=xcall_def;
 	o->name=name;
 	if(**pp!='('){// arguments
 		printf("<file> <line> <col> expected '(' followed by arguments and ')'");

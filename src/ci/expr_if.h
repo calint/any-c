@@ -3,7 +3,7 @@
 #include "expr.h"
 #include "toc.h"
 #include"block.h"
-#include "expr_bool.h"
+#include "xbool.h"
 typedef struct ci_expr_if{
 	ci_expr super;
 	xbool cond;

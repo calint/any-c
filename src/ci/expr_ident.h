@@ -9,18 +9,17 @@ typedef struct ci_expr_ident{
 	ci_expr super;
 	str name;
 	char incdecbits;
-}ci_expr_ident;
+}xident;
 
-inline static void _ci_expr_ident_free_(struct ci_expr*oo){
-	ci_expr_ident*o=(ci_expr_ident*)oo;
+inline static void _xident_free_(struct ci_expr*oo){
+	xident*o=(xident*)oo;
 	ci_expr_free((ci_expr*)o);
 }
 
-#define ci_expr_ident_def (ci_expr_ident){\
-	{str_def,_ci_expr_ident_compile_,_ci_expr_ident_free_},str_def,false}
+#define xident_def (xident){{str_def,_xcompile_,_xident_free_},str_def,false}
 
-inline static void _ci_expr_ident_compile_(const ci_expr*oo,toc*tc){
-	const ci_expr_ident*o=(ci_expr_ident*)oo;
+inline static void _xcompile_(const ci_expr*oo,toc*tc){
+	const xident*o=(xident*)oo;
 
 	// test string or charachter
 	if(o->name.data[0]=='"' || o->name.data[0]=='\''){
