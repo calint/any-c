@@ -32,4 +32,4 @@ typedef struct type{
 	dynp funcs;
 }type;
 
-#define type_def (type){str_def,dynp_def,dynp_def,dynp_def}
+#define type_def (type){str_def,dynp_def,dynp_def}
