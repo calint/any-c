@@ -1,20 +1,19 @@
 #pragma once
 
-typedef struct xcontinue{
+typedef struct xcont{
 	xexpr super;
-}xcontinue;
+}xcont;
 
-inline static void _xcontinue_compile_(const xexpr*oo,toc*tc){
+inline static void _xcont_compile_(const xexpr*oo,toc*tc){
 	printf("continue");
 }
 
-#define xcontinue_def (xcontinue){\
-	{str_def,_xcontinue_compile_,NULL}}
+#define xcont_def (xcont){{str_def,_xcont_compile_,NULL}}
 
-inline static xcontinue*xcontinue_read_next(const char**pp,toc*tc){
+inline static xcont*xcont_read_next(const char**pp,toc*tc){
 	if(**pp==';')
 		(*pp)++;
-	xcontinue*e=malloc(sizeof(xcontinue));
-	*e=xcontinue_def;
+	xcont*e=malloc(sizeof(xcont));
+	*e=xcont_def;
 	return e;
 }

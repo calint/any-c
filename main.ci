@@ -1,5 +1,4 @@
 global{
-	
 	int main(int argc,char** arga){
 		puts("hello")
 		var c=3
