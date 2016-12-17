@@ -2,8 +2,8 @@
 #include"../lib.h"
 #include "block.h"
 #include "expr.h"
-#include "func_arg.h"
 #include"block.h"
+#include "funcarg.h"
 typedef struct ci_func{
 	str type;
 	str name;

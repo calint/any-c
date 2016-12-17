@@ -331,9 +331,9 @@ inline static void toc_parse_func(const char**pp,toc*tc,type*c,
 		if(token_is_empty(&tkt)){
 			break;
 		}
-		ci_func_arg*fa=malloc(sizeof(ci_func_arg));
+		funcarg*fa=malloc(sizeof(funcarg));
 		dynp_add(&f->args,fa);
-		*fa=ci_func_arg_def;
+		*fa=funcarg_def;
 		token tkn=token_next(pp);
 		token_setz(&tkt,&fa->type);
 		token_setz(&tkn,&fa->name);
@@ -631,7 +631,7 @@ inline static void toc_compile_to_c(toc*tc){
 					f->type.data,c->name.data,f->name.data,c->name.data);
 
 			for(unsigned j=0;j<f->args.count;j++){
-				ci_func_arg*a=(ci_func_arg*)dynp_get(&f->args,j);
+				funcarg*a=(funcarg*)dynp_get(&f->args,j);
 				printf(",");
 				printf("%s %s",a->type.data,a->name.data);
 				_ci_toc_add_ident(tc,a->type.data,a->name.data);
