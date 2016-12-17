@@ -132,6 +132,8 @@ inline static token token_next(const char**s){
 		if(*p=='\'')break;
 		if(*p=='+')break;
 		if(*p=='-')break;
+		if(*p=='&')break;
+		if(*p=='|')break;
 		p++;
 	}
 	t.content_end=p;
