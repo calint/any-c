@@ -4,16 +4,16 @@
 #include "toc.h"
 
 inline static /*gives*/ci_expr*toc_next_expr_from_pp(
-		const char**pp,toc*tc);
+		const char**pp,toc*o);
 
-typedef struct ci_block{
+typedef struct codeblock{
 	ci_expr super;
 	int is_encaps;
 	dynp/*own expr*/exprs;
 	token token_pre_block;
-}ci_block;
+}codeblock;
 
-inline static void _ci_block_free_(ci_expr*oo){
+inline static void _codeblock_free_(ci_expr*oo){
 //	ci_block*o=(ci_block*)oo;
 //	for(unsigned i=0;i<o->exprs.count;i++){
 //		ci_expr*e=(ci_expr*)dynp_get(&o->exprs,i);
@@ -25,14 +25,14 @@ inline static void _ci_block_free_(ci_expr*oo){
 //	dynp_free(&o->exprs);
 }
 
-inline static void toc_indent_for_source(toc*tc){
-	for(unsigned i=2;i<tc->scopes.count;i++){
+inline static void toc_indent_for_source(toc*o){
+	for(unsigned i=2;i<o->scopes.count;i++){
 		printf("\t");
 	}
 }
 
-inline static void _ci_block_compile_(const ci_expr*oo,toc*tc){
-	ci_block*o=(ci_block*)oo;
+inline static void _codeblock_compile_(const ci_expr*oo,toc*tc){
+	codeblock*o=(codeblock*)oo;
 	_ci_toc_push_scope(tc,'b',"");
 	if(o->is_encaps){
 		printf("{\n");
@@ -50,7 +50,8 @@ inline static void _ci_block_compile_(const ci_expr*oo,toc*tc){
 	}
 }
 
-#define ci_block_def (ci_block){{str_def,_ci_block_compile_,_ci_block_free_},\
+#define codeblock_def (codeblock){\
+	{str_def,_codeblock_compile_,_codeblock_free_},\
 	0,dynp_def,token_def}
 
 //inline static void ci_expr_ident_free(ci_expr_ident*o){
@@ -58,7 +59,7 @@ inline static void _ci_block_compile_(const ci_expr*oo,toc*tc){
 //	free(o);
 //}
 
-inline static /*gives*/ci_block*ci_block_parse(ci_block*o,const char**pp,toc*tc){
+inline static /*gives*/codeblock*ci_block_parse(codeblock*o,const char**pp,toc*tc){
 //	ci_code*c=malloc(sizeof(ci_code));
 //	*o=ci_code_def;
 	token_skip_empty_space(pp);

@@ -8,7 +8,7 @@
 typedef struct ci_expr_ife{
 	ci_expr super;
 	dynp/*own&ci_expr_if*/ifs;
-	ci_block elsecode;
+	codeblock elsecode;
 }ci_expr_ife;
 
 inline static void _ci_expr_ife_compile_(const ci_expr*oo,toc*tc){
@@ -23,7 +23,7 @@ inline static void _ci_expr_ife_compile_(const ci_expr*oo,toc*tc){
 	}
 	if(o->elsecode.exprs.count){
 		printf(" else ");
-		_ci_block_compile_((ci_expr*)&o->elsecode,tc);
+		_codeblock_compile_((ci_expr*)&o->elsecode,tc);
 	}
 }
 
@@ -33,7 +33,7 @@ inline static void _ci_expr_ife_free_(ci_expr*oo){
 
 #define ci_expr_ife_def (ci_expr_ife){\
 	{str_def,_ci_expr_ife_compile_,_ci_expr_ife_free_},\
-	dynp_def,ci_block_def}
+	dynp_def,codeblock_def}
 
 inline static ci_expr_ife*ci_expr_ife_next(const char**pp,toc*tc){
 	ci_expr_ife*o=malloc(sizeof(ci_expr_ife));

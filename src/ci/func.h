@@ -8,10 +8,10 @@ typedef struct ci_func{
 	str type;
 	str name;
 	dynp/*owns ci_func_arg**/args;
-	ci_block code;
+	codeblock code;
 }ci_func;
 
-#define ci_func_def (ci_func){str_def,str_def,dynp_def,ci_block_def}
+#define ci_func_def (ci_func){str_def,str_def,dynp_def,codeblock_def}
 
 //inline static void ci_func_free(ci_func*o){
 //	dynp_foa(&o->args,{

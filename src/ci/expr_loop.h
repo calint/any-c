@@ -5,12 +5,12 @@
 #include"block.h"
 typedef struct ci_expr_loop{
 	ci_expr super;
-	ci_block code;
+	codeblock code;
 }ci_expr_loop;
 
 inline static void _ci_expr_loop_free_(ci_expr*oo){
 	ci_expr_loop*o=(ci_expr_loop*)oo;
-	_ci_block_free_((ci_expr*)&o->code);
+	_codeblock_free_((ci_expr*)&o->code);
 	ci_expr_free(&o->super);
 }
 
@@ -21,7 +21,7 @@ inline static void _ci_ci_expr_loop_compile_(const ci_expr*oo,toc*tc){
 }
 
 #define ci_expr_loop_def (ci_expr_loop){\
-	{str_def,_ci_ci_expr_loop_compile_,_ci_expr_loop_free_},ci_block_def}
+	{str_def,_ci_ci_expr_loop_compile_,_ci_expr_loop_free_},codeblock_def}
 
 
 inline static ci_expr_loop*ci_expr_loop_next(const char**pp,toc*tc){
