@@ -6,14 +6,15 @@ inline static /*gives*/xexpr*toc_read_next_xexpr(const char**pp,toc*o);
 
 typedef struct codeblk{
 	xexpr super;
-	bool is_encaps;
 	dynp/*own expr*/exprs;
 }codeblk;
+
+#define codeblk_def (codeblk){{_codeblk_compile_,NULL,str_def,1},dynp_def}
 
 inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 	codeblk*o=(codeblk*)oo;
 	toc_push_scope(tc,'b',"");
-	if(o->is_encaps){
+	if(o->super.bits&1){
 		printf("{\n");
 	}else{
 		printf("\n");
@@ -22,23 +23,25 @@ inline static void _codeblk_compile_(const xexpr*oo,toc*tc){
 		xexpr*e=dynp_get(&o->exprs,i);
 		toc_indent_for_compile(tc);
 		e->compile(e,tc);
-		printf(";\n");//? e->is_block
+		if(!(e->bits&1))
+			printf(";");
+		else
+			printf("***");
+		printf("\n");
 	}
 	toc_pop_scope(tc);
-	if(o->is_encaps){
+	if(o->super.bits&1){
 		toc_indent_for_compile(tc);
 		printf("}");
 	}
 }
-
-#define codeblk_def (codeblk){{_codeblk_compile_,NULL,str_def,0},0,dynp_def}
 
 inline static void codeblk_read_next(codeblk*o,const char**pp,toc*tc){
 	token_skip_empty_space(pp);
 	toc_push_scope(tc,'b',"");
 	if(**pp=='{'){
 		(*pp)++;
-		o->is_encaps=1;
+		o->super.bits|=1;
 		while(1){
 			xexpr*e=toc_read_next_xexpr(pp,tc);
 			if(xexpr_is_empty(e))
