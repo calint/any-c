@@ -10,6 +10,7 @@
 #include "xvar.h"
 #include"toc.h"
 #include"xconst.h"
+#include"xexpls.h"
 
 inline static type*toc_get_type_by_name(toc*o,ccharp name){
 	for(unsigned i=0;i<o->types.count;i++){
@@ -186,6 +187,10 @@ inline static bool toc_can_assign(toc*tc,
 inline static void ci_init(){}
 
 inline static void ci_free(){}
+
+inline static xexpls*toc_read_next_xexpls(toc*tc,token tk){
+	return xexpls_read_next(tc,tk);
+}
 
 inline static xexpr*toc_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
@@ -380,6 +385,206 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			incdecbits|=2;
 		}else{
 			tc->srcp--;
+			tc->srcp--;
+		}
+	}
+
+	xident*e=malloc(sizeof(xident));
+	*e=xident_def;
+	e->name=name;
+	e->super.token=tk;
+	e->incdecbits=incdecbits;
+	e->super.type=const_str(toc_get_type_for_accessor(tc,e->name.data,tk));
+	return(xexpr*)e;
+}
+
+inline static xexpr*toc_read_next_expression(toc*tc){
+	token tk=toc_next_token(tc);
+	if(token_is_empty(&tk)){
+		if(toc_is_char_take(tc,'"')){ // string
+			while(1){
+				const char c=*tc->srcp;
+				if(c==0){
+					printf("<file> <line:col> did not find the "
+							" end of string\n");
+					longjmp(_jmpbufenv,1);
+				}
+				if(c=='\n'){
+					printf("<file> <line:col> did not find the "
+							" end of string on the same line\n");
+					longjmp(_jmpbufenv,1);
+				}
+				tc->srcp++;
+				if(c=='\\'){
+					tc->srcp++;
+					continue;
+				}
+				if(c=='"')break;
+			}
+			tk.end=tk.content_end=tc->srcp;
+
+			xconst*e=malloc(sizeof(xconst));
+			*e=xconst_def;
+			e->super.token=tk;
+			token_setz(&tk,&e->name);
+			e->super.type=str_from_string("ccharp");
+			return(xexpr*)e;
+
+		}else if(toc_is_char_take(tc,'\'')){
+			toc_srcp_inc(tc);
+			if(*tc->srcp!='\''){
+				toc_print_source_location(tc,tk,4);
+				printf("expected a character, example 'a'");
+				printf("\n    %s %d",__FILE__,__LINE__);
+				longjmp(_jmpbufenv,1);
+			}
+			toc_srcp_inc(tc);
+			tk.end=tk.content_end=tc->srcp;
+
+			xconst*e=malloc(sizeof(xconst));
+			*e=xconst_def;
+			e->super.token=tk;
+			token_setz(&tk,&e->name);
+			e->super.type=str_from_string("char");
+			return(xexpr*)e;
+
+		}else{
+			xexpr*e=malloc(sizeof(xexpr));
+			*e=xexpr_def;
+			return e;
+		}
+	}
+
+	// constant
+	str tks=str_def;
+	token_setz(&tk,&tks);
+
+	// boolean
+	if(!strcmp("true",tks.data) || !strcmp("false",tks.data)){
+		xconst*e=malloc(sizeof(xconst));
+		*e=xconst_def;
+		e->super.token=tk;
+		e->name=tks;
+		e->super.type=const_str("bool");
+		return(xexpr*)e;
+	}
+
+	// int
+	char*endptr;strtol(tks.data,&endptr,10);
+	if(endptr==tks.data+tks.count-1){
+		xconst*e=malloc(sizeof(xconst));
+		*e=xconst_def;
+		e->super.token=tk;
+		e->name=tks;
+		e->super.type=const_str("int");
+		return(xexpr*)e;
+	}
+
+	// float
+	strtof(tks.data,&endptr);
+	if(*endptr=='f' && tks.count>2){
+		xconst*e=malloc(sizeof(xconst));
+		*e=xconst_def;
+		e->super.token=tk;
+		e->name=tks;
+		e->super.type=const_str("float");
+		return(xexpr*)e;
+	}
+
+	// hex
+	if(tks.count>1){
+		if((tks.data[0]=='0' && tks.data[1]=='x')){
+			strtol(tks.data+2,&endptr,16);
+			if(endptr==tks.data+tks.count-2+1){
+				xconst*e=malloc(sizeof(xconst));
+				*e=xconst_def;
+				e->super.token=tk;
+				e->name=tks;
+				e->super.type=const_str("int");
+				return(xexpr*)e;
+			}
+		}
+		if((tks.data[0]=='0' && tks.data[1]=='b')){
+			strtol(tks.data+2,&endptr,2);
+			if(endptr==tks.data+tks.count-2+1){
+				xconst*e=malloc(sizeof(xconst));
+				*e=xconst_def;
+				e->super.token=tk;
+				e->name=tks;
+				e->super.type=const_str("int");
+				return(xexpr*)e;
+			}
+		}
+	}
+//
+//	// keywords
+//	if(token_equals(&tk,"loop")){
+//		xloop*e=xloop_read_next(tc);
+//		e->super.token=tk;
+//		return (xexpr*)e;
+//	}
+//
+//	if(token_equals(&tk,"break")){
+//		xbreak*e=xbreak_read_next(tc);
+//		e->super.token=tk;
+//		return (xexpr*)e;
+//	}
+//
+//	if(token_equals(&tk,"continue")){
+//		xcont*e=xcont_read_next(tc,tk);
+//		return (xexpr*)e;
+//	}
+//
+//	if(token_equals(&tk,"if")){
+//		xife*e=xife_read_next(tc,tk);
+//		return (xexpr*)e;
+//	}
+
+	// built in types
+	str name=str_def;
+	token_setz(&tk,&name);
+//	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
+//			token_equals(&tk,"bool")||token_equals(&tk,"char")||
+//			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
+//		xvar*e=xvar_read_next(tc,name);
+//		return(xexpr*)e;
+//	}
+
+	//  class instance
+//	type*c=toc_get_type_by_name(tc,name.data);
+//	if(c){// instantiate
+//		xvar*e=xvar_read_next(tc,name);
+//		return(xexpr*)e;
+//	}
+
+	// function call
+	if(*tc->srcp=='('){
+		xcall*e=xcall_read_next(tc,/*gives*/name);
+		e->super.token=tk;
+		return(xexpr*)e;
+	}
+
+	// assignment
+//	if(*tc->srcp=='='){
+//		tc->srcp++;
+//		if(*tc->srcp!='='){
+//			xset*e=xset_read_next(tc,name,tk);
+//			return(xexpr*)e;
+//		}
+//		tc->srcp--;
+//	}
+
+	char incdecbits=0;
+	if(toc_is_char_take(tc,'+')){
+		if(toc_is_char_take(tc,'+')){
+			incdecbits|=1;
+		}else{
+			tc->srcp--;
+		}
+	}else if(toc_is_char_take(tc,'-')){
+		if(toc_is_char_take(tc,'-')){
+			incdecbits|=2;
+		}else{
 			tc->srcp--;
 		}
 	}

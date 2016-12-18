@@ -1,10 +1,16 @@
 #pragma once
 #include <setjmp.h>
-#define bool char
-#define true 1
-#define false 0
 
-typedef const char* ccharp;
+#define int_def 0
+#define char_def 0
+#define float_def 0.0f
+
+#define bool char
+#define false 0
+#define bool_def false
+#define true 1
+
+#define ccharp const char*
 #define ccharp_def ""
 
 #include"lib/str.h"
