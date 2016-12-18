@@ -1,4 +1,5 @@
 #/bin/sh
+exit 2
 date &&
 cd .. &&
 ./make.sh &&
