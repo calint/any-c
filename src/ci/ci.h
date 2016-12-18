@@ -125,7 +125,7 @@ inline static void toc_assert_can_set(toc*tc,
 			if(!strcmp(current_class_name,settype))
 				return;
 
-	if(!strcmp(settype,current_type->name.data))
+	if(!strcmp(settype,current_class_name))
 		return;
 
 	toc_print_source_location(tc,tk,4);
