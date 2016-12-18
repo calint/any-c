@@ -1,5 +1,5 @@
-Sun Dec 18 13:53:36 ICT 2016
--rwxr-xr-x 1 c c 60048 Dec 18 13:53 [0m[01;32many-c[0m
+Sun Dec 18 21:36:12 ICT 2016
+-rwxr-xr-x 1 c c 60304 Dec 18 21:36 [0m[01;32many-c[0m
 1 : ok
 2 : ok
 3 : ok
@@ -10,4 +10,6 @@ Sun Dec 18 13:53:36 ICT 2016
 8 : ok
 9 : ok
 10 : ok
-Files cmp and 11.cmp differ
+11 : ok
+Sun Dec 18 21:36:15 ICT 2016
+done. ok

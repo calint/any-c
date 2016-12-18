@@ -262,7 +262,7 @@ typedef struct xexpr{
 #define xexpr_def (xexpr){NULL,NULL,str_def,token_def,0}
 inline static int xexpr_is_empty(const xexpr*o){return o->compile==NULL;}
 inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
-inline static void toc_inc_srcp(toc*o){o->srcp++;}
+inline static void toc_srcp_inc(toc*o){o->srcp++;}
 inline static bool toc_is_srcp(const toc*o,const char ch)
 	{return *o->srcp==ch;}
 inline static bool toc_is_char_take(toc*o,const char ch){
@@ -272,9 +272,9 @@ inline static bool toc_is_char_take(toc*o,const char ch){
 	}
 	return false;
 }
-inline static void toc_skip_optional(toc*o,const char ch){
+inline static void toc_charp_skip_if(toc*o,const char ch){
 	if(toc_is_srcp(o,ch))
-		toc_inc_srcp(o);
+		toc_srcp_inc(o);
 }
 inline static bool xexpr_is_encapsulated(const xexpr*o){return(o->bits&1)==1;}
 inline static void xexpr_set_is_encapsulated(xexpr*o,const bool b){

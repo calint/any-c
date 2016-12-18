@@ -52,7 +52,7 @@ inline static void _xcont_compile_(const xexpr*oo,toc*tc){
 #define xcont_def (xcont){{_xcont_compile_,NULL,str_def,token_def,0}}
 
 inline static xcont*xcont_read_next(toc*tc,token tk){
-	toc_skip_optional(tc,';');
+	toc_charp_skip_if(tc,';');
 	xcont*o=malloc(sizeof(xcont));
 	*o=xcont_def;
 	o->super.token=tk;

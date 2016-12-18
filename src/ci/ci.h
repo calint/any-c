@@ -9,8 +9,9 @@
 #include "xloop.h"
 #include "xvar.h"
 #include"toc.h"
+#include"xconst.h"
 
-inline static type*toc_get_class_by_name(toc*o,ccharp name){
+inline static type*toc_get_type_by_name(toc*o,ccharp name){
 	for(unsigned i=0;i<o->types.count;i++){
 		type*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name.data,name)){
@@ -24,7 +25,9 @@ inline static void toc_add_type(toc*o,type*c){
 	dynp_add(&o->types,c);
 }
 
-inline static ccharp toc_get_type_for_accessor(toc*tc,ccharp accessor,token tk){
+inline static ccharp toc_get_type_for_accessor(toc*tc,
+			ccharp accessor,token tk){
+
 	ccharp current_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration(tc,current_accessor);
 	if(!decl){
@@ -34,7 +37,7 @@ inline static ccharp toc_get_type_for_accessor(toc*tc,ccharp accessor,token tk){
 		longjmp(_jmpbufenv,1);
 	}
 	ccharp current_class_name=decl->type.data;
-	const type*current_type=toc_get_class_by_name(tc,current_class_name);
+	const type*current_type=toc_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
 			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -62,7 +65,7 @@ inline static ccharp toc_get_type_for_accessor(toc*tc,ccharp accessor,token tk){
 				longjmp(_jmpbufenv,1);
 			}
 			current_class_name=fld->type.data;
-			current_type=toc_get_class_by_name(tc,current_class_name);
+			current_type=toc_get_type_by_name(tc,current_class_name);
 			if(!current_type)
 				break;
 		}
@@ -86,7 +89,7 @@ inline static void toc_assert_can_set(toc*tc,
 		return;
 
 	ccharp current_class_name=decl->type.data;
-	const type*current_type=toc_get_class_by_name(tc,current_class_name);
+	const type*current_type=toc_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
 			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -114,7 +117,7 @@ inline static void toc_assert_can_set(toc*tc,
 				longjmp(_jmpbufenv,1);
 			}
 			current_class_name=fld->type.data;
-			current_type=toc_get_class_by_name(tc,current_class_name);
+			current_type=toc_get_type_by_name(tc,current_class_name);
 			if(!current_type)
 				break;
 		}
@@ -142,7 +145,7 @@ inline static bool toc_can_assign(toc*tc,
 		ccharp accessor,
 		ccharp from_typenm){
 
-	type*c=toc_get_class_by_name(tc,to_typenm);
+	type*c=toc_get_type_by_name(tc,to_typenm);
 	ccharp endptr=accessor;
 	while(1){
 		ccharp p=strpbrk(endptr,".");
@@ -163,7 +166,7 @@ inline static bool toc_can_assign(toc*tc,
 		for(unsigned i=0;i<c->fields.count;i++){
 			field*fld=(field*)dynp_get(&c->fields,i);
 			if(!strcmp(fld->name.data,ident.data)){
-				c=toc_get_class_by_name(tc,fld->type.data);
+				c=toc_get_type_by_name(tc,fld->type.data);
 				if(!c){
 					if(!from_typenm)
 						return true;//?
@@ -187,8 +190,7 @@ inline static void ci_free(){}
 inline static xexpr*toc_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(*tc->srcp=='"'){ // string
-			tc->srcp++;
+		if(toc_is_char_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
@@ -209,32 +211,32 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 				if(c=='"')break;
 			}
 			tk.end=tk.content_end=tc->srcp;
-			xident*e=malloc(sizeof(xident));
-			*e=xident_def;
-			str name=str_def;
+
+			xconst*e=malloc(sizeof(xconst));
+			*e=xconst_def;
 			e->super.token=tk;
-			token_setz(&tk,&name);
-			e->name=name;
+			token_setz(&tk,&e->name);
 			e->super.type=str_from_string("ccharp");
 			return(xexpr*)e;
-		}else if(*tc->srcp=='\''){
-			tc->srcp++;
-			tc->srcp++;
+
+		}else if(toc_is_char_take(tc,'\'')){
+			toc_srcp_inc(tc);
 			if(*tc->srcp!='\''){
-				printf("<file> <line:col> expected a character\n"
-						" example 'a'\n");
+				toc_print_source_location(tc,tk,4);
+				printf("expected a character, example 'a'");
+				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmpbufenv,1);
 			}
-			tc->srcp++;
+			toc_srcp_inc(tc);
 			tk.end=tk.content_end=tc->srcp;
-			xident*e=malloc(sizeof(xident));
-			*e=xident_def;
+
+			xconst*e=malloc(sizeof(xconst));
+			*e=xconst_def;
 			e->super.token=tk;
-			str name=str_def;
-			token_setz(&tk,&name);
-			e->name=name;
+			token_setz(&tk,&e->name);
 			e->super.type=str_from_string("char");
 			return(xexpr*)e;
+
 		}else{
 			xexpr*e=malloc(sizeof(xexpr));
 			*e=xexpr_def;
@@ -248,8 +250,8 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 
 	// boolean
 	if(!strcmp("true",tks.data) || !strcmp("false",tks.data)){
-		xident*e=malloc(sizeof(xident));
-		*e=xident_def;
+		xconst*e=malloc(sizeof(xconst));
+		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("bool");
@@ -259,8 +261,8 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	// int
 	char*endptr;strtol(tks.data,&endptr,10);
 	if(endptr==tks.data+tks.count-1){
-		xident*e=malloc(sizeof(xident));
-		*e=xident_def;
+		xconst*e=malloc(sizeof(xconst));
+		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("int");
@@ -270,8 +272,8 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	// float
 	strtof(tks.data,&endptr);
 	if(*endptr=='f' && tks.count>2){
-		xident*e=malloc(sizeof(xident));
-		*e=xident_def;
+		xconst*e=malloc(sizeof(xconst));
+		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("float");
@@ -283,8 +285,8 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 		if((tks.data[0]=='0' && tks.data[1]=='x')){
 			strtol(tks.data+2,&endptr,16);
 			if(endptr==tks.data+tks.count-2+1){
-				xident*e=malloc(sizeof(xident));
-				*e=xident_def;
+				xconst*e=malloc(sizeof(xconst));
+				*e=xconst_def;
 				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
@@ -294,8 +296,8 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 		if((tks.data[0]=='0' && tks.data[1]=='b')){
 			strtol(tks.data+2,&endptr,2);
 			if(endptr==tks.data+tks.count-2+1){
-				xident*e=malloc(sizeof(xident));
-				*e=xident_def;
+				xconst*e=malloc(sizeof(xconst));
+				*e=xconst_def;
 				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
@@ -338,7 +340,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	}
 
 	//  class instance
-	type*c=toc_get_class_by_name(tc,name.data);
+	type*c=toc_get_type_by_name(tc,name.data);
 	if(c){// instantiate
 		xvar*e=xvar_read_next(tc,name);
 		return(xexpr*)e;
