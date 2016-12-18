@@ -2,7 +2,7 @@ type{var i=0}
 object{type}
 player{object}
 global{
-	main(int i,char**c){
+	main{
 		player p
 		p.object.type.i=3
 		printf("3=%d\n",p.object.type)

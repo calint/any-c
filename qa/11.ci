@@ -1,5 +1,5 @@
 global{
-	main(int argc,char** args){
+	main{
 		var a=2
 		var b=a
 		b=2

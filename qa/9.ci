@@ -1,5 +1,5 @@
 global{
-	main(int c,char** a){
+	main{
 		var b=0
 		loop{
 			if b==10 break

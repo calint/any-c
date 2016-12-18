@@ -10,7 +10,7 @@ player{
 }
 
 global{
-	main(int c,char** a){
+	main{
 		player p
 		p.print()
 	}

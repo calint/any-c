@@ -21,7 +21,11 @@ inline static void _xexpls_compile_(const xexpr*oo,toc*tc){
 		if(i!=0){
 			printf("%c",op);
 		}
+		if(e->bits&4)
+			printf("(");
 		e->compile(e,tc);
+		if(e->bits&4)
+			printf(")");
 	}
 }
 
@@ -31,20 +35,39 @@ inline static xexpls*xexpls_read_next(toc*tc,token tk){
 //	o->super.type=type;//?
 	o->super.token=tk;
 
+	if(toc_is_srcp_take(tc,'(')){
+		o->super.bits|=4;
+	}
 	while(1){
-		xexpr*e=toc_read_next_expression(tc);
+		if(!o->exprs.count)
+			str_add(&o->ops,'\0');
+		xexpr*e;
+		if(toc_is_srcp(tc,'(')){
+			e=(xexpr*)xexpls_read_next(tc,tk);
+		}else{
+			e=toc_read_next_expression(tc);
+		}
 		if(xexpr_is_empty(e))
 			break;
-		if(!o->exprs.count){
-			str_add(&o->ops,'\0');
-		}
 		dynp_add(&o->exprs,e);
-		if(toc_is_char_take(tc,'+')){
-			str_add(&o->ops,'+');
-		}else{
+		if(toc_is_srcp_take(tc,'+')){str_add(&o->ops,'+');}
+		else if(toc_is_srcp_take(tc,'-')){str_add(&o->ops,'-');}
+		else if(toc_is_srcp_take(tc,'*')){str_add(&o->ops,'*');}
+		else if(toc_is_srcp_take(tc,'/')){str_add(&o->ops,'/');}
+		else if(toc_is_srcp_take(tc,'%')){str_add(&o->ops,'%');}
+		else{
 			break;
 		}
 	}
+	if(o->super.bits&4){
+		if(!toc_is_srcp_take(tc,')')){
+			toc_print_source_location(tc,o->super.token,4);
+			printf("expected ')'");
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmpbufenv,1);
+		}
+	}
+
 	xexpr*first=dynp_get(&o->exprs,0);
 	o->super.type=first->type;
 	return o;

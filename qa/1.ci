@@ -6,7 +6,7 @@ player{
 }
 
 global{
-	void main(int c,char** a){
+	main{
 		player p1
 		player p2
 		p1.c=1

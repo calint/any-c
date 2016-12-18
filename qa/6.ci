@@ -3,7 +3,7 @@ object{
 }
 
 global{
-	main(int i,char**c){
+	main{
 		int j=1
 		object o1
 		o1.i=2

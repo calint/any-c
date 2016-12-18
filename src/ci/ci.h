@@ -195,7 +195,7 @@ inline static xexpls*toc_read_next_xexpls(toc*tc,token tk){
 inline static xexpr*toc_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(toc_is_char_take(tc,'"')){ // string
+		if(toc_is_srcp_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
@@ -224,7 +224,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			e->super.type=str_from_string("ccharp");
 			return(xexpr*)e;
 
-		}else if(toc_is_char_take(tc,'\'')){
+		}else if(toc_is_srcp_take(tc,'\'')){
 			toc_srcp_inc(tc);
 			if(*tc->srcp!='\''){
 				toc_print_source_location(tc,tk,4);
@@ -401,7 +401,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 inline static xexpr*toc_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(toc_is_char_take(tc,'"')){ // string
+		if(toc_is_srcp_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
@@ -430,7 +430,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 			e->super.type=str_from_string("ccharp");
 			return(xexpr*)e;
 
-		}else if(toc_is_char_take(tc,'\'')){
+		}else if(toc_is_srcp_take(tc,'\'')){
 			toc_srcp_inc(tc);
 			if(*tc->srcp!='\''){
 				toc_print_source_location(tc,tk,4);
@@ -575,14 +575,14 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 //	}
 
 	char incdecbits=0;
-	if(toc_is_char_take(tc,'+')){
-		if(toc_is_char_take(tc,'+')){
+	if(toc_is_srcp_take(tc,'+')){
+		if(toc_is_srcp_take(tc,'+')){
 			incdecbits|=1;
 		}else{
 			tc->srcp--;
 		}
-	}else if(toc_is_char_take(tc,'-')){
-		if(toc_is_char_take(tc,'-')){
+	}else if(toc_is_srcp_take(tc,'-')){
+		if(toc_is_srcp_take(tc,'-')){
 			incdecbits|=2;
 		}else{
 			tc->srcp--;
@@ -805,7 +805,7 @@ inline static void toc_compile_to_c(toc*tc){
 	}
 	printf("\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
-	printf("int main(int c,char** a){global_main(0,c,a);}\n");
+	printf("int main(int c,char** a){global_main(0);}\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 

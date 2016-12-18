@@ -1,5 +1,5 @@
 global{
-	main(int argc,char** args){
+	main{
 		var a=2
 		var b=a+1
 		printf("(2,3)=(%d,%d)\n",a,b);

@@ -265,7 +265,7 @@ inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
 inline static void toc_srcp_inc(toc*o){o->srcp++;}
 inline static bool toc_is_srcp(const toc*o,const char ch)
 	{return *o->srcp==ch;}
-inline static bool toc_is_char_take(toc*o,const char ch){
+inline static bool toc_is_srcp_take(toc*o,const char ch){
 	if(*o->srcp==ch){
 		o->srcp++;
 		return true;
