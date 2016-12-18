@@ -38,6 +38,7 @@ inline static void _code_compile_(const xexpr*oo,toc*tc){
 	}
 	if(!o->exprs.count)// typedef struct empty {}
 		printf("\n");
+
 }
 
 inline static void code_read_next(code*o,toc*tc){

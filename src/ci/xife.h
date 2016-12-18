@@ -41,30 +41,32 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	for(unsigned i=0;i<o->ifs.count;i++){
 		xif*fi=(xif*)dynp_get(&o->ifs,i);
 		if(i>0){
-			printf(" else ");
+			xif*prvfi=(xif*)dynp_get(&o->ifs,i-1);
+			if(xexpr_is_encapsulated(&prvfi->super)){
+				printf(" else ");
+			}else{
+				toc_indent_for_compile(tc);
+				printf("else ");
+			}
 		}
 		_xif_compile_((xexpr*)fi,tc);
 	}
-	xif*fi=(xif*)dynp_get_last(&o->ifs);
+	xif*lastif=(xif*)dynp_get_last(&o->ifs);
 	if(o->elsecode.exprs.count){
-		if(fi->super.bits&1)
+		if(xexpr_is_encapsulated(&lastif->super))
 			printf(" else ");
 		else{
-//			printf("\n");
 			toc_indent_for_compile(tc);
 			printf("else ");
 		}
 		_code_compile_((xexpr*)&o->elsecode,tc);
+		if(xexpr_is_encapsulated(&o->elsecode.super)){
+			printf("\n");
+		}
+	}else{
+		if(xexpr_is_encapsulated(&lastif->code.super))
+			printf("\n");
 	}
-//	if(o->elsecode.exprs.count){
-//		const bool b=xexpr_is_encapsulated(&o->elsecode.super);
-//		xexpr_set_encapsulated(&o->super,b);
-//	}else{
-//		const xif*last=dynp_get_last(&o->ifs);
-//		const bool b=xexpr_is_encapsulated(&last->super);
-//		xexpr_set_encapsulated(&o->super,b);
-//	}
-//	xexpr_set_is_block(&o->super,true);
 }
 
 #define xife_def (xife){{_xife_compile_,NULL,str_def,token_def,2},\
