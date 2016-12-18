@@ -225,12 +225,15 @@ typedef struct xexpr{
 }xexpr;
 
 #define xexpr_def (xexpr){NULL,NULL,str_def,token_def,0}
-
-inline static int xexpr_is_empty(xexpr*o){
-	return o->compile==NULL;
-}
-
-inline static token toc_next_token(toc*o){
-	return token_next(&o->srcp);
+inline static int xexpr_is_empty(xexpr*o){return o->compile==NULL;}
+inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
+inline static void toc_inc_srcp(toc*o){o->srcp++;}
+inline static bool toc_is_srcp(toc*o,char ch){return *o->srcp==ch;}
+inline static void toc_skip_optional(toc*o,char ch){
+	if(toc_is_srcp(o,ch)){
+		toc_inc_srcp(o);
+//		return true;
+	}
+//	return false;
 }
 

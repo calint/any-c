@@ -168,6 +168,9 @@ inline static void xbool_parse(xbool*o,toc*tc){
 		if(*tc->srcp==')'){
 			return;
 		}
+//		if(*tc->srcp=='}'){//? optional
+//			return;
+//		}
 
 		//? keybits==1 && ok
 		if(*tc->srcp=='&'){
@@ -187,8 +190,10 @@ inline static void xbool_parse(xbool*o,toc*tc){
 				longjmp(_jmpbufenv,1);
 			}
 		}else{
-			printf("<file> <line:col> expected && or ||\n");
-			longjmp(_jmpbufenv,1);
+			// not encapsulated, could be if b==2 break
+//			printf("<file> <line:col> expected && or ||\n");
+//			longjmp(_jmpbufenv,1);
+			return;
 		}
 	}
 

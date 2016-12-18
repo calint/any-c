@@ -12,18 +12,20 @@ typedef struct xif{
 
 inline static void _xif_compile_(const xexpr*oo,toc*tc){
 	xif*o=(xif*)oo;
-	printf("if ");
+	printf("if (");
 	_xbool_compile_((xexpr*)&o->cond,tc);
-	printf(" ");
+	printf(") ");
 	_code_compile_((xexpr*)&o->code,tc);
 }
 
 #define xif_def (xif){{_xif_compile_,NULL,str_def,token_def,0},xbool_def,code_def}
 
-inline static xif*xif_read_next(ccharp *pp,toc*tc){
+inline static xif*xif_read_next(toc*tc){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
+	toc_skip_optional(tc,'(');
 	xbool_parse(&o->cond,tc);
+	toc_skip_optional(tc,')');
 	codeblk_read_next(&o->code,tc);
 	return o;
 }
@@ -62,16 +64,17 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 inline static xife*xife_read_next(toc*tc){
 	xife*o=malloc(sizeof(xife));
 	*o=xife_def;
-	o->super.bits|=1;
+//	o->super.bits|=1;
 	while(1){
-		xif*i=malloc(sizeof(xif));
-		*i=xif_def;
+		xif*i=xif_read_next(tc);
+//		xif*i=malloc(sizeof(xif));
+//		*i=xif_def;
 		dynp_add(&o->ifs,i);
-
-		xbool_parse(&i->cond,tc);
-		codeblk_read_next(&i->code,tc);
-
-		i->super.bits=i->code.super.bits; // encapsulation
+//
+//		xbool_parse(&i->cond,tc);
+//		codeblk_read_next(&i->code,tc);
+//
+//		i->super.bits=i->code.super.bits; // encapsulation
 
 		token t=toc_next_token(tc);
 		if(!token_equals(&t,"else")){
