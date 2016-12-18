@@ -26,7 +26,7 @@ inline static xif*xif_read_next(toc*tc){
 	toc_skip_optional(tc,'(');
 	xbool_parse(&o->cond,tc);
 	toc_skip_optional(tc,')');
-	codeblk_read_next(&o->code,tc);
+	code_read_next(&o->code,tc);
 	return o;
 }
 
@@ -56,36 +56,35 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 		}
 		_code_compile_((xexpr*)&o->elsecode,tc);
 	}
+//	if(o->elsecode.exprs.count){
+//		const bool b=xexpr_is_encapsulated(&o->elsecode.super);
+//		xexpr_set_encapsulated(&o->super,b);
+//	}else{
+//		const xif*last=dynp_get_last(&o->ifs);
+//		const bool b=xexpr_is_encapsulated(&last->super);
+//		xexpr_set_encapsulated(&o->super,b);
+//	}
+//	xexpr_set_is_block(&o->super,true);
 }
 
-#define xife_def (xife){{_xife_compile_,NULL,str_def,token_def,0},\
+#define xife_def (xife){{_xife_compile_,NULL,str_def,token_def,2},\
 						dynp_def,code_def}
 
 inline static xife*xife_read_next(toc*tc){
 	xife*o=malloc(sizeof(xife));
 	*o=xife_def;
-//	o->super.bits|=1;
 	while(1){
 		xif*i=xif_read_next(tc);
-//		xif*i=malloc(sizeof(xif));
-//		*i=xif_def;
 		dynp_add(&o->ifs,i);
-//
-//		xbool_parse(&i->cond,tc);
-//		codeblk_read_next(&i->code,tc);
-//
-//		i->super.bits=i->code.super.bits; // encapsulation
-
 		token t=toc_next_token(tc);
 		if(!token_equals(&t,"else")){
 			tc->srcp=t.begin;
 			return o;
 		}
-
 		token t2=toc_next_token(tc);
 		if(!token_equals(&t2,"if")){
 			tc->srcp=t2.begin;
-			codeblk_read_next(&o->elsecode,tc);
+			code_read_next(&o->elsecode,tc);
 			return o;
 		}
 	}

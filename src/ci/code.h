@@ -24,21 +24,23 @@ inline static void _code_compile_(const xexpr*oo,toc*tc){
 		xexpr*e=dynp_get(&o->exprs,i);
 		toc_indent_for_compile(tc);
 		e->compile(e,tc);
-		if(!(e->bits&1))
+		if(xexpr_is_block(e))
+			continue;
+		if(!xexpr_is_encapsulated(e))
 			printf(";\n");
 		else
 			printf("\n");
 	}
 	toc_pop_scope(tc);
-	if(o->super.bits&1){
+	if(xexpr_is_encapsulated(&o->super)){
 		toc_indent_for_compile(tc);
 		printf("}");
 	}
-	if(!o->exprs.count)
+	if(!o->exprs.count)// typedef struct empty {}
 		printf("\n");
 }
 
-inline static void codeblk_read_next(code*o,toc*tc){
+inline static void code_read_next(code*o,toc*tc){
 	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
 	if(*tc->srcp=='{'){

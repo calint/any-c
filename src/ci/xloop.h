@@ -17,7 +17,7 @@ inline static xloop*xloop_read_next(toc*tc){
 	toc_push_scope(tc,'l',"");
 	xloop*o=malloc(sizeof(xloop));
 	*o=xloop_def;
-	codeblk_read_next(&o->code,tc);
+	code_read_next(&o->code,tc);
 	toc_pop_scope(tc);
 	return o;
 }

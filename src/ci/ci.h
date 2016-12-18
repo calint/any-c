@@ -332,7 +332,7 @@ inline static void toc_parse_func(toc*tc,type*c,token*type){
 			longjmp(_jmpbufenv,1);
 		}
 	}
-	codeblk_read_next(&f->code,tc);
+	code_read_next(&f->code,tc);
 	toc_pop_scope(tc);
 }
 

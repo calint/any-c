@@ -225,15 +225,27 @@ typedef struct xexpr{
 }xexpr;
 
 #define xexpr_def (xexpr){NULL,NULL,str_def,token_def,0}
-inline static int xexpr_is_empty(xexpr*o){return o->compile==NULL;}
+inline static int xexpr_is_empty(const xexpr*o){return o->compile==NULL;}
 inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
 inline static void toc_inc_srcp(toc*o){o->srcp++;}
-inline static bool toc_is_srcp(toc*o,char ch){return *o->srcp==ch;}
-inline static void toc_skip_optional(toc*o,char ch){
-	if(toc_is_srcp(o,ch)){
+inline static bool toc_is_srcp(const toc*o,const char ch)
+	{return *o->srcp==ch;}
+inline static void toc_skip_optional(toc*o,const char ch){
+	if(toc_is_srcp(o,ch))
 		toc_inc_srcp(o);
-//		return true;
-	}
-//	return false;
+}
+inline static bool xexpr_is_encapsulated(const xexpr*o){return(o->bits&1)==1;}
+inline static void xexpr_set_is_encapsulated(xexpr*o,const bool b){
+	if(b)
+		o->bits|=1;
+	else
+		o->bits&=~1;
+}
+inline static bool xexpr_is_block(const xexpr*o){return(o->bits&2)==2;}
+inline static void xexpr_set_is_block(xexpr*o,const bool b){
+	if(b)
+		o->bits|=2;
+	else
+		o->bits&=~2;
 }
 

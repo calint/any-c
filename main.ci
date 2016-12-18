@@ -2,7 +2,7 @@ global{
 	main(int c,char** a){
 		var b=0
 		loop{
-			if b==10 break
+			if (b==10) break
 			b++
 			printf("%d. hello world\t",b)
 		}
