@@ -1,6 +1,4 @@
-
-
-global+{
+global{
 	main(int c,char**a){
 		var b=1
 		printf("%d. hello world",b)

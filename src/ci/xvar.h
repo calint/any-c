@@ -10,7 +10,11 @@ typedef struct xset{
 
 inline static void _xset_compile_(const xexpr*oo,toc*tc){
 	xset*o=(xset*)oo;
-	toc_compile_for_xset(tc,o->name.data,o->expr->type.data);
+	toc_compile_for_xset(tc,
+			o->super.token,
+			o->name.data,
+			o->expr->type.data);
+
 	o->expr->compile((xexpr*)o->expr,tc);
 }
 

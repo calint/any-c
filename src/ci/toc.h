@@ -107,9 +107,39 @@ inline static void toc_pop_scope(toc*o){
 	o->scopes.count--;//? pop
 }
 
-inline static void toc_compile_for_xset(
-		toc*tc,ccharp id,ccharp type){
+typedef struct tocloc{
+	ccharp filenm;
+	unsigned line;
+	unsigned col;
+}tocloc;
 
+inline static tocloc toc_get_line_number_from_pp(toc*o,ccharp p,
+		unsigned tabsize){
+
+	ccharp pt=o->src.data;
+	int line=1,col=1;
+	while(pt<p){
+		if(*pt!='\n'){
+			if(*pt=='\t')
+				col+=tabsize;
+			else
+				col++;
+			pt++;
+			continue;
+		}
+		col=1;
+		line++;
+		pt++;
+	}
+	return (tocloc){o->filepth,line,col};
+}
+
+inline static void toc_print_source_location(toc*o,token tk,int tabsize){
+	tocloc tl=toc_get_line_number_from_pp(o,tk.content,tabsize);
+	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
+}
+
+inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
 	ccharp p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
@@ -149,7 +179,8 @@ inline static void toc_compile_for_xset(
 
 //	tocloc tl=toc_get_line_number_from_pp(tc, p)
 
-	printf("<file> <line:col> could not find identifier: %s\n",id);
+	toc_print_source_location(tc,tk,4);
+	printf("could not find var '%s'\n",id);
 	longjmp(_jmpbufenv,1);
 }
 
@@ -199,29 +230,6 @@ inline static int xexpr_is_empty(xexpr*o){
 	return o->compile==NULL;
 }
 
-typedef struct tocloc{
-	ccharp filenm;
-	unsigned line;
-	unsigned col;
-}tocloc;
-
-inline static tocloc toc_get_line_number_from_pp(toc*o,const char*p){
-	const char*pt=o->src.data;
-	int line=1,col=1;
-	while(pt<p){
-		if(*pt=='\n'){
-			line++;
-			col=1;
-		}
-		col++;
-		pt++;
-	}
-	return (tocloc){o->filepth,line,col};
-}
-inline static void toc_print_source_location(toc*o,ccharp p){
-	tocloc tl=toc_get_line_number_from_pp(o,p);
-	printf("%s:%d:%d: ",tl.filenm,tl.line,tl.col);
-}
 inline static token toc_next_token(toc*o){
 	return token_next(&o->srcp);
 }

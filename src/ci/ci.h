@@ -102,6 +102,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			xident*e=malloc(sizeof(xident));
 			*e=xident_def;
 			str name=str_def;
+			e->super.token=tk;
 			token_setz(&tk,&name);
 			e->name=name;
 			e->super.type=str_from_string("ccharp");
@@ -118,6 +119,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			tk.end=tk.content_end=tc->srcp;
 			xident*e=malloc(sizeof(xident));
 			*e=xident_def;
+			e->super.token=tk;
 			str name=str_def;
 			token_setz(&tk,&name);
 			e->name=name;
@@ -138,6 +140,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	if(!strcmp("true",tks.data) || !strcmp("false",tks.data)){
 		xident*e=malloc(sizeof(xident));
 		*e=xident_def;
+		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("bool");
 		return(xexpr*)e;
@@ -148,6 +151,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	if(endptr==tks.data+tks.count-1){
 		xident*e=malloc(sizeof(xident));
 		*e=xident_def;
+		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("int");
 		return(xexpr*)e;
@@ -158,6 +162,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	if(*endptr=='f' && tks.count>2){
 		xident*e=malloc(sizeof(xident));
 		*e=xident_def;
+		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("float");
 		return(xexpr*)e;
@@ -170,6 +175,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			if(endptr==tks.data+tks.count-2+1){
 				xident*e=malloc(sizeof(xident));
 				*e=xident_def;
+				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
 				return(xexpr*)e;
@@ -180,6 +186,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			if(endptr==tks.data+tks.count-2+1){
 				xident*e=malloc(sizeof(xident));
 				*e=xident_def;
+				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
 				return(xexpr*)e;
@@ -190,21 +197,25 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	// keywords
 	if(token_equals(&tk,"loop")){
 		xloop*e=xloop_read_next(tc);
+		e->super.token=tk;
 		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"break")){
 		xbreak*e=xbreak_read_next(tc);
+		e->super.token=tk;
 		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"continue")){
 		xcont*e=xcont_read_next(tc);
+		e->super.token=tk;
 		return (xexpr*)e;
 	}
 
 	if(token_equals(&tk,"if")){
 		xife*e=xife_read_next(tc);
+		e->super.token=tk;
 		return (xexpr*)e;
 	}
 
@@ -213,8 +224,9 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	token_setz(&tk,&name);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
-			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char
+			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
 		xvar*e=xvar_read_next(tc,name);
+		e->super.token=tk;
 		return(xexpr*)e;
 	}
 
@@ -222,12 +234,14 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	type*c=toc_find_class_by_name(tc,name.data);
 	if(c){// instantiate
 		xvar*e=xvar_read_next(tc,name);
+		e->super.token=tk;
 		return(xexpr*)e;
 	}
 
 	// function call
 	if(*tc->srcp=='('){
 		xcall*e=xcall_read_next(tc,/*gives*/name);
+		e->super.token=tk;
 		return(xexpr*)e;
 	}
 
@@ -236,6 +250,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 		tc->srcp++;
 		if(*tc->srcp!='='){
 			xset*e=/*takes*/xset_read_next(tc,/*gives*/name);
+			e->super.token=tk;
 			return(xexpr*)e;
 		}
 		tc->srcp--;
@@ -265,6 +280,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
 	e->name=name;
+	e->super.token=tk;
 	e->incdecbits=incdecbits;
 	return(xexpr*)e;
 }
@@ -358,7 +374,7 @@ inline static type*toc_parse_type(toc*tc,token name){
 	token_setz(&c->token,&c->name);
 	toc_push_scope(tc,'c',c->name.data);
 	if(*tc->srcp!='{'){
-		toc_print_source_location(tc,c->token.content);
+		toc_print_source_location(tc,c->token,4);
 		printf("expected '{' to open class body\n");
 		longjmp(_jmpbufenv,1);
 	}
@@ -482,7 +498,7 @@ inline static void toc_compile_to_c(toc*tc){
 inline static void toc_compile_file(ccharp path){
 	int val=setjmp(_jmpbufenv);
 	if(val==1){
-		printf(" * error occured ");
+//		printf(" error occured");
 		return;
 	}
 
