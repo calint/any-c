@@ -77,7 +77,7 @@ inline static str const_str(ccharp s){
 inline static xexpr*toc_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(*tc->srcp=='"'){
+		if(*tc->srcp=='"'){ // string
 			tc->srcp++;
 			while(1){
 				const char c=*tc->srcp;
