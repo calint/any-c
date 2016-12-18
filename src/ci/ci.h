@@ -22,6 +22,43 @@ inline static type*toc_get_type_by_name(toc*o,ccharp name){
 	return NULL;
 }
 
+inline static void toc_print_func_call_for_compile(toc*tc,
+		token tk,ccharp funcnm){
+	// get current class name
+	ccharp typenm=0;
+	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		if(s->type=='c'){
+			typenm=s->name;
+			break;
+		}
+	}
+
+	if(typenm==0){
+		toc_print_source_location(tc,tk,4);
+		printf("could not find class scope");
+		longjmp(_jmpbufenv,1);
+	}
+
+	type*tp=toc_get_type_by_name(tc,typenm);
+	if(!tp){
+		toc_print_source_location(tc,tk,4);
+		printf("cannot find class scope");
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmpbufenv,1);
+	}
+
+	func*fc=type_get_func_by_name(tp,funcnm);
+	if(!fc){
+		toc_print_source_location(tc,tk,4);
+		printf("cannot find function '%s' in '%s'",funcnm,typenm);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmpbufenv,1);
+	}
+
+	printf("%s_%s((%s*)&%s",typenm,funcnm,typenm,"o");
+}
+
 inline static void toc_add_type(toc*o,type*c){
 	dynp_add(&o->types,c);
 }
@@ -353,8 +390,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 
 	// function call
 	if(*tc->srcp=='('){
-		xcall*e=xcall_read_next(tc,/*gives*/name);
-		e->super.token=tk;
+		xcall*e=xcall_read_next(tc,tk,/*gives*/name);
 		return(xexpr*)e;
 	}
 
@@ -559,8 +595,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 
 	// function call
 	if(*tc->srcp=='('){
-		xcall*e=xcall_read_next(tc,/*gives*/name);
-		e->super.token=tk;
+		xcall*e=xcall_read_next(tc,tk,name);
 		return(xexpr*)e;
 	}
 
@@ -798,12 +833,12 @@ inline static void toc_compile_to_c(toc*tc){
 				}
 				printf(")");
 				f->code.super.compile((xexpr*)&f->code,tc);
+				printf("\n");
 				toc_pop_scope(tc);
 			}
 		}
 		toc_pop_scope(tc);
 	}
-	printf("\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("int main(int c,char** a){global_main(0);}\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");

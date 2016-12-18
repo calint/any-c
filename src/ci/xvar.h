@@ -4,7 +4,6 @@
 #include"xexpls.h"
 
 inline static void toc_assert_can_set(toc*,ccharp,ccharp,token);
-inline static xexpls*toc_read_next_xexpls(toc*,token);
 
 typedef struct xset{
 	xexpr super;

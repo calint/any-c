@@ -46,3 +46,12 @@ inline static field*type_get_field_by_name(const type*o,ccharp field_name){
 	}
 	return NULL;
 }
+
+inline static func*type_get_func_by_name(const type*o,ccharp field_name){
+	for(unsigned i=0;i<o->funcs.count;i++){
+		func*f=dynp_get(&o->funcs,i);
+		if(!strcmp(f->name.data,field_name))
+				return f;
+	}
+	return NULL;
+}

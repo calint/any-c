@@ -3,6 +3,7 @@
 #include "toc.h"
 
 inline static xexpr*toc_read_next_expression(toc*);
+//inline static xexpls*toc_read_next_xexpls(toc*,token);
 
 typedef struct xexpls{
 	xexpr super;

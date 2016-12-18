@@ -15,9 +15,12 @@ typedef const char* ccharp;
 typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
+inline static void global_print(global*o,int a){
+	printf("%d",a);
+}
 inline static void global_main(global*o){
-	int a=2*((3+5)/2+3%2-3);
-	printf("4=%d",a);
+	int a=5;
+	global_print((global*)&o,1+(5+2)/a);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char** a){global_main(0);}

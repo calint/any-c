@@ -1,5 +1,6 @@
 #pragma once
 #include"../lib.h"
+//#include"type.h"
 
 typedef struct toc{
 	dynp types;
@@ -12,6 +13,8 @@ typedef struct toc{
 #define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
 
 inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,ccharp src);
+inline static void toc_print_func_call_for_compile(toc*,token,ccharp);
+
 
 typedef struct tocscope{
 	char type;
@@ -220,27 +223,40 @@ inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
 }
 
 inline static void toc_compile_for_call(
-		toc*tc,ccharp id,unsigned argcount){
+		toc*tc,token tk,ccharp accessor,unsigned argcount){
 
-	ccharp p=strpbrk(id,".");
+	ccharp p=strpbrk(accessor,".");
 	if(p){
-		str sid=str_def;
-		str_add_list(&sid,id,p-id);
-		str_add(&sid,0);
+		str s=str_def;
+		str_add_list(&s,accessor,p-accessor);
+		str_add(&s,0);
 
-		const tocdecl*i=toc_get_declaration(tc,sid.data);
+		const tocdecl*i=toc_get_declaration(tc,s.data);
 		if(!i){
-			printf("<file> <line:col> identifier not found: %s\n",sid.data);
+			printf("<file> <line:col> identifier not found: %s\n",s.data);
 			longjmp(_jmpbufenv,1);
 		}
 		printf("%s_%s((%s*)&%s",
 				i->type.data,p+1,
-				i->type.data,sid.data);
+				i->type.data,s.data);
 		if(argcount){
 			printf(",");
 		}
-	}else{
-		printf("%s(",id);
+		return;
+	}
+
+	if(!strcmp("printf",accessor)){
+		printf("%s(",accessor);
+		return;
+	}
+	if(!strcmp("p",accessor)){
+		printf("printf(");
+		return;
+	}
+
+	toc_print_func_call_for_compile(tc,tk,accessor);
+	if(argcount){
+		printf(",");
 	}
 }
 
