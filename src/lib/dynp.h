@@ -50,14 +50,14 @@ inline static void _dynp_insure_free_capcity(dynp*o,unsigned n){
 
 //---------------------------------------------------------------------- public
 
-inline static void dynp_add(dynp*o,const void* oo){
+inline static void dynp_add(dynp*o,void* oo){
 	_dynp_insure_free_capcity(o,1);
 	*(o->data+o->count++)=oo;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void* dynp_get(dynp*o,unsigned index){
+inline static void* dynp_get(const dynp*o,unsigned index){
 #ifdef dynp_bounds_check
 	if(index>=o->count){
 		fprintf(stderr,"\n   index-out-of-bounds at %s:%u\n",__FILE__,__LINE__);
@@ -74,14 +74,14 @@ inline static void* dynp_get(dynp*o,unsigned index){
 
 //-----------------------------------------------------------------------------
 
-inline static void* dynp_get_last(dynp*o){
+inline static void* dynp_get_last(const dynp*o){
 	void* p=*(o->data+o->count-1);
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static size_t dynp_size_in_bytes(dynp*o){
+inline static size_t dynp_size_in_bytes(const dynp*o){
 	return o->count*sizeof(void*);
 }
 
@@ -117,7 +117,7 @@ inline static void dynp_add_string(dynp*o,/*copies*/const void**str){
 
 //-----------------------------------------------------------------------------
 
-inline static void dynp_write_to_fd(dynp*o,int fd){
+inline static void dynp_write_to_fd(const dynp*o,int fd){
 	if(!o->data)
 		return;
 	write(fd,o->data,o->count);
@@ -160,8 +160,11 @@ inline static dynp dynp_from_file(const char*path){
 	fclose(f);
 	filedata[length]=0;
 
-	dynp dd=(dynp){filedata,((unsigned)length+1)/sizeof(void*),(unsigned)length+1};
-	return dd;
+	return (dynp){
+		.data=filedata,
+		.count=((unsigned)length+1)/sizeof(void*),
+		.cap=(unsigned)length+1
+	};
 }
 
 //-----------------------------------------------------------------------------
@@ -185,10 +188,10 @@ inline static void dynp_setz(dynp*o,/*copies*/const void**s){
 }
 
 //-----------------------------------------------------------------------------
-//#define dynp_foa(ls,body)dynp_foreach_all(ls,({void __fn__ (void* o) body __fn__;}))
-//#define dynp_foac(ls,body)dynp_foreach_all_count(ls,({void __fn__ (void* o,unsigned i) body __fn__;}))
-//#define dynp_fou(ls,body)dynp_foreach(ls,({int __fn__ (void* o) body __fn__;}))
-//#define dynp_foar(ls,body)dynp_foreach_all_rev(ls,({void __fn__ (void* o) body __fn__;}))
+#define dynp_foa(ls,body)dynp_foreach_all(ls,({void __fn__ (void* o) body __fn__;}))
+#define dynp_foac(ls,body)dynp_foreach_all_count(ls,({void __fn__ (void* o,unsigned i) body __fn__;}))
+#define dynp_fou(ls,body)dynp_foreach(ls,({int __fn__ (void* o) body __fn__;}))
+#define dynp_foar(ls,body)dynp_foreach_all_rev(ls,({void __fn__ (void* o) body __fn__;}))
 //-----------------------------------------------------------------------------
 inline static void dynp_foreach(dynp*o,int(*f)(void*)){
 	if(!o->count)
@@ -228,7 +231,7 @@ inline static void dynp_foreach_all_rev(dynp*o,void(*f)(void*)){
 }
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
-inline static unsigned dynp_find_index(dynp*o,void* oo){
+inline static unsigned dynp_find_index(const dynp*o,void* oo){
 	for(unsigned i=0;i<o->count;i++){
 		if(dynp_get(o,i)==oo)
 			return i;
@@ -236,7 +239,7 @@ inline static unsigned dynp_find_index(dynp*o,void* oo){
 	return o->count;
 }
 //-----------------------------------------------------------------------------
-inline static unsigned dynp_has(dynp*o,void* oo){
+inline static unsigned dynp_has(const dynp*o,void* oo){
 	const unsigned i=dynp_find_index(o,oo);
 	if(i==o->count)
 		return 0;

@@ -37,3 +37,12 @@ typedef struct type{
 }type;
 
 #define type_def (type){str_def,dynp_def,dynp_def,token_def}
+
+inline static field*type_get_field_by_name(const type*o,ccharp field_name){
+	for(unsigned i=0;i<o->fields.count;i++){
+		field*f=dynp_get(&o->fields,i);
+		if(!strcmp(f->name.data,field_name))
+				return f;
+	}
+	return NULL;
+}

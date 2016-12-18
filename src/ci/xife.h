@@ -53,7 +53,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 	}
 	xif*lastif=(xif*)dynp_get_last(&o->ifs);
 	if(o->elsecode.exprs.count){
-		if(xexpr_is_encapsulated(&lastif->super))
+		if(xexpr_is_encapsulated(&lastif->code.super))
 			printf(" else ");
 		else{
 			toc_indent_for_compile(tc);
@@ -72,9 +72,10 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 #define xife_def (xife){{_xife_compile_,NULL,str_def,token_def,2},\
 						dynp_def,code_def}
 
-inline static xife*xife_read_next(toc*tc){
+inline static xife*xife_read_next(toc*tc,token tk){
 	xife*o=malloc(sizeof(xife));
 	*o=xife_def;
+	o->super.token=tk;
 	while(1){
 		xif*i=xif_read_next(tc);
 		dynp_add(&o->ifs,i);

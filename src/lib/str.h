@@ -57,7 +57,7 @@ inline static void str_add(str*o,char oo){
 
 //-----------------------------------------------------------------------------
 
-inline static char str_get(str*o,unsigned index){
+inline static char str_get(const str*o,unsigned index){
 #ifdef str_bounds_check
 	if(index>=o->count){
 		fprintf(stderr,"\n   index-out-of-bounds at %s:%u\n",__FILE__,__LINE__);
@@ -74,14 +74,14 @@ inline static char str_get(str*o,unsigned index){
 
 //-----------------------------------------------------------------------------
 
-inline static char str_get_last(str*o){
+inline static char str_get_last(const str*o){
 	char p=*(o->data+o->count-1);
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static size_t str_size_in_bytes(str*o){
+inline static size_t str_size_in_bytes(const str*o){
 	return o->count*sizeof(char);
 }
 
@@ -117,7 +117,7 @@ inline static void str_add_string(str*o,/*copies*/const char*str){
 
 //-----------------------------------------------------------------------------
 
-inline static void str_write_to_fd(str*o,int fd){
+inline static void str_write_to_fd(const str*o,int fd){
 	if(!o->data)
 		return;
 	write(fd,o->data,o->count);
@@ -231,7 +231,7 @@ inline static void str_foreach_all_rev(str*o,void(*f)(char)){
 }
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
-inline static unsigned str_find_index(str*o,char oo){
+inline static unsigned str_find_index(const str*o,char oo){
 	for(unsigned i=0;i<o->count;i++){
 		if(str_get(o,i)==oo)
 			return i;
@@ -239,7 +239,7 @@ inline static unsigned str_find_index(str*o,char oo){
 	return o->count;
 }
 //-----------------------------------------------------------------------------
-inline static unsigned str_has(str*o,char oo){
+inline static unsigned str_has(const str*o,char oo){
 	const unsigned i=str_find_index(o,oo);
 	if(i==o->count)
 		return 0;

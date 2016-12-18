@@ -1,6 +1,7 @@
 #pragma once
 #include"../lib.h"
 #include "toc.h"
+inline static void toc_assert_can_set(toc*,ccharp,ccharp,token);
 
 typedef struct xset{
 	xexpr super;
@@ -10,31 +11,39 @@ typedef struct xset{
 
 inline static void _xset_compile_(const xexpr*oo,toc*tc){
 	xset*o=(xset*)oo;
-	toc_compile_for_xset(tc,
-			o->super.token,
-			o->name.data,
-			o->expr->type.data);
-
-	o->expr->compile((xexpr*)o->expr,tc);
+	toc_compile_for_xset(tc,o->super.token,o->name.data,o->expr->type.data);
+	o->expr->compile(o->expr,tc);
 }
 
 #define xset_def (xset){{_xset_compile_,NULL,str_def,token_def,0},str_def,0}
 
-inline static/*gives*/xset*xset_read_next(toc*tc,/*takes*/str name){
-	xset*e=malloc(sizeof(xset));
-	*e=xset_def;
-	e->name=/*gives*/name;
-	e->expr=toc_read_next_xexpr(tc);
-	e->super.type=e->expr->type;//? str shares buffer
-	return e;
-}
+inline static void _xset_init(toc*tc,xset*o,str name,token tk){
+	const tocdecl*d=toc_get_declaration(tc,name.data);
+	if(!d){
+		toc_print_source_location(tc,o->super.token,4);
+		printf("'%s' not found",o->name.data);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmpbufenv,1);
+		return;
+	}
 
-inline static void xset_parse_next(xset*o,toc*tc,str name){
-	o->name=/*gives*/name;
+	o->super.token=tk;
+	o->name=name;
 	o->expr=toc_read_next_xexpr(tc);
-	o->super.type=o->expr->type;//? str shares buffer
+	toc_assert_can_set(tc,name.data,o->expr->type.data,tk);
+	o->super.type=o->expr->type;
 }
 
+inline static/*gives*/xset*xset_read_next(toc*tc,str name,token tk){
+	xset*o=malloc(sizeof(xset));
+	*o=xset_def;
+	_xset_init(tc,o,name,tk);
+	return o;
+}
+
+inline static void xset_parse_next(xset*o,toc*tc,str name,token tk){
+	_xset_init(tc,o,name,tk);
+}
 
 typedef struct xvar{
 	xexpr super;
@@ -44,17 +53,16 @@ typedef struct xvar{
 
 inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	xvar*o=(xvar*)oo;
-	const char idtype=toc_find_ident_scope_type(tc,o->name.data);
+	const char idtype=toc_get_declaration_scope_type(tc,o->name.data);
 	if(idtype){
-		printf("\n\n<file> <line:col> '%s' is already declared at ..."
-				,o->initval.name.data);
+		toc_print_source_location(tc,o->super.token,4);
+		printf("'%s' is already declared at ...",o->name.data);
 		longjmp(_jmpbufenv,1);
 		return;
 	}
 
-	toc_add_ident(tc,o->super.type.data,o->name.data);
-
 	printf("%s ",o->super.type.data);
+	toc_add_ident(tc,o->super.type.data,o->name.data);
 	if(o->initval.super.compile){
 		_xset_compile_((xexpr*)&o->initval,tc);
 	}else{
@@ -66,37 +74,37 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 						str_def,xset_def}
 
 inline static xvar*xvar_read_next(toc*tc,str type){
-	xvar*e=malloc(sizeof(xvar));
-	*e=xvar_def;
-	e->super.type/*takes*/=type;
-	token tk=toc_next_token(tc);
-	token_setz(&tk,&e->name);
+	xvar*o=malloc(sizeof(xvar));
+	*o=xvar_def;
+	o->super.type=type;
+	o->super.token=toc_next_token(tc);
+	token_setz(&o->super.token,&o->name);
 
-	if(!strcmp("o",e->name.data)){
-		printf("\n\n<file> <line:col> identifier 'o' is reserved");
+	if(!strcmp("o",o->name.data)){
+		toc_print_source_location(tc,o->super.token,4);
+		printf("identifier 'o' is reserved, equivalent of 'this'");
 		longjmp(_jmpbufenv,1);
 	}
 
-	bool is_var=!strcmp(e->super.type.data,"var")||
-			!strcmp(e->super.type.data,"auto");
-
-	if(*tc->srcp=='='){
-		tc->srcp++;
-		xset_parse_next(&e->initval,tc,/*shares*/e->name);
+	toc_add_ident(tc,o->super.type.data,o->name.data);
+	bool is_var=!strcmp(o->super.type.data,"var");
+	if(toc_is_char_take(tc,'=')){
+		xset_parse_next(&o->initval,tc,o->name,o->super.token);
 		if(is_var){
-			e->super.type=e->initval.super.type;
+			o->super.type=o->initval.super.type;
+			toc_set_declaration_type(tc,o->name.data,o->super.type.data);
 		}else{
-			if(strcmp(e->super.type.data,e->initval.super.type.data)){
+			if(strcmp(o->super.type.data,o->initval.super.type.data)){
 				printf("\n\n<file> <line:col> %s declared as %s but initial"
 						" expression is of type %s\n",
-						e->initval.name.data,
-						e->super.type.data,
-						e->initval.super.type.data);
+						o->initval.name.data,
+						o->super.type.data,
+						o->initval.super.type.data);
 				longjmp(_jmpbufenv,1);
 			}
 		}
 	}else{
-		e->initval.super.compile=NULL;
+		o->initval.super.compile=NULL;
 	}
-	return e;
+	return o;
 }

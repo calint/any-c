@@ -51,10 +51,10 @@ inline static void _xcont_compile_(const xexpr*oo,toc*tc){
 
 #define xcont_def (xcont){{_xcont_compile_,NULL,str_def,token_def,0}}
 
-inline static xcont*xcont_read_next(toc*tc){
-	if(*tc->srcp==';')
-		tc->srcp++;
-	xcont*e=malloc(sizeof(xcont));
-	*e=xcont_def;
-	return e;
+inline static xcont*xcont_read_next(toc*tc,token tk){
+	toc_skip_optional(tc,';');
+	xcont*o=malloc(sizeof(xcont));
+	*o=xcont_def;
+	o->super.token=tk;
+	return o;
 }

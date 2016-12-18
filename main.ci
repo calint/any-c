@@ -1,13 +1,13 @@
 global{
 	main(int c,char** a){
 		var b=0
+		var d=0
 		loop{
-			if b++==10 break
-			else if b--==10{break}
-			if(b++==10)break
-			if(b==10){break}
-			b++ b--
-			printf("%d. hello world\t",b)
+			if b++==10{break}else a=2
+			if b++==10{break}else {d=2}
+
+			if b++==10 break else d=2
+			if b++==10 break else {d=2}
 		}
 		printf("\n");
 	}

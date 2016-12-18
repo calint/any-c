@@ -1,0 +1,4 @@
+		toc_print_source_location(tc,o->super.token,4);
+		printf("'%s' not found",o->name.data);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmpbufenv,1);

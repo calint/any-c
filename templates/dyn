@@ -57,7 +57,7 @@ inline static void ${name}_add(${name}*o,${type} oo){
 
 //-----------------------------------------------------------------------------
 
-inline static ${type} ${name}_get(${name}*o,unsigned index){
+inline static ${type} ${name}_get(const ${name}*o,unsigned index){
 #ifdef ${name}_bounds_check
 	if(index>=o->count){
 		fprintf(stderr,"\n   index-out-of-bounds at %s:%u\n",__FILE__,__LINE__);
@@ -74,14 +74,14 @@ inline static ${type} ${name}_get(${name}*o,unsigned index){
 
 //-----------------------------------------------------------------------------
 
-inline static ${type} ${name}_get_last(${name}*o){
+inline static ${type} ${name}_get_last(const ${name}*o){
 	${type} p=*(o->data+o->count-1);
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static size_t ${name}_size_in_bytes(${name}*o){
+inline static size_t ${name}_size_in_bytes(const ${name}*o){
 	return o->count*sizeof(${type});
 }
 
@@ -117,7 +117,7 @@ inline static void ${name}_add_string(${name}*o,/*copies*/const ${type}*str){
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_write_to_fd(${name}*o,int fd){
+inline static void ${name}_write_to_fd(const ${name}*o,int fd){
 	if(!o->data)
 		return;
 	write(fd,o->data,o->count);
@@ -231,7 +231,7 @@ inline static void ${name}_foreach_all_rev(${name}*o,void(*f)(${type})){
 }
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
-inline static unsigned ${name}_find_index(${name}*o,${type} oo){
+inline static unsigned ${name}_find_index(const ${name}*o,${type} oo){
 	for(unsigned i=0;i<o->count;i++){
 		if(${name}_get(o,i)==oo)
 			return i;
@@ -239,7 +239,7 @@ inline static unsigned ${name}_find_index(${name}*o,${type} oo){
 	return o->count;
 }
 //-----------------------------------------------------------------------------
-inline static unsigned ${name}_has(${name}*o,${type} oo){
+inline static unsigned ${name}_has(const ${name}*o,${type} oo){
 	const unsigned i=${name}_find_index(o,oo);
 	if(i==o->count)
 		return 0;
