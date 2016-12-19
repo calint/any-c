@@ -11,14 +11,19 @@ lookvec      { vec3 }
 texture      {}
 drawctx      {}
 
-vertices have position, normal and color
+vertex vertices
+	have position, normal and color
 
-materials have name, texture ref, diffuse color, ambient color and specular color ;
+materials
+	have name, texture ref, diffuse color, ambient color and specular color ;
 
-rrange has int from, int to and material ref
+rranges have
+	int from, int to and material ref
+	
 	does draw buffer ref do
 		p "draw_render_range: from " from " to " to " using " material.name ;
 	;
+
 ;
 
 glo has vertices and rranges
