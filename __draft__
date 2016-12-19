@@ -23,6 +23,13 @@ material/materials {
 	refs: maybe a texture;
 }
 
+material m has name "metal" diffuse color "red" ambient color "blue" specular color "green"
+
+m set texture ref to 
+
+ 
+accessor: material texture ref
+
 rranges 
 	have one begin and one end described by integers
 	reference a material each
