@@ -1,0 +1,204 @@
+vec3 {x=0.0 y=0.0 z=0.0}
+
+vec4 {vec3; t=0.0}
+
+vec4 : vec3 {t=0.0}
+
+position {vec3}
+
+orientation {vec3}
+
+scale {vec3}
+
+lookvec {vec3}
+
+rendctx {}
+
+buffer template typename T {}
+
+dictionary aka kvps is template for typename T {}
+
+dictionary aka kvps template T {}
+
+
+kvps template T {}
+
+kvps template T {}
+
+material{}
+
+
+
+rendrange plural rendranges
+{
+	int from
+	
+	int to
+	
+	material& m
+	
+	draw (buffer&) {
+		printf("draw_render_range\n")
+	}
+} 
+
+
+
+glo / glos {
+	
+	buffer&;
+	
+	rendranges rendrngs;
+	
+	draw (rendctx&)	{
+		printf ("draw_glo\n")
+		
+		for all const r in rendranges {
+			r.draw(buffer)
+		}
+		
+		for i c in rendranges {
+			i.draw (buffer)
+			printf (" counter:%d",c)
+			
+			for j cc in rendranges {
+				if cc==1 return false
+				r.draw (buffer)
+				j.draw (buffer)
+				true
+			}
+			
+		}
+	}
+}
+
+
+
+glob {
+	
+	glo : glo ref
+
+	glo : glo&
+	
+	glo& glo
+	
+	glo&;
+	
+	position : position
+	
+	position;
+	
+	orientation;
+	
+	lookvec;
+	
+	globs : buffer of globs
+	
+	leftglobs : buffer of globs
+	
+	options { add allocated remove free }
+	
+	draw (rendctx&)	glo.draw(rendctx)
+
+	main {
+	
+		var g=globs.mk()
+
+		var g=globs.alloc()
+		
+		glob& g=globs.new()
+	
+		globs.free(g)
+		
+		globs.delete(g)
+
+		globs.rm(g)
+		
+	}
+}
+
+
+
+
+glob {
+	position;
+	lookvec;
+	orientation;
+	glo&;
+	children : buffer of globs
+	bits { add allocated remove free }
+	draw (rendctx&) glo.draw(rendctx)
+}
+
+
+
+global{
+
+	glos;
+	
+	globs;
+	
+	root : glob
+
+	g1 : glob
+	
+	draw {
+		printf("draw_global\n")
+	}
+
+	main{
+		draw()
+		
+		gl.draw()
+		
+		glo g
+		
+		g.glo=glos.ref(0)
+		
+		g.glo=glos.copy(0)
+		
+		g.glo=ref first g in glos where { g.name=="floor" }
+		
+		g.glo=ref first in glos where { name=="floor" }
+
+		g.glo=copy first g from glos where { g.name=="floor" }
+
+		g.glo=take from glos where { type is new } sort name range 1..4
+		
+		give g to globs
+
+		take g from globs { name=="floor" || }
+
+		g2 = take first from globs
+
+		glo g{
+			.glo{glos.ref(0)}
+			.scale{1,1,1}
+		}
+
+		glo g.glo{glos.ref(0)}.scale{1,1,1}.draw()
+
+		glo g
+			.glo{glos.ref(0)}
+			.scale{1,1,1}
+			.draw()
+		
+		query q
+				.filter{}
+				.sort{}
+				.range{}
+				.table{}
+				.output{}
+		
+		globs.filter{}
+				.sort{}
+					.range{}
+						.table{}
+				.			.output{}
+		
+		g.draw()
+		
+		g.rendrngs.draw()
+	}
+
+}
