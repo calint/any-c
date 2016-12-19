@@ -41,10 +41,10 @@ glos
 			i draw buffer
 			p " counter: " c ;
 			for j cc in rranges do
-				if cc is 1 done false
+				if cc is 1 return false
 				i draw buffer
 				j draw buffer
-				done true
+				return true
 			;
 		;
 	;
