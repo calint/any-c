@@ -102,10 +102,17 @@ glob {
 
 	main {
 	
-		var g=globs.new()
+		var g=globs.mk()
+
+		var g=globs.alloc()
 		
 		glob& g=globs.new()
+	
+		globs.free(g)
 		
+		globs.delete(g)
+
+		globs.rm(g)
 		
 	}
 }
