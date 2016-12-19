@@ -21,7 +21,18 @@ inline static type*toc_get_type_by_name(toc*o,ccharp name){
 	}
 	return NULL;
 }
-
+inline static ccharp toc_get_type_in_context(toc*tc,token tk){
+	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		if(s->type=='c'){
+			return s->name;
+		}
+	}
+	toc_print_source_location(tc,tk,4);
+	printf("error: cannot find current class");
+	printf("\n    %s %d",__FILE__,__LINE__);
+	longjmp(_jmpbufenv,1);
+}
 inline static void toc_print_func_call_for_compile(toc*tc,
 		token tk,ccharp funcnm){
 	// get current class name

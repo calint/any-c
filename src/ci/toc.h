@@ -14,6 +14,8 @@ typedef struct toc{
 
 inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,ccharp src);
 inline static void toc_print_func_call_for_compile(toc*,token,ccharp);
+inline static ccharp toc_get_type_for_accessor(toc*,ccharp,token);
+inline static ccharp toc_get_type_in_context(toc*,token);
 
 
 typedef struct tocscope{
@@ -116,13 +118,38 @@ inline static const tocdecl*toc_get_declaration(toc*o,ccharp name){
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
-			const tocdecl*id=(const tocdecl*)dynp_get(&s->idents,i);
-			if(!strcmp(id->name.data,variable_name))
-				return id;
+			const tocdecl*td=(const tocdecl*)dynp_get(&s->idents,i);
+			if(!strcmp(td->name.data,variable_name))
+				return td;
 		}
 	}
 	return 0;
 }
+
+//inline static const char toc_get_scope_type_for_declaration(const toc*o,
+//		ccharp name){
+//
+//	ccharp p=strpbrk(name,".");
+//	ccharp variable_name;
+//	if(p){
+//		str s=str_def;//? leakcase
+//		str_add_list(&s,name,p-name);
+//		str_add(&s,0);
+//		variable_name=s.data;
+//	}else{
+//		variable_name=name;
+//	}
+//
+//	for(int j=(signed)o->scopes.count-1;j>=0;j--){
+//		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
+//		for(unsigned i=0;i<s->idents.count;i++){
+//			const tocdecl*td=(const tocdecl*)dynp_get(&s->idents,i);
+//			if(!strcmp(td->name.data,variable_name))
+//				return s->type;
+//		}
+//	}
+//	return 0;
+//}
 
 inline static void toc_set_declaration_type(toc*o,ccharp name,ccharp type){
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
@@ -222,7 +249,63 @@ inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
 	longjmp(_jmpbufenv,1);
 }
 
+#define toc_id_max_len 1024
 inline static void toc_compile_for_call(
+		toc*tc,token tk,ccharp accessor,unsigned argcount){
+
+	if(!strcmp("printf",accessor)){
+		printf("%s(",accessor);
+		return;
+	}
+	if(!strcmp("p",accessor)){
+		printf("printf(");
+		return;
+	}
+//
+	char cb[toc_id_max_len];
+	strcpy(cb,accessor);
+	const char*path_ptr=cb;
+	const char*varnm_ptr=cb;
+	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
+	if(funcnm_ptr){                           //
+		cb[funcnm_ptr-cb]=0;
+//		*funcnm_ptr=0;                        // path: g.gl
+		funcnm_ptr++;                         // func: print
+		ccharp target_type=toc_get_type_for_accessor(tc,varnm_ptr,tk);
+		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
+		printf("%s_%s((%s*)&",target_type,funcnm_ptr,target_type);
+		if(scope=='c'){
+			printf("o->%s",path_ptr);
+			if(argcount)
+				printf(",");
+			return;
+		}
+		char*first_dot=strchr(cb,'.'); // g.gl
+		if(first_dot){
+			*first_dot=0;                        // var: g
+			path_ptr=first_dot+1;
+			printf("%s.%s",varnm_ptr,path_ptr);
+			if(argcount)
+				printf(",");
+			return;
+		}
+		printf("%s",varnm_ptr);
+		if(argcount)
+			printf(",");
+		return;
+	}
+	funcnm_ptr=cb;       // func: draw
+	ccharp target_type=toc_get_type_in_context(tc,tk);
+	printf("%s_%s((%s*)&o",
+		target_type,
+		funcnm_ptr,
+		target_type
+	);
+	if(argcount)
+		printf(",");
+}
+
+inline static void toc_compile_for_call2(
 		toc*tc,token tk,ccharp accessor,unsigned argcount){
 
 	ccharp p=strpbrk(accessor,".");

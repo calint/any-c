@@ -13,6 +13,8 @@
 #define ccharp const char*
 #define ccharp_def ""
 
+#define null 0
+
 #include"lib/str.h"
 #include"lib/dynp.h"
 #include"lib/token.h"
