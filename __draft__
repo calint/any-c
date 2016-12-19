@@ -15,7 +15,7 @@ buffer template T {}
 
 vertex, vertices have position, normal and color.
 
-materials, material has name; diffuse, ambient and specular color; many configurations; maybe refs texture and bumps.
+materials, material has name; colors diffuse, ambient and specular; maybe refs a texture.
 
 rranges 
 	have one begin and one end described by integers
