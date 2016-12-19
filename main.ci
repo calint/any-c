@@ -35,7 +35,7 @@ rendrange plural rendranges
 	
 	int to
 	
-	material m
+	material& m
 	
 	draw (buffer&) {
 		printf("draw_render_range\n")
@@ -100,6 +100,14 @@ glob {
 	
 	draw (rendctx&)	glo.draw(rendctx)
 
+	main {
+	
+		var g=globs.new()
+		
+		glob& g=globs.new()
+		
+		
+	}
 }
 
 
@@ -148,7 +156,7 @@ global{
 
 		g.glo=copy first g from glos where { g.name=="floor" }
 
-		g.glo=take first from glos where { name=="floor" } sort name range 1..4
+		g.glo=take from glos where { type is new } sort name range 1..4
 		
 		give g to globs
 
