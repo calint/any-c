@@ -160,6 +160,8 @@ global{
 			.glo{glos.ref(0)}
 			.scale{1,1,1}
 		}
+
+		glo g.glo{glos.ref(0).scale{1,1,1}
 		
 		g.draw()
 		
