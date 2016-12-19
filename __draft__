@@ -92,7 +92,9 @@ for ro m in materials using count as c do     // specified
 //     references for read write
 
 // auto c=0;for(auto const&m:materials)p("%4d: %32s\n",c++,m.name);
+// var c=0;for(const&m:materials)p("%4d: %32s\n",c++,m.name);
 
+// !c=0 foo m:materials p"%4d"c++": %32s"m.name"\n";
 
 
 
