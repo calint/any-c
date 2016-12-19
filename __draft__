@@ -32,8 +32,8 @@ for each material in materials   //  deduced to read only
 	p material.name ;
 ;
 
-for each ro material in materials   //  specified
-	p material.name ;
+for each ro m in materials   //  specified
+	p m.name ;
 ;
 
 m ref texture ""
