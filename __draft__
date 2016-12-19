@@ -27,16 +27,18 @@ rranges
 	have one begin and one end described by integers
 	reference a material each
 	
-	do draw using buffer reference do
+	do draw vertices do
 		p "draw_render_range: from " from " to " to " using " material.name ;
 	;
 ;
 
 glos 
 	have vertices and rranges
+	
 	do draw context do
 		p "draw_glo" ;
-		for each const r in rranges do r draw buffer
+		for each const r in rranges do r draw vertices
+//		for each const r in rranges do r draw copy of vertices
 		for i c in rranges do
 			i draw buffer
 			p " counter: " c ;
