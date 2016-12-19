@@ -6,6 +6,8 @@ vec3 {x=0.0 y=0.0 z=0.0}
 
 vec4 {vec3; t=0.0}
 
+vec4 : vec3 {t=0.0}
+
 position {vec3}
 
 orientation {vec3}
@@ -16,7 +18,8 @@ rendctx {}
 
 
 
-rendrange plural rendranges {
+rendrange plural rendranges
+{
 	int from
 	int to
 	material m
@@ -26,20 +29,20 @@ rendrange plural rendranges {
 	}
 } 
 
-glo/glos {
+glo / glos {
 	buffer&;
 	rendranges rendrngs;
 	
 	draw (rendctx&)	{
 		printf ("draw_glo\n")
 		
-		for r in rendranges {
+		for all const r in rendranges {
 			r.draw(buffer)
 		}
 		
-		for all const i c in rendranges {
-			i.draw buffer
-			printf(" counter:%d",c)
+		for i c in rendranges {
+			i.draw (buffer)
+			printf (" counter:%d",c)
 			
 			for j cc in rendranges {
 				if cc==1 return false
@@ -52,7 +55,7 @@ glo/glos {
 	}
 }
 
-glob/globs {
+glob {
 	
 	glo&;
 	
@@ -71,21 +74,17 @@ glob/globs {
 	draw (rendctx&)	glo.draw(rendctx)
 }
 
-globs;
-
-glob root
-
-
-
 global{
-	glob g1
+	glos;
+	
+	globs;
+	
+	root : glob
+
+	g1 : glob
 	
 	draw {
 		printf("draw_global\n")
-	}
-
-	main_loop{
-		
 	}
 
 	main{
