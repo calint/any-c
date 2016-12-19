@@ -16,7 +16,7 @@ buffer template T {}
 
 vertices
 a vertex
-	has a
+	has
 		position
 		normal
 		color
@@ -25,8 +25,8 @@ a vertex
 materials
 a material
 	has
-		a name
-		a diffuse, ambient and specular color
+		name
+		diffuse, ambient and specular color
 		many configurations
 	references
 		a texture
