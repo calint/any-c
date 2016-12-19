@@ -1,40 +1,6 @@
 buffer{}
+
 material{}
-
-rendrange plural rendranges {
-	int from
-	int to
-	material m
-	
-	draw(buffer&){
-		printf("draw_render_range\n")
-	}
-} 
-
-glo/glos {
-	buffer&;
-	rendranges rendrngs;
-	
-	draw{
-		printf ("draw_glo\n")
-		
-		for r in rendranges {
-			r.draw(buffer)
-		}
-		
-		for all const r in rendranges {
-			r.draw buffer
-			
-			for j c in rendranges{
-				if c==1 return false
-				r.draw (buffer)
-				j.draw (buffer)
-				true
-			}
-			
-		}
-	}
-}
 
 vec3 {x=0.0 y=0.0 z=0.0}
 
@@ -47,6 +13,44 @@ orientation {vec3}
 lookvec {vec3}
 
 rendctx {}
+
+
+
+rendrange plural rendranges {
+	int from
+	int to
+	material m
+	
+	draw (buffer&) {
+		printf("draw_render_range\n")
+	}
+} 
+
+glo/glos {
+	buffer&;
+	rendranges rendrngs;
+	
+	draw (rendctx&)	{
+		printf ("draw_glo\n")
+		
+		for r in rendranges {
+			r.draw(buffer)
+		}
+		
+		for all const i c in rendranges {
+			i.draw buffer
+			printf(" n:%d",c)
+			
+			for j c in rendranges {
+				if c==1 return false
+				r.draw (buffer)
+				j.draw (buffer)
+				true
+			}
+			
+		}
+	}
+}
 
 glob/globs {
 	
@@ -62,7 +66,7 @@ glob/globs {
 	
 	globs leftglobs
 	
-	bits options { add allocated remove free }
+	options { add allocated remove free }
 	
 	draw (rendctx&)	glo.draw(rendctx)
 }
