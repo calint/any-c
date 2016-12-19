@@ -22,7 +22,7 @@ materials
 	
 
 rranges 
-	have one from, to as ints
+	have one from and to as ints
 	reference a material each
 	
 	does draw buffer ref do
