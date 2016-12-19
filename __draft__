@@ -28,7 +28,11 @@ new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
 var m=new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
-for each material in materials
+for each material in materials   //  deduced to read only
+	p material.name ;
+;
+
+for each ro material in materials   //  specified
 	p material.name ;
 ;
 
