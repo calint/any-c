@@ -32,6 +32,8 @@ rrange {
 	}
 } 
 
+rrange has int from, int to and material ref
+
 glo has vertices and rranges
 
 	does draw do	
