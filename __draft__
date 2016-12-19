@@ -11,7 +11,7 @@ lookvec      { vec3 }
 texture      {}
 context      {}
 
-from c use opengl
+from c opengl
 
 vertices (singular vertex)
 	have position, normal and color
