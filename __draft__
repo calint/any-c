@@ -23,8 +23,12 @@ material, materials
 		specular
 	many
 		configurations
-	ref 
+	ref
 		textures
+	maybe ref
+		texture
+	ref many
+		texture
 ;
 
 rranges 
