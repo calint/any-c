@@ -15,12 +15,11 @@ buffer template T {}
 
 vertex, vertices have position, normal and color.
 
-material, materials have name,   diffuse, ambient and specular color
+material, materials have name    diffuse, ambient and specular colors
 		many configurations
-	references
-		a texture
-		a bump map maybe
-		many textures
+		refs a texture
+		refs a bumpmap maybe
+		refs many textures
 ;
 
 rranges 
