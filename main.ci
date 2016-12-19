@@ -18,6 +18,13 @@ buffer template typename T {}
 
 dictionary aka kvps is template for typename T {}
 
+dictionary aka kvps template T {}
+
+
+kvps template T {}
+
+kvps template T {}
+
 material{}
 
 
