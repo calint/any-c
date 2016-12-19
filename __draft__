@@ -11,11 +11,7 @@ lookvec      { vec3 }
 texture      {}
 context      {}
 
-from c use
-	glDrawElements
-	glDrawArray
-	..
-;
+from c use opengl
 
 vertices (singular vertex)
 	have position, normal and color
