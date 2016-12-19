@@ -1,32 +1,79 @@
-varray{}
+array{}
 buffer{}
 material{}
 
-render_range{
-	buffer;
+rendrange{
 	int from
 	int to
 	material m
 	
-	draw{
+	draw(buffer&){
 		printf("draw_render_range\n")
 	}
 }
 
 glo{
-	buffer vertbuf;
-	render_range rendrngs;
+	buffer&;
+	rendranges rendrngs;
 	
 	draw{
-		printf("draw_glo\n")
-		rendrngs.draw()
+		printf ("draw_glo\n")
+		
+		for r in rendranges {
+			r.draw(buffer)
+		}
+		
+		rendranges:for all const i {
+			i.draw buffer
+			
+			rendranges:for j count {
+				if c==1 return false
+				i.draw buffer
+				j.draw buffer
+				true
+			}
+			
+		}
 	}
 }
 
+vec3 {
+	x=0.0
+	y=0.0
+	z=0.0
+}
+
+position {vec3}
+lookvec {vec3}
+
+rendctx {}
+
+glob {
+	glo&;
+	globs;
+	position;
+	lookvec;
+	
+	draw (rendctx&)	glo.draw(rendctx)
+}
+array of glob globs
+array of glob refs globs_added
+array of glob refs globs_removed
+
+glob ref root
+
+
 
 global{
-	glo gl
-	draw{printf("draw_global\n")}
+	glob g1
+	
+	draw {
+		printf("draw_global\n")
+	}
+
+	main_loop{
+		
+	}
 
 	main{
 		draw()
