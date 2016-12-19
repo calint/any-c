@@ -37,6 +37,11 @@ for ro m in materials do   //  specified
 	m.name="new name" // error
 ;
 
+for ro m in materials do count  //  specified
+	p count ": " m.name ,
+	m.name="new name" // error
+;
+
 m ref texture ""
  
 accessor: material texture ref
