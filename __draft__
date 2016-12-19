@@ -29,26 +29,25 @@ material{}
 
 
 
-rendrange plural rendranges
-{
-	int from
-	
-	int to
-	
-	material& m
-	
+rrange {
+	from     : int
+	to       : int
+	material : ref
+
 	draw (buffer&) {
 		printf("draw_render_range\n")
 	}
 } 
 
+vertex/vertices {
+	pos  : vec3
+	norm : vec3
+	colr : vec3
+}
 
-
-glo / glos {
-	
-	buffer&;
-	
-	rendranges rendrngs;
+glo {
+	vertices;
+	rranges;
 	
 	draw (rendctx&)	{
 		printf ("draw_glo\n")
@@ -86,9 +85,9 @@ glob {
 	
 	lookvec;
 	
-	globs : buffer of globs
+	globs;
 	
-	leftglobs : buffer of globs
+	leftglobs : stack of globs
 	
 	options : bits { add allocated remove free }
 
