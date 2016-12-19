@@ -161,7 +161,25 @@ global{
 			.scale{1,1,1}
 		}
 
-		glo g.glo{glos.ref(0)}.scale{1,1,1}
+		glo g.glo{glos.ref(0)}.scale{1,1,1}.draw()
+
+		glo g
+			.glo{glos.ref(0)}
+			.scale{1,1,1}
+			.draw()
+		
+		query q
+				.filter{}
+				.sort{}
+				.range{}
+				.table{}
+				.output{}
+		
+		globs.filter{}
+				.sort{}
+					.range{}
+						.table{}
+				.			.output{}
 		
 		g.draw()
 		
