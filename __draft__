@@ -15,7 +15,7 @@ buffer template T {}
 
 
 vertices, a vertex has: position, normal and color;
-vertex, vertices have: a vertex has: position, normal and color;
+vertex, vertices have: position, normal and color;
 
 materials
 a material
