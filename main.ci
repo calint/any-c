@@ -36,36 +36,40 @@ glo/glos {
 	}
 }
 
-vec3/vecs3 {
-	x=0.0
-	y=0.0
-	z=0.0
-}
+vec3 {x=0.0 y=0.0 z=0.0}
 
-vec4/vecs4 {
-	vec3;
-	t=0.0
-}
+vec4 {vec3; t=0.0}
 
+position {vec3}
 
-position/positions {vec3}
-lookvec/lookvecs {vec3}
+orientation {vec3}
+
+lookvec {vec3}
 
 rendctx {}
 
 glob/globs {
+	
 	glo&;
-	globs;
+	
 	position;
+	
+	orientation;
+	
 	lookvec;
+	
+	childs [glob]
+	
+	vector<glob> childs
+	
+	bits options { add allocated remove free }
 	
 	draw (rendctx&)	glo.draw(rendctx)
 }
-array of glob globs
-array of glob refs globs_added
-array of glob refs globs_removed
 
-glob ref root
+globs;
+
+glob root
 
 
 
