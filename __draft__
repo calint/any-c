@@ -15,8 +15,11 @@ vertex vertices
 	have position, normal and color
 
 materials
-	have name,   diffuse, ambient and specular color ;
-	refs texture
+	have one name,   diffuse, ambient and specular color
+	have many configurations each	
+	reference a texture each
+	reference many textures each
+	
 
 rranges have
 	int from, int to and material ref
