@@ -28,7 +28,7 @@ new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
 var m=new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
-for each read only material in materials do
+for each material in materials
 	p material.name ;
 ;
 
