@@ -11,11 +11,11 @@ lookvec      { vec3 }
 texture      {}
 context      {}
 
-vertex vertices
+vertices (singular vertex)
 	have position, normal and color
 
 materials
-	have one name and diffuse, ambient and specular color
+	have a name   and diffuse, ambient and specular color
 	have many configurations each
 	reference a texture each
 	reference many textures each
@@ -32,7 +32,7 @@ rranges
 
 glos 
 	have vertices and rranges
-	do draw context:
+	do draw context do
 		p "draw_glo" ;
 		for each const r in rranges do r draw buffer
 		for i c in rranges do
