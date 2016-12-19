@@ -31,7 +31,7 @@ rranges
 	have one begin and one end described by integers
 	reference a material each
 	
-	do draw using vertices do
+	do draw vertices do
 		p "draw_render_range: from " from " to " to " using " material.name ;
 	;
 ;
@@ -41,7 +41,7 @@ glos
 	
 	do draw context do
 		p "draw_glo" ;
-		for each read only r in rranges do r draw using vertices
+		for each read only r in rranges do r draw vertices
 //		for each const r in rranges do r draw copy of vertices
 		for i c in rranges do
 			i draw buffer
