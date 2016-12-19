@@ -92,11 +92,9 @@ glob {
 	
 	options : bits { add allocated remove free }
 
-	bits : bits { add allocated remove free }
-
 	bits { add allocated remove free }
 	
-	draw (rendctx&)	glo.draw(rendctx)
+	draw(rendctx&)=glo.draw(rendctx)
 
 	main {
 	
@@ -181,18 +179,16 @@ global{
 			.scale{1,1,1}
 			.draw()
 		
-		query q
-				.filter{}
-				.sort{}
-				.range{}
-				.table{}
-				.output{}
+		query q.filter{}.sort{}.range{}.table{}.output{}
 		
 		globs.filter{}
 				.sort{}
 					.range{}
 						.table{}
 				.			.output{}
+
+				filter  sort  range  table  output
+		globs.q({},      {},    {},    {},   {})
 		
 		g.draw()
 		
