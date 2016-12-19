@@ -21,14 +21,15 @@ buffer template T {}
 color {vec3}
 
 
-material{
-	name : cstr
-	diffuse : color
-	ambient : color
+material {
+	name     : cstr
+	diffuse  : color
+	ambient  : color
 	specular : color
-	texture_name : cstr
-	texture : ref
+	texture  : ref
 }
+
+
 
 rrange {
 	from     : int
