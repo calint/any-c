@@ -75,7 +75,7 @@ for ro m in materials using count as c do     // specified
 // .c=0 for const&m:materials {p "%4d: %32s\n",c++,m.name}
 // .c=0 for ro&m:materials p"%4d: %32s\n",c++,m.name
 // auto c=0;for(auto const&m:materials)p("%4d: %32s\n",c++,m.name);
-// .c=0 for m&m:materials p"%4d: %32s\n",c++,m.name;
+// .c=0 for m&m:materials p"%4d"c++" %32s",m.name"\n";
 //         m& mutable reference
 
 for m in materials inc c {
