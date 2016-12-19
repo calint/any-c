@@ -13,13 +13,9 @@ context      {}
 
 buffer template T {}
 
-vertex, vertices have: position, normal and color.
+vertex, vertices have position, normal and color.
 
-materials
-a material
-	has
-		name
-		diffuse, ambient and specular color
+material, materials have name,   diffuse, ambient and specular color
 		many configurations
 	references
 		a texture
