@@ -78,11 +78,17 @@ glob {
 	
 	glo : glo ref
 	
-	position : vec3
+	glo& glo
 	
-	orientation : vec3
+	glo&;
 	
-	lookvec : vec3
+	position : position
+	
+	position;
+	
+	orientation;
+	
+	lookvec;
 	
 	globs : buffer of globs
 	
