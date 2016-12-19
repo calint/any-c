@@ -14,13 +14,7 @@ context      {}
 buffer template T {}
 
 
-vertices
-a vertex
-	has
-		position
-		normal
-		color
-;
+vertices, a vertex has: position, normal and color;
 
 materials
 a material
