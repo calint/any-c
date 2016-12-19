@@ -77,6 +77,8 @@ glo / glos {
 glob {
 	
 	glo : glo ref
+
+	glo : glo&
 	
 	glo& glo
 	
@@ -98,6 +100,19 @@ glob {
 	
 	draw (rendctx&)	glo.draw(rendctx)
 
+}
+
+
+
+
+glob {
+	position;
+	lookvec;
+	orientation;
+	glo&;
+	children : buffer of globs
+	bits { add allocated remove free }
+	draw (rendctx&) glo.draw(rendctx)
 }
 
 
