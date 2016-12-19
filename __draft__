@@ -18,9 +18,7 @@ vertex, vertices have position, normal and color.
 material, materials
 	has
 		name
-		diffuse
-		ambient
-		specular
+		diffuse, ambient, specular color
 	many
 		configurations
 	maybe refs
