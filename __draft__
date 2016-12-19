@@ -31,7 +31,8 @@ a material
 	references a texture maybe
 	references at least a texture
 	references many textures
-	
+done materials
+
 
 rranges 
 	have one begin and one end described by integers
