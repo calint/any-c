@@ -47,7 +47,7 @@ for ro m in materials using count as c do     // specified
 	m.name="new name"        // error
 ;
 
-materials for each m count c do
+materials: for each m count c do
 	p c ": " m.name ,    // count
 	m.name="new name"        // error
 ;
