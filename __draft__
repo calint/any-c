@@ -55,6 +55,9 @@ for ro m in materials using count as c do     // specified
 // for m in materials with count in c do print c ": " m.name ; c++.
 // for m in materials inc c do p c ": " m.name ;;
 // int c=0;for(const & m:materials){printf("%d: %s\n",c++,m.name);}
+// int c=0;for(const m:materials){printf("%d: %s\n",c++,m.name);}
+// int c=0;for(&m:materials){printf("%d: %s\n",c++,m.name);}
+// int c=0;for(m:materials){printf("%d: %s\n",c++,m.name);}
 
 for m in materials inc c {
 	p c ": " m.name ;
