@@ -1,27 +1,15 @@
-vec3 {x=0.0 y=0.0 z=0.0}
-
-vec4 {vec3; t=0.0}
-
-vec4 : vec3 {t=0.0}
-
-position {vec3}
-
-orientation {vec3}
-
-normal {vec3}
-
-scale {vec3}
-
-lookvec {vec3}
-
-rendctx {}
-
-kvps template T {}
-
 buffer template T {}
 
-color {vec3}
-
+vec3         { x=0.0 y=0.0 z=0.0 }
+vec4         { vec3; t=0.0 }
+position     { vec3 }
+orientation  { vec3 }
+normal       { vec3 }
+color        { vec3 }
+scale        { vec3 }
+lookvec      { vec3 }
+texture      {}
+drawctx      {}
 
 material {
 	name     : cstr
@@ -30,8 +18,6 @@ material {
 	specular : color
 	texture  : ref
 }
-
-
 
 rrange {
 	from     : int
@@ -44,15 +30,11 @@ rrange {
 	}
 } 
 
-
-
 vertex/vertices {
 	position;
 	normal;
 	color;
 }
-
-
 
 glo {
 	vertices;
@@ -60,11 +42,8 @@ glo {
 	
 	draw (rendctx&)	{
 		printf ("draw_glo\n")
-		
 		for all const r in rrranges {r.draw(buffer)}
-
 		for all const r in rrranges r.draw(buffer)
-		
 		for i c in rrranges {
 			i.draw (buffer)
 			p(" counter: %d",c)
@@ -74,38 +53,26 @@ glo {
 				j.draw (buffer)
 				true
 			}
-			
 		}
 	}
 }
 
-
-
 glob {
-		
-	glo : ref
-	
-	position;
-	
-	orientation;
-	
-	lookvec;
-	
-	globs;
-		
-	bits { add allocated remove free }
-	
+	position    ;
+	orientation ;
+	lookvec     ;
+	globs       ;
+	bits        { add allocated remove free }
+	glo         : ref
+	other_glo   : glo ref
 	other_globs : stack of globs
 	
-	other_glo : glo ref
-	
-	draw(rendctx&)=glo.draw(rendctx)
+	draw( r : rendctx ref )=glo.draw(r)
 
 	main {
 		var g=globs.alloc()
 		globs.free(g)
 	}
-
 }
 
 global{
