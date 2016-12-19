@@ -53,6 +53,7 @@ for ro m in materials using count as c do     // specified
 // for each m in materials c do p c ": " m.name ; ;
 // var c=0 for m in materials do p c ": " m.name ; c++;
 // for m in materials with count in c do p c ": " m.name ; c++;
+// for m in materials count c do p c ": " m.name ; c++;
 
 
 for each m in materials c do
