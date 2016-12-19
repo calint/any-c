@@ -60,8 +60,7 @@ for ro m in materials using count as c do     // specified
 // int c=0;for(m:materials)p("%d: %s\n",c++,m.name);
 // for m in materials inc c do p c ": " m.name ;;
 // int c=0;for(const&m:materials)p("%4d: 5%s\n",c++,m.name);
-f
-or ro m in materials using count as c do     // specified
+for ro m in materials using count as c do     // specified
 	p c ": " m.name ,    // count
 	m.name="new name"        // error
 ;
