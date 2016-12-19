@@ -40,10 +40,10 @@ glo has vertices and rranges
 	
 		for all const r in rranges r draw buffer
 		
-		for i c in rrranges do
+		for i c in rranges do
 			i draw buffer
 			p " counter: " c ;
-			for j cc in rrranges do
+			for j cc in rranges do
 				if cc is 1 return false
 				i draw buffer
 				j draw buffer
