@@ -14,7 +14,9 @@ context      {}
 buffer template T {}
 
 
-a vertex has position, normal and color plural vertices
+vertices
+a vertex
+	has position, normal and color plural vertices
 
 materials
 a material
