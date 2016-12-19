@@ -1,7 +1,7 @@
 buffer{}
 material{}
 
-rendrange/rendranges {
+rendrange plural rendranges {
 	int from
 	int to
 	material m
@@ -9,9 +9,9 @@ rendrange/rendranges {
 	draw(buffer&){
 		printf("draw_render_range\n")
 	}
-}
+} 
 
-glo{
+glo/glos {
 	buffer&;
 	rendranges rendrngs;
 	
@@ -36,14 +36,20 @@ glo{
 	}
 }
 
-vec3 {
+vec3/vecs3 {
 	x=0.0
 	y=0.0
 	z=0.0
 }
 
-position {vec3}
-lookvec {vec3}
+vec4/vecs4 {
+	vec3;
+	t=0.0
+}
+
+
+position/positions {vec3}
+lookvec/lookvecs {vec3}
 
 rendctx {}
 
