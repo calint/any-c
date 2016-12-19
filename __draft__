@@ -18,6 +18,11 @@ vertex, vertices have position, normal and color.
 materials, material has name; colors diffuse, ambient and specular; maybe a texture reference.
 materials, material has name, diffuse color, ambient color and specular color; maybe refs a texture.
 
+material/materials {
+	has: name, diffuse color, ambient color, specular color;
+	refs: maybe a texture
+}
+
 rranges 
 	have one begin and one end described by integers
 	reference a material each
