@@ -1,8 +1,7 @@
-array{}
 buffer{}
 material{}
 
-rendrange{
+rendrange/rendranges {
 	int from
 	int to
 	material m
@@ -28,8 +27,8 @@ glo{
 			
 			for j c in rendranges{
 				if c==1 return false
-				r.draw buffer
-				j.draw buffer
+				r.draw (buffer)
+				j.draw (buffer)
 				true
 			}
 			
