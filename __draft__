@@ -14,20 +14,21 @@ lookvec {vec3}
 
 rendctx {}
 
-buffer template typename T {}
-
-dictionary aka kvps is template for typename T {}
-
-dictionary aka kvps template T {}
-
-
 kvps template T {}
 
-kvps template T {}
+buffer template T {}
 
-material{}
+color {vec3}
 
 
+material{
+	name : cstr
+	diffuse : color
+	ambient : color
+	specular : color
+	texture_name : cstr
+	texture : ref
+}
 
 rrange {
 	from     : int
@@ -35,15 +36,20 @@ rrange {
 	material : ref
 
 	draw (buffer&) {
-		printf("draw_render_range\n")
+		printf("draw_render_range: from %d to %d using %s\n",
+			from, to, material.name )
 	}
 } 
+
+
 
 vertex/vertices {
 	pos  : vec3
 	norm : vec3
 	colr : vec3
 }
+
+
 
 glo {
 	vertices;
@@ -52,14 +58,13 @@ glo {
 	draw (rendctx&)	{
 		printf ("draw_glo\n")
 		
-		for all const r in rrranges {
-			r.draw(buffer)
-		}
+		for all const r in rrranges {r.draw(buffer)}
+
+		for all const r in rrranges r.draw(buffer)
 		
 		for i c in rrranges {
 			i.draw (buffer)
-			printf (" counter:%d",c)
-			
+			p(" counter: %d",c)
 			for j cc in rrranges {
 				if cc==1 return false
 				r.draw (buffer)
