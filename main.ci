@@ -133,10 +133,36 @@ global{
 
 	main{
 		draw()
+		
 		gl.draw()
 		
 		glo g
+		
+		g.glo=glos.ref(0)
+		
+		g.glo=glos.copy(0)
+		
+		g.glo=ref first g in glos where { g.name=="floor" }
+		
+		g.glo=ref first in glos where { name=="floor" }
+
+		g.glo=copy first g from glos where { g.name=="floor" }
+
+		g.glo=take first from glos where { name=="floor" } sort name range 1..4
+		
+		give g to globs
+
+		take g from globs { name=="floor" || }
+
+		g2 = take first from globs
+
+		glo g{
+			.glo{glos.ref(0)}
+			.scale{1,1,1}
+		}
+		
 		g.draw()
+		
 		g.rendrngs.draw()
 	}
 
