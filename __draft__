@@ -11,7 +11,7 @@ lookvec      { vec3 }
 texture      {}
 drawctx      {}
 
-vertices (sing vertex) have position, normal and color
+vertices have position, normal and color
 
 materials have name, texture ref, diffuse color, ambient color and specular color ;
 
