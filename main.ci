@@ -39,7 +39,7 @@ glo/glos {
 		
 		for all const i c in rendranges {
 			i.draw buffer
-			printf(" n:%d",c)
+			printf(" counter:%d",c)
 			
 			for j c in rendranges {
 				if c==1 return false
