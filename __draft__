@@ -36,7 +36,7 @@ glo is
 	vertices
 	rranges
 	
-	does draw rendctx ref
+	does draw rendctx ref do
 		
 		p "draw_glo" ;
 		
