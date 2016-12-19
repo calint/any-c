@@ -47,7 +47,7 @@ for ro m in materials using count as c do     // specified
 	m.name="new name"        // error
 ;
 
-// int c=0;for(auto const & m:materials){printf("%d: %s",count,m.name);}
+// int c=0;for(auto const & m:materials){printf("%d: %s",c,m.name);c++;}
 materials: for each m count c do
 	p c ": " m.name ,    // count
 	m.name="new name"        // error
