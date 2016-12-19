@@ -70,7 +70,7 @@ for ro m in materials using count as c do     // specified
 // var c=0 for ro m in materials p c++": "m.name;
 // .c=0;for(const&m:materials)p("%4d: %32s\n",c++,m.name);
 // auto c=0;for(const&m:materials)p("%4d: %32s\n",c++,m.name);
-// $c=0;for(const&m:materials)p("%4d: %32s\n",c++,m.name);
+// c=0;for(const&m:materials)p("%4d: %32s\n",c++,m.name);
 // #c=0;for(const&m:materials)p("%4d: %32s\n",c++,m.name);
 
 
