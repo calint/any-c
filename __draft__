@@ -44,10 +44,10 @@ glo has vertices and rranges
 			i draw buffer
 			p " counter: " c ;
 			for j cc in rranges do
-				if cc is 1 return false
+				if cc is 1 done false
 				i draw buffer
 				j draw buffer
-				return true
+				done true
 			;
 		;
 	;
