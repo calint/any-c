@@ -91,6 +91,8 @@ for ro m in materials using count as c do     // specified
 // .c=0 fow m:materials p"%4d"c++" %32s",m.name"\n";
 //     references for read write
 
+// auto c=0;for(auto const&m:materials)p("%4d: %32s\n",c++,m.name);
+
 
 
 
