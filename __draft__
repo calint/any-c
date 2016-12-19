@@ -25,7 +25,7 @@ rranges
 	have one begin and one end described by integers
 	reference a material each
 	
-	do draw buffer ref 
+	do draw using buffer reference do
 		p "draw_render_range: from " from " to " to " using " material.name ;
 	;
 ;
