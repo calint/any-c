@@ -8,11 +8,15 @@ position {vec3}
 
 orientation {vec3}
 
+scale {vec3}
+
 lookvec {vec3}
 
 rendctx {}
 
 buffer template typename T {}
+
+dictionary aka kvps is template for typename T {}
 
 material{}
 
@@ -65,11 +69,11 @@ glo / glos {
 
 glob {
 	
-	glo&;
+	glo : glo ref
 	
-	position;
+	position : vec3
 	
-	orientation;
+	orientation : vec3
 	
 	lookvec : vec3
 	
