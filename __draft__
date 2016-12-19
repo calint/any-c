@@ -62,6 +62,12 @@ for m in materials inc c {
 	}
 }
 
+for ro m in materials inc c {         // read-only
+	p c ": " m.name ;
+	for t in m.textures inc cc {      // might modify referenced textures
+		p c "," cc ": " m.name ;
+	}
+}
 
 for each m in materials c do
 	p c ": " m.name ,    // count
