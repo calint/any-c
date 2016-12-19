@@ -102,8 +102,10 @@ for ro m in materials using count as c do     // specified
 // {!c=0;foo(m:materials){pf(stderr,"%4d: %32s\n",c++,m.name);}}
 // !c=0 foo m:materials pf stderr "%4d"c++": %32s"m.name;
 // {!c=0 foo m:materials pf stderr "%4d"c++": %32s"m.name;}
+
 // {!c=0 foo m:materials{pf stderr "%4d"c++": %32s"m.name;}}
 // {auto c=0;for(auto const&m:materials)p(stderr,"%4d: %32s\n",c++,m.name);}
+
 // {auto c=0;for(auto&m:materials)p(stderr,"%4d: %32s\n",c++,m.name);}
 / {!c=0 fow m:materials{pf stderr "%4d"c++": %32s"m.name;}}
 /
