@@ -41,7 +41,7 @@ glos
 	
 	do draw context do
 		p "draw_glo" ;
-		for each const r in rranges do r draw vertices
+		for each unmodifiable r in rranges do r draw vertices
 //		for each const r in rranges do r draw copy of vertices
 		for i c in rranges do
 			i draw buffer
