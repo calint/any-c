@@ -16,13 +16,14 @@ vertex vertices
 
 materials
 	have one name and diffuse, ambient and specular color
-	have many configurations each	
+	have many configurations each
 	reference a texture each
 	reference many textures each
 	
 
-rranges have
-	int from, int to and material ref
+rranges 
+	have one from, to as ints
+	reference a material each
 	
 	does draw buffer ref do
 		p "draw_render_range: from " from " to " to " using " material.name ;
