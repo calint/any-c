@@ -37,6 +37,7 @@ inline static void toc_print_func_call_for_compile(toc*tc,
 	if(typenm==0){
 		toc_print_source_location(tc,tk,4);
 		printf("could not find class scope");
+		//? print toc
 		longjmp(_jmpbufenv,1);
 	}
 
@@ -721,12 +722,12 @@ inline static type*toc_parse_type(toc*tc,token name){
 	c->token=name;
 	token_setz(&c->token,&c->name);
 	toc_push_scope(tc,'c',c->name.data);
-	if(*tc->srcp!='{'){
+	if(!toc_is_srcp(tc,'{')){
 		toc_print_source_location(tc,c->token,4);
 		printf("expected '{' to open class body\n");
 		longjmp(_jmpbufenv,1);
 	}
-	tc->srcp++;
+	toc_srcp_inc(tc);
 	while(1){
 		token type=toc_next_token(tc);
 		if(token_is_empty(&type)){
@@ -737,14 +738,14 @@ inline static type*toc_parse_type(toc*tc,token name){
 			tc->srcp++;
 			break;
 		}
-		if(*tc->srcp=='(' || *tc->srcp=='{'){
+		if(toc_is_srcp(tc,'(') || toc_is_srcp(tc,'{')){
 			toc_parse_func(tc,c,&type);
-		}else if(*tc->srcp=='=' || *tc->srcp==';'){
+		}else if(toc_is_srcp(tc,'=') || toc_is_srcp(tc,';')){
 			token name=toc_next_token(tc);
 			toc_parse_field(tc,c,&type,&name);
 		}else{
 			token name=toc_next_token(tc);
-			if(*tc->srcp=='(' || *tc->srcp=='{'){
+			if(toc_is_srcp(tc,'(') || toc_is_srcp(tc,'{')){
 				tc->srcp=name.content;
 				toc_parse_func(tc,c,&type);
 			}else{

@@ -1,0 +1,42 @@
+buffer{}
+vertex_buffer{buffer}
+index_buffer{buffer}
+material{}
+
+render_range{
+	buffer
+	int from
+	int to
+	material m
+}
+
+glo{
+	vertex_buffer
+	index buffer
+	render_range[]
+	
+	render{
+		printf("glo")
+	}
+}
+
+glob{
+	glo g
+}
+
+glos{
+	gps{
+		printf("hello from glos")
+}	}
+
+glob{
+	glos
+	glo
+}
+
+global{
+	main{
+		glob g
+		g.glo.gp()
+	}
+}
