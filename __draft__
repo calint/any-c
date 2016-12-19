@@ -33,6 +33,9 @@ rrange {
 } 
 
 rrange has int from, int to and material ref
+	does draw buffer ref do
+	;
+;
 
 glo has vertices and rranges
 
