@@ -11,6 +11,8 @@ lookvec      { vec3 }
 texture      {}
 drawctx      {}
 
+vertex/vertices { position; normal; color; }
+
 material {
 	name     : cstr
 	diffuse  : color
@@ -30,28 +32,29 @@ rrange {
 	}
 } 
 
-vertex/vertices {
-	position;
-	normal;
-	color;
-}
-
 glo {
 	vertices;
 	rranges;
 	
 	draw (rendctx&)	{
 		printf ("draw_glo\n")
-		for all const r in rrranges {r.draw(buffer)}
-		for all const r in rrranges r.draw(buffer)
+//		for all const r in rranges {r.draw(buffer)}
+//		for all const r in rranges r.draw(buffer)
+		for all const r in rranges r draw buffer
+		
+		
 		for i c in rrranges {
-			i.draw (buffer)
-			p(" counter: %d",c)
+//			i.draw (buffer)
+			i draw buffer
+//			p(" counter: %d",c)
+			p " counter: " c "\n"
 			for j cc in rrranges {
-				if cc==1 return false
-				r.draw (buffer)
-				j.draw (buffer)
-				true
+//				if cc==1 return false
+//				if cc is one false
+				if cc is 1 return false
+				r draw buffer
+				j draw buffer
+				return true
 			}
 		}
 	}
