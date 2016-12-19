@@ -15,7 +15,7 @@ vertices (singular vertex)
 	have position, normal and color
 
 materials
-	have a name   and diffuse, ambient and specular color
+	have a name   and a diffuse, ambient and specular color
 	have many configurations each
 	reference a texture each
 	reference many textures each
