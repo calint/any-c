@@ -9,7 +9,7 @@ color        { vec3 }
 scale        { vec3 }
 lookvec      { vec3 }
 texture      {}
-drawctx      {}
+context      {}
 
 vertex vertices
 	have position, normal and color
@@ -22,18 +22,18 @@ materials
 	
 
 rranges 
-	have one from and to as ints
+	have one begin and one end described by integers
 	reference a material each
 	
-	does draw buffer ref do
+	do draw buffer ref 
 		p "draw_render_range: from " from " to " to " using " material.name ;
 	;
-
 ;
 
-glo has vertices and rranges
-
-	does draw do	
+glos 
+	have vertices and rranges
+	
+	do draw context:
 
 		p "draw_glo" ;
 	
