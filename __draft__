@@ -23,6 +23,14 @@ materials
 	reference a texture each maybe
 	reference at least a texture each
 	reference many textures each
+
+a material
+	has a name   and a diffuse, ambient and specular color
+	has many configurations
+	references a texture
+	references a texture maybe
+	references at least a texture
+	references many textures
 	
 
 rranges 
