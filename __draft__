@@ -20,7 +20,7 @@ materials, material has name, diffuse color, ambient color and specular color; m
 
 material/materials {
 	has: name, diffuse color, ambient color, specular color;
-	refs: maybe a texture
+	refs: maybe a texture;
 }
 
 rranges 
