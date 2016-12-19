@@ -11,9 +11,9 @@ lookvec      { vec3 }
 texture      {}
 drawctx      {}
 
-vertex (plural vertices) have position, normal and color
+vertices (sing vertex) have position, normal and color
 
-material has name, texture ref, diffuse color, ambient color and specular color ;
+materials have name, texture ref, diffuse color, ambient color and specular color ;
 
 rrange has int from, int to and material ref
 	does draw buffer ref do
