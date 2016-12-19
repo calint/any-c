@@ -38,7 +38,7 @@ glo has vertices and rranges
 
 		p "draw_glo" ;
 	
-		for all const r in rranges r draw buffer
+		for each const r in rranges do r draw buffer
 		
 		for i c in rranges do
 		
