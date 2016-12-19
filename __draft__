@@ -28,18 +28,24 @@ new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
 var m=new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
-for m in materials do   //  deduced to read only
+for m in materials do        //  deduced to read only
 	p m.name ;
 ;
 
-for ro m in materials do   //  specified
+for ro m in materials do     //  specified
 	p m.name ,
-	m.name="new name" // error
+	m.name="new name"        // error
 ;
 
-for with count ro m in materials do //  specified
-	p count ": " m.name ,
-	m.name="new name" // error
+for ro m in materials using count do     // specified
+	p count ": " m.name ,    // count
+	m.name="new name"        // error
+;
+
+
+for ro m in materials using count as c do     // specified
+	p c ": " m.name ,    // count
+	m.name="new name"        // error
 ;
 
 m ref texture ""
