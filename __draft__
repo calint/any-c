@@ -8,6 +8,8 @@ position {vec3}
 
 orientation {vec3}
 
+normal {vec3}
+
 scale {vec3}
 
 lookvec {vec3}
@@ -45,9 +47,9 @@ rrange {
 
 
 vertex/vertices {
-	pos  : vec3
-	norm : vec3
-	colr : vec3
+	position;
+	normal;
+	color;
 }
 
 
