@@ -23,10 +23,9 @@ material/materials {
 	refs: maybe a texture;
 }
 
-material m has name "metal" diffuse color "red" ambient color "blue" specular color "green"
+material m has name "sample" diffuse color "red" ambient color "0x0000ff" specular color ".5"
 
-m set texture ref to 
-
+m ref texture ""
  
 accessor: material texture ref
 
