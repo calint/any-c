@@ -1,7 +1,3 @@
-buffer{}
-
-material{}
-
 vec3 {x=0.0 y=0.0 z=0.0}
 
 vec4 {vec3; t=0.0}
@@ -16,12 +12,18 @@ lookvec {vec3}
 
 rendctx {}
 
+buffer{}
+
+material{}
+
 
 
 rendrange plural rendranges
 {
 	int from
+	
 	int to
+	
 	material m
 	
 	draw (buffer&) {
@@ -29,8 +31,12 @@ rendrange plural rendranges
 	}
 } 
 
+
+
 glo / glos {
+	
 	buffer&;
+	
 	rendranges rendrngs;
 	
 	draw (rendctx&)	{
@@ -55,6 +61,8 @@ glo / glos {
 	}
 }
 
+
+
 glob {
 	
 	glo&;
@@ -65,16 +73,20 @@ glob {
 	
 	lookvec;
 	
-	globs;
+	globs : buffer of globs
 	
-	globs leftglobs
+	leftglobs : buffer of globs
 	
 	options { add allocated remove free }
 	
 	draw (rendctx&)	glo.draw(rendctx)
+
 }
 
+
+
 global{
+
 	glos;
 	
 	globs;
@@ -95,4 +107,5 @@ global{
 		g.draw()
 		g.rendrngs.draw()
 	}
+
 }
