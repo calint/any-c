@@ -26,7 +26,7 @@ material/materials:
 new material in materials with name "sample" diffuse color "red" ambient color "0x0000ff" specular color ".5"
 new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
-any m=new material in materials {"sample",0xff0000,0x0000ff,0x808080}
+var m=new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
 m ref texture ""
  
