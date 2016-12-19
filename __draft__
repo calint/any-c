@@ -81,6 +81,27 @@ for ro m in materials using count as c do     // specified
 // .c=0 for&m:materials p"%4d"c++" %32s",m.name"\n";
 // .c=0 for!&m:materials p"%4d"c++" %32s",m.name"\n";
 //        !& mutable reference
+
+
+
+// .c=0 foo m:materials p"%4d"c++" %32s",m.name"\n";
+//     references for read only
+
+
+// .c=0 fow m:materials p"%4d"c++" %32s",m.name"\n";
+//     references for read write
+
+
+
+
+
+
+
+
+
+
+
+
 for m in materials inc c {
 	p c ": " m.name ;
 	for t in m.textures inc cc {
