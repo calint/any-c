@@ -32,9 +32,8 @@ rrange {
 	}
 } 
 
-glo is
-	vertices
-	rranges
+glo has
+	vertices and rranges
 	
 	does draw rendctx ref do
 		
