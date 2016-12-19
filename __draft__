@@ -28,14 +28,14 @@ new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
 var m=new material in materials {"sample",0xff0000,0x0000ff,0x808080}
 
-for m in materials   //  deduced to read only
+for m in materials do   //  deduced to read only
 	p m.name ;
 ;
 
 for ro m in materials do   //  specified
 	p m.name ,
 	m.name="new name" // error
-.
+;
 
 m ref texture ""
  
