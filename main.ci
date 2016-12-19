@@ -58,9 +58,9 @@ glob/globs {
 	
 	lookvec;
 	
-	childs [glob]
+	globs;
 	
-	vector<glob> childs
+	globs leftglobs
 	
 	bits options { add allocated remove free }
 	
