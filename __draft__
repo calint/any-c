@@ -42,11 +42,16 @@ for ro m in materials using count do     // specified
 	m.name="new name"        // error
 ;
 
-
 for ro m in materials using count as c do     // specified
 	p c ": " m.name ,    // count
 	m.name="new name"        // error
 ;
+
+materials for each m count c do
+	p c ": " m.name ,    // count
+	m.name="new name"        // error
+;
+
 
 m ref texture ""
  
