@@ -15,15 +15,17 @@ from c import opengl and posix
 
 a vertex has position, normal and color plural vertices
 
+materials
 a material
-	has a name   and a diffuse, ambient and specular color
-	has many configurations
-	references a texture
-	references a texture maybe
-	references at least a texture
-	references many textures
-plural materials
-
+	has
+		a name
+		a diffuse, ambient and specular color
+		many configurations
+	references
+		a texture
+		a bump map maybe
+		many textures
+done
 
 rranges 
 	have one begin and one end described by integers
