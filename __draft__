@@ -32,29 +32,17 @@ rranges
 
 glos 
 	have vertices and rranges
-	
 	do draw context:
-
 		p "draw_glo" ;
-	
 		for each const r in rranges do r draw buffer
-		
 		for i c in rranges do
-		
 			i draw buffer
-		
 			p " counter: " c ;
-		
 			for j cc in rranges do
-		
 				if cc is 1 done false
-		
 				i draw buffer
-		
 				j draw buffer
-		
 				done true
-		
 			;
 		;
 	;
