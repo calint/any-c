@@ -79,7 +79,8 @@ for ro m in materials using count as c do     // specified
 //         m& mutable reference
 
 // .c=0 for&m:materials p"%4d"c++" %32s",m.name"\n";
-
+// .c=0 for!&m:materials p"%4d"c++" %32s",m.name"\n";
+//        !& mutable reference
 for m in materials inc c {
 	p c ": " m.name ;
 	for t in m.textures inc cc {
