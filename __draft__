@@ -113,31 +113,9 @@ glob {
 	}
 }
 
-
-
-
-glob {
-	position;
-	lookvec;
-	orientation;
-	glo&;
-	children : buffer of globs
-	bits { add allocated remove free }
-	draw (rendctx&) glo.draw(rendctx)
-}
-
-
-
 global{
-
-	glos;
-	
-	globs;
-	
 	root : glob
 
-	g1 : glob
-	
 	draw {
 		printf("draw_global\n")
 	}
@@ -147,7 +125,7 @@ global{
 		
 		gl.draw()
 		
-		glo g
+		glob g
 		
 		g.glo=glos.ref(0)
 		
@@ -165,6 +143,8 @@ global{
 
 		take g from globs { name=="floor" || }
 
+		take first t from tasks
+
 		g2 = take first from globs
 
 		glo g{
@@ -174,12 +154,7 @@ global{
 
 		glob g.glo{glos.ref(0)}.scale{1,1,1}.draw()
 
-		glob g
-			.glo{glos.ref(0)}
-			.scale{1,1,1}
-			.draw()
-		
-		query q.filter{}.sort{}.range{}.table{}.output{}
+		glob g.glo{glos.ref(0)}.scale{1,1,1}.draw()	
 		
 		globs.filter{}
 				.sort{}
