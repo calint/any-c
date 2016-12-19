@@ -94,19 +94,8 @@ glob {
 	draw(rendctx&)=glo.draw(rendctx)
 
 	main {
-	
-		var g=globs.mk()
-
 		var g=globs.alloc()
-		
-		glob& g=globs.new()
-	
 		globs.free(g)
-		
-		globs.delete(g)
-
-		globs.rm(g)
-		
 	}
 }
 
