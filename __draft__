@@ -27,13 +27,12 @@ rrange {
 	material : ref
 
 	draw (buffer&) {
-		printf("draw_render_range: from %d to %d using %s\n",
-			from, to, material.name )
 	}
 } 
 
 rrange has int from, int to and material ref
 	does draw buffer ref do
+		p "draw_render_range: from " from " to " to " using " material.name ;
 	;
 ;
 
