@@ -32,33 +32,28 @@ rrange {
 	}
 } 
 
-glo {
-	vertices;
-	rranges;
+glo is
+	vertices
+	rranges
 	
-	draw (rendctx&)	{
-		printf ("draw_glo\n")
-//		for all const r in rranges {r.draw(buffer)}
-//		for all const r in rranges r.draw(buffer)
+	does draw rendctx ref
+		
+		p "draw_glo" ;
+		
 		for all const r in rranges r draw buffer
 		
-		
-		for i c in rrranges {
-//			i.draw (buffer)
+		for i c in rrranges do
 			i draw buffer
-//			p(" counter: %d",c)
-			p " counter: " c "\n"
-			for j cc in rrranges {
-//				if cc==1 return false
-//				if cc is one false
+			p " counter: " c ;
+			for j cc in rrranges do
 				if cc is 1 return false
-				r draw buffer
+				i draw buffer
 				j draw buffer
 				return true
-			}
-		}
-	}
-}
+			;
+		;
+	;
+;
 
 glob {
 	position    ;
