@@ -52,15 +52,15 @@ glo {
 	draw (rendctx&)	{
 		printf ("draw_glo\n")
 		
-		for all const r in rendranges {
+		for all const r in rrranges {
 			r.draw(buffer)
 		}
 		
-		for i c in rendranges {
+		for i c in rrranges {
 			i.draw (buffer)
 			printf (" counter:%d",c)
 			
-			for j cc in rendranges {
+			for j cc in rrranges {
 				if cc==1 return false
 				r.draw (buffer)
 				j.draw (buffer)
@@ -97,6 +97,7 @@ glob {
 		var g=globs.alloc()
 		globs.free(g)
 	}
+
 }
 
 global{
@@ -114,6 +115,10 @@ global{
 		glob g
 		
 		g.glo=glos.ref(0)
+		
+		var gloref=ref some_glo
+
+		g.glo=ref some_glo
 		
 		g.glo=glos.copy(0)
 		
