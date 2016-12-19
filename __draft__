@@ -174,9 +174,9 @@ global{
 			.scale{1,1,1}
 		}
 
-		glo g.glo{glos.ref(0)}.scale{1,1,1}.draw()
+		glob g.glo{glos.ref(0)}.scale{1,1,1}.draw()
 
-		glo g
+		glob g
 			.glo{glos.ref(0)}
 			.scale{1,1,1}
 			.draw()
