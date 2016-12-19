@@ -41,8 +41,8 @@ glo/glos {
 			i.draw buffer
 			printf(" counter:%d",c)
 			
-			for j c in rendranges {
-				if c==1 return false
+			for j cc in rendranges {
+				if cc==1 return false
 				r.draw (buffer)
 				j.draw (buffer)
 				true
