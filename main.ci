@@ -12,7 +12,7 @@ lookvec {vec3}
 
 rendctx {}
 
-buffer{}
+buffer template typename T {}
 
 material{}
 
@@ -71,7 +71,7 @@ glob {
 	
 	orientation;
 	
-	lookvec;
+	lookvec : vec3
 	
 	globs : buffer of globs
 	
