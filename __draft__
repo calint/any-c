@@ -63,7 +63,7 @@ for ro m in materials using count as c do     // specified
 
 // for ro m in materials inc c do p c++": "m.name;
 // int c=0;for(const m&:materials)p("%d: %s\n",c++,m.name);
-// var c=0 for ro m in materials p c++": "m.name;
+// var c=0 for ro m:materials p c++": "m.name;
 
 
 for m in materials inc c {
