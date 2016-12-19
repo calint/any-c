@@ -23,12 +23,12 @@ glo{
 			r.draw(buffer)
 		}
 		
-		rendranges:for all const i {
-			i.draw buffer
+		for all const r in rendranges {
+			r.draw buffer
 			
-			rendranges:for j count {
+			for j c in rendranges{
 				if c==1 return false
-				i.draw buffer
+				r.draw buffer
 				j.draw buffer
 				true
 			}
@@ -48,7 +48,7 @@ lookvec {vec3}
 
 rendctx {}
 
-glob {
+glob/globs {
 	glo&;
 	globs;
 	position;
