@@ -3,13 +3,13 @@
 #include"xcode.h"
 
 typedef struct xfield{
-	str type;
-	str name;
+	cstr type;
+	cstr name;
 	xexpls initval;
 	token token;
 }xfield;
 
-#define xfield_def (xfield){str_def,str_def,xexpls_def,token_def}
+#define xfield_def (xfield){cstr_def,cstr_def,xexpls_def,token_def}
 
 typedef struct xfuncarg{
 	str type;
@@ -41,7 +41,7 @@ typedef struct xtype{
 inline static xfield*xtype_get_field_by_name(const xtype*o,cstr field_name){
 	for(unsigned i=0;i<o->fields.count;i++){
 		xfield*f=dynp_get(&o->fields,i);
-		if(!strcmp(f->name.data,field_name))
+		if(!strcmp(f->name,field_name))
 				return f;
 	}
 	return NULL;

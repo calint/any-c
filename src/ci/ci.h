@@ -67,7 +67,7 @@ inline static cstr ci_get_type_for_accessor(const toc*tc,
 				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
-			current_class_name=fld->type.data;
+			current_class_name=fld->type;
 			current_type=ci_get_type_by_name(tc,current_class_name);
 			if(!current_type)
 				break;
@@ -119,7 +119,7 @@ inline static void ci_assert_set(const toc*tc,
 				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
-			current_class_name=fld->type.data;
+			current_class_name=fld->type;
 			current_type=ci_get_type_by_name(tc,current_class_name);
 			if(!current_type)
 				break;
@@ -610,25 +610,26 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 inline static void ci_parse_field(toc*tc,xtype*c,token*type,token*name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
-	token_setz(type,&f->type);
+	f->type=token_to_new_cstr(type);//? leak
+//	token_setz(type,&f->type);
 	if(token_is_empty(name)){
-		token_setz(type,&f->name);
+		f->name=f->type;
 	}else{
-		token_setz(name,&f->name);
+		f->name=token_to_new_cstr(name);//? leak
 	}
 	dynp_add(&c->fields,f);
-	toc_add_declaration(tc,f->type.data,f->name.data);
+	toc_add_declaration(tc,f->type,f->name);
 	if(*tc->srcp=='='){
 		tc->srcp++;
 		xexpls_parse_next(&f->initval, tc,*type);
 //		f->initval=e;
-		if(strcmp(f->type.data,"var")){
+		if(strcmp(f->type,"var")){
 				ci_assert_set(tc,
-					f->name.data,
+					f->name,
 					f->initval.super.type.data,
 					f->initval.super.token);
 		}
-		f->type=f->initval.super.type;
+		f->type=f->initval.super.type.data;
 	}
 	if(*tc->srcp==';'){
 		tc->srcp++;
@@ -712,16 +713,16 @@ inline static void ci_compile_to_c(toc*tc){
 		if(c->fields.count)printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
 			xfield*f=(xfield*)dynp_get(&c->fields,i);
-			toc_add_declaration(tc,f->type.data,f->name.data);
-			if(!strcmp(f->type.data,"var")){
+			toc_add_declaration(tc,f->type,f->name);
+			if(!strcmp(f->type,"var")){
 				if(!f->initval.exprs.count){
 					printf("<file> <line:col> expected initializer with auto");
 					longjmp(_jmp_buf,1);
 				}
 				f->initval.super.compile((xexp*)&f->initval,tc);
-				f->type=f->initval.super.type;
+				f->type=f->initval.super.type.data;
 			}
-			printf("    %s %s;\n",f->type.data,f->name.data);
+			printf("    %s %s;\n",f->type,f->name);
 		}
 		printf("}%s;\n",c->name);
 
@@ -732,7 +733,7 @@ inline static void ci_compile_to_c(toc*tc){
 			if(s->initval.exprs.count){
 				s->initval.super.compile((xexp*)&s->initval,tc);
 			}else{
-				printf("%s_def",s->type.data);
+				printf("%s_def",s->type);
 			}
 			if(i!=c->fields.count-1)
 				printf(",");
