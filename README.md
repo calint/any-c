@@ -75,12 +75,12 @@ int main(int c,char**a){global g=global_def;global_main(&g);}
 ```
 	program output:
 ```
-			 :: ./run 
-			-rwxrwxr-x 1 c c 72416 ธ.ค.  21 03:20 any-c
-			entity: 1 2.200000
-			entity: 1 2.200000
-			entity: 2 2.200000
-			 ::
+ :: ./run
+-rwxrwxr-x 1 c c 72416 ธ.ค.  21 03:20 any-c
+entity: 1 2.200000
+entity: 1 2.200000
+entity: 2 2.200000
+ ::
 ```
 	
 	
