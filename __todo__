@@ -33,7 +33,7 @@
 [ ] taskpools
 [ ] reflection, text based, offset addresses, fields, functions
 [ ] compilation of default print / read for types
-[ ]     1. table row
+[ ]     1. table column span
 [ ]     2. text in list
 [ ]     3. text in summary
 [ ]     4. full text in dump
