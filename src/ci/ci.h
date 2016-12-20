@@ -763,7 +763,7 @@ inline static void ci_compile_to_c(toc*tc){
 		toc_pop_scope(tc);
 	}
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
-	printf("int main(int c,char** a){global_main(0);}\n");
+	printf("int main(int c,char**a){global_main(0);}\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
