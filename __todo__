@@ -1,0 +1,9 @@
+[ ] binary arthimatic ops
+[ ] unary ops
+[ ] assert call args
+[ ] assert return type
+[ ] multiple return values f():int a,float b;
+[ ] overhaul of string usage
+[ ] xstmt xexp xexpls
+[ ] toc_read_next_expression / toc_read_next_statement
+[ ] 
