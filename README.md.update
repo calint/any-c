@@ -32,6 +32,8 @@ cat $o               >> $f  &&
 echo '```'           >> $f  &&
 echo                 >> $f  &&
 echo '```'           >> $f  &&
+echo                 >> $f  &&
+echo "source size"              >> $f  &&
 echo 'cat src/ci/* | wc'        >> $f &&
 cat src/ci/* | wc               >> $f &&
 echo 'cat src/ci/* | gzip | wc' >> $f &&

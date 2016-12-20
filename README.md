@@ -85,6 +85,8 @@ entity: 2 2.200000
 ```
 
 ```
+
+source size
 cat src/ci/* | wc
    2103    3268   46387
 cat src/ci/* | gzip | wc
