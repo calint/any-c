@@ -10,4 +10,5 @@
 [ ] compile containers
 [ ] compile templates
 [ ] assert member type exists
+[ ] optional cleanup before shutdown
 
