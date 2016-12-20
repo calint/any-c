@@ -2,7 +2,6 @@
 #include<setjmp.h>
 #include"xcall.h"
 #include"xident.h"
-#include"xife.h"
 #include"xloop.h"
 #include"xvar.h"
 #include"xconst.h"
@@ -11,6 +10,7 @@
 #include"xbreak.h"
 #include"xcode.h"
 #include"xcont.h"
+#include"xife.h"
 #include"xtype.h"
 
 //typedef struct ci{}ci;
