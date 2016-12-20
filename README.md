@@ -84,3 +84,8 @@ entity: 1 2.200000
 entity: 2 2.200000
 ```
 
+cat src/ci/* | wc
+   2103    3268   46387
+cat src/ci/* | gzip | wc
+     35     192    9311
+
