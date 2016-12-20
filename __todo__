@@ -12,20 +12,19 @@
 [ ] assert member type exists
 [x] optional cleanup before shutdown
 [x] valgrind
-[ ] foo fow
 [ ] xtype, xfield, xfunc, xfuncarg expressions
 [ ] function in function
 [ ] class in class
 [ ] lambdas
-[ ] destructors at end of scope
+[o] destructors at end of scope
 [ ] default values on funcargs
 [ ] function overloading
 [ ] operator overloading
 [ ] virtual functions
 [ ] packages
 [ ] class and member visibility public,package
-[ ] const correctness
-[ ] unconsted/mutable members during a const op
+[o] const correctness
+[ ]    unconsted/mutable members during a const op
 [ ] threads
 [ ] atomic locks
 [ ] mutexes
