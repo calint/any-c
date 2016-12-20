@@ -12,24 +12,24 @@ simple framework with c++ like language that compiles
     
 	example code:
 ```
-				entity{
-					var i=1
-					var f=2.2
-					print{
-						printf("entity: %d %f\n",i,f)
-					}
-				}
-				
-				global{
-					entity e1
-					entity e2
-					main{
-						e1.print()
-						e2.print()
-						e1.i=2
-						e1.print()
-					}
-				}
+entity{
+	var i=1
+	var f=2.2
+	print{
+		printf("entity: %d %f\n",i,f)
+	}
+}
+
+global{
+	entity e1
+	entity e2
+	main{
+		e1.print()
+		e2.print()
+		e1.i=2
+		e1.print()
+	}
+}
 ```
 	compiles to following c code:
 ```
