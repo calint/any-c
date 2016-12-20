@@ -8,7 +8,7 @@ inline static void toc_assert_can_set(toc*,ccharp,ccharp,token);
 typedef struct xset{
 	xexpr super;
 	str name;
-	xexpr*expr;
+	xexpr*expr;//? xexpls
 }xset;
 
 inline static void _xset_compile_(const xexpr*oo,toc*tc){
