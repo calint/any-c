@@ -21,18 +21,18 @@ inline static type*toc_get_type_by_name(toc*o,ccharp name){
 	}
 	return NULL;
 }
-inline static ccharp toc_get_type_in_context(toc*tc,token tk){
-	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
-		if(s->type=='c'){
-			return s->name;
-		}
-	}
-	toc_print_source_location(tc,tk,4);
-	printf("error: cannot find current class");
-	printf("\n    %s %d",__FILE__,__LINE__);
-	longjmp(_jmpbufenv,1);
-}
+//inline static ccharp toc_get_type_in_context(toc*tc,token tk){
+//	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+//		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+//		if(s->type=='c'){
+//			return s->name;
+//		}
+//	}
+//	toc_print_source_location(tc,tk,4);
+//	printf("error: cannot find current class");
+//	printf("\n    %s %d",__FILE__,__LINE__);
+//	longjmp(_jmpbufenv,1);
+//}
 inline static void toc_print_func_call_for_compile(toc*tc,
 		token tk,ccharp funcnm){
 	// get current class name
@@ -709,16 +709,18 @@ inline static void toc_parse_field(toc*tc,type*c,token*type,token*name){
 	toc_add_ident(tc,f->type.data,f->name.data);
 	if(*tc->srcp=='='){
 		tc->srcp++;
-		xexpr*e=toc_read_next_xexpr(tc);
-		f->initval=e;
+		xexpls_parse_next(&f->initval, tc,*type);
+//		f->initval=e;
 		if(strcmp(f->type.data,"var") && !toc_can_assign(tc,
-				f->type.data,f->initval->type.data,e->type.data)){
+				f->type.data,
+				f->initval.super.type.data,
+				f->initval.super.type.data)){
 
 			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
-					e->type.data,f->type.data);
+					f->initval.super.type.data,f->type.data);
 			longjmp(_jmpbufenv,1);
 		}
-		f->type=e->type;
+		f->type=f->initval.super.type;
 	}
 	if(*tc->srcp==';'){
 		tc->srcp++;
@@ -803,13 +805,13 @@ inline static void toc_compile_to_c(toc*tc){
 		for(unsigned i=0;i<c->fields.count;i++){
 			field*f=(field*)dynp_get(&c->fields,i);
 			toc_add_ident(tc,f->type.data,f->name.data);
-			if(!strcmp(f->type.data,"auto")){
-				if(!f->initval){
+			if(!strcmp(f->type.data,"var")){
+				if(!f->initval.exprs.count){
 					printf("<file> <line:col> expected initializer with auto");
 					longjmp(_jmpbufenv,1);
 				}
-				f->initval->compile(f->initval,tc);
-				f->type=f->initval->type;
+				f->initval.super.compile((xexpr*)&f->initval,tc);
+				f->type=f->initval.super.type;
 			}
 			printf("    %s %s;\n",f->type.data,f->name.data);
 		}
@@ -819,8 +821,8 @@ inline static void toc_compile_to_c(toc*tc){
 		printf("#define %s_def (%s){",c->name.data,c->name.data);
 		for(unsigned i=0;i<c->fields.count;i++){
 			field*s=(field*)dynp_get(&c->fields,i);
-			if(s->initval){
-				s->initval->compile(s->initval,tc);
+			if(s->initval.exprs.count){
+				s->initval.super.compile((xexpr*)&s->initval,tc);
 			}else{
 				printf("%s_def",s->type.data);
 			}

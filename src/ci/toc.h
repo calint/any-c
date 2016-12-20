@@ -15,7 +15,7 @@ typedef struct toc{
 inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,ccharp src);
 inline static void toc_print_func_call_for_compile(toc*,token,ccharp);
 inline static ccharp toc_get_type_for_accessor(toc*,ccharp,token);
-inline static ccharp toc_get_type_in_context(toc*,token);
+//inline static ccharp toc_get_type_in_context(toc*,token);
 
 
 typedef struct tocscope{
@@ -32,6 +32,53 @@ typedef struct tocdecl{
 }tocdecl;
 
 #define toctn_def (tocdecl){str_def,str_def}
+
+
+typedef struct tocloc{
+	ccharp filenm;
+	unsigned line;
+	unsigned col;
+}tocloc;
+
+
+inline static tocloc toc_get_line_number_from_pp(toc*o,ccharp p,
+		unsigned tabsize){
+
+	ccharp pt=o->src.data;
+	int line=1,col=1;
+	while(pt<p){
+		if(*pt!='\n'){
+			if(*pt=='\t')
+				col+=tabsize;
+			else
+				col++;
+			pt++;
+			continue;
+		}
+		col=1;
+		line++;
+		pt++;
+	}
+	return (tocloc){o->filepth,line,col};
+}
+
+inline static void toc_print_source_location(toc*o,token tk,int tabsize){
+	tocloc tl=toc_get_line_number_from_pp(o,tk.content,tabsize);
+	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
+}
+
+inline static ccharp toc_get_type_in_context(toc*tc,token tk){
+	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		if(s->type=='c'){
+			return s->name;
+		}
+	}
+	toc_print_source_location(tc,tk,4);
+	printf("error: cannot find current class");
+	printf("\n    %s %d",__FILE__,__LINE__);
+	longjmp(_jmpbufenv,1);
+}
 
 inline static void toc_scope_free(tocscope*o){
 	dynp_free(&o->idents);
@@ -160,38 +207,6 @@ inline static void toc_pop_scope(toc*o){
 	o->scopes.count--;//? pop
 }
 
-typedef struct tocloc{
-	ccharp filenm;
-	unsigned line;
-	unsigned col;
-}tocloc;
-
-inline static tocloc toc_get_line_number_from_pp(toc*o,ccharp p,
-		unsigned tabsize){
-
-	ccharp pt=o->src.data;
-	int line=1,col=1;
-	while(pt<p){
-		if(*pt!='\n'){
-			if(*pt=='\t')
-				col+=tabsize;
-			else
-				col++;
-			pt++;
-			continue;
-		}
-		col=1;
-		line++;
-		pt++;
-	}
-	return (tocloc){o->filepth,line,col};
-}
-
-inline static void toc_print_source_location(toc*o,token tk,int tabsize){
-	tocloc tl=toc_get_line_number_from_pp(o,tk.content,tabsize);
-	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
-}
-
 inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
 	ccharp p=strpbrk(id,".");
 	if(p){
@@ -309,6 +324,8 @@ typedef struct xexpr{
 }xexpr;
 
 #define xexpr_def (xexpr){NULL,NULL,str_def,token_def,0}
+
+
 inline static int xexpr_is_empty(const xexpr*o){return o->compile==NULL;}
 inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
 inline static void toc_srcp_inc(toc*o){o->srcp++;}

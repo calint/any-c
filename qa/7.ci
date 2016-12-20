@@ -5,6 +5,6 @@ global{
 	main{
 		player p
 		p.object.type.i=3
-		printf("3=%d\n",p.object.type)
+		printf("3=%d\n",p.object.type.i)
 	}
 }

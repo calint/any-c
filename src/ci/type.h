@@ -1,15 +1,16 @@
 #pragma once
 #include"../lib.h"
 #include "code.h"
+#include"xexpls.h"
 
 typedef struct field{
 	str type;
 	str name;
-	xexpr*initval;
+	xexpls initval;
 	token token;
 }field;
 
-#define field_def (field){str_def,str_def,NULL,token_def}
+#define field_def (field){str_def,str_def,xexpls_def,token_def}
 
 typedef struct funcarg{
 	str type;

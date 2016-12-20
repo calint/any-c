@@ -30,9 +30,17 @@ inline static void _xexpls_compile_(const xexpr*oo,toc*tc){
 	}
 }
 
+inline static void xexpls_parse_next(xexpls*,toc*,token);
 inline static xexpls*xexpls_read_next(toc*tc,token tk){
 	xexpls*o=malloc(sizeof(xexpls));
 	*o=xexpls_def;
+	xexpls_parse_next(o,tc,tk);
+	return o;
+}
+
+inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
+//	xexpls*o=malloc(sizeof(xexpls));
+//	*o=xexpls_def;
 //	o->super.type=type;//?
 	o->super.token=tk;
 
@@ -71,5 +79,7 @@ inline static xexpls*xexpls_read_next(toc*tc,token tk){
 
 	xexpr*first=dynp_get(&o->exprs,0);
 	o->super.type=first->type;
-	return o;
+//	return o;
 }
+
+
