@@ -1,6 +1,8 @@
 #pragma once
 #include"xexpls.h"
 
+//inline static void ci_assert_can_set(toc*,ccharp,ccharp,token);
+
 typedef struct xset{
 	xexp super;
 	str name;
@@ -33,7 +35,7 @@ inline static void _xset_init(toc*tc,xset*o,str name,token tk){
 //	xexpr*e=(xexpr*)toc_read_next_xexpls(tc,tk);
 //	o->expr=e;
 	xexpls_parse_next(&o->expls,tc, tk);
-	toc_assert_can_set(tc,name.data,o->expls.super.type.data,tk);
+	ci_assert_can_set(tc,name.data,o->expls.super.type.data,tk);
 	o->super.type=o->expls.super.type;
 }
 

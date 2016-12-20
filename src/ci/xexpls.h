@@ -2,7 +2,7 @@
 #include"../lib.h"
 #include "toc.h"
 
-inline static xexp*toc_read_next_expression(toc*);
+inline static xexp*ci_read_next_expression(toc*);
 
 typedef struct xexpls{
 	xexp super;
@@ -53,7 +53,7 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 		if(toc_is_srcp(tc,'(')){
 			e=(xexp*)xexpls_read_next(tc,tk);
 		}else{
-			e=toc_read_next_expression(tc);
+			e=ci_read_next_expression(tc);
 		}
 		if(xexpr_is_empty(e))
 			break;

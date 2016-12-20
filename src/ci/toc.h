@@ -1,5 +1,4 @@
 #pragma once
-#include"../lib.h"
 #include"xexp.h"
 
 typedef struct toc{
@@ -10,11 +9,10 @@ typedef struct toc{
 	ccharp filepth;
 }toc;
 
+inline static void ci_assert_can_set(toc*,ccharp,ccharp,token);
+inline static ccharp ci_get_type_for_accessor(toc*,ccharp,token);
+
 #define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
-
-inline static void toc_assert_can_set(toc*,ccharp,ccharp,token);
-inline static ccharp toc_get_type_for_accessor(toc*,ccharp,token);
-
 
 typedef struct tocscope{
 	char type;
@@ -217,7 +215,7 @@ inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			longjmp(_jmpbufenv,1);
 		}
-		toc_assert_can_set(tc,id,type,tk);
+		ci_assert_can_set(tc,id,type,tk);
 		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
 		if(scopetype){
 			if(scopetype=='c'){// class member
@@ -268,7 +266,7 @@ inline static void toc_compile_for_call(
 		cb[funcnm_ptr-cb]=0;
 //		*funcnm_ptr=0;                        // path: g.gl
 		funcnm_ptr++;                         // func: print
-		ccharp target_type=toc_get_type_for_accessor(tc,varnm_ptr,tk);
+		ccharp target_type=ci_get_type_for_accessor(tc,varnm_ptr,tk);
 		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
 		printf("%s_%s((%s*)&",target_type,funcnm_ptr,target_type);
 		if(scope=='c'){
@@ -336,4 +334,6 @@ inline static bool toc_is_type_builtin(const toc*o,ccharp typenm){
 //	if(!strcmp("double",typenm))return true;
 	return false;
 }
+
+
 

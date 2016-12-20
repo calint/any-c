@@ -2,7 +2,7 @@
 #include"xexp.h"
 #include"toc.h"
 
-inline static /*gives*/xexp*toc_read_next_xexpr(toc*o);
+inline static /*gives*/xexp*ci_read_next_xexpr(toc*o);
 
 typedef struct xcode{
 	xexp super;
@@ -48,7 +48,7 @@ inline static void code_read_next(xcode*o,toc*tc){
 		tc->srcp++;
 		o->super.bits|=1;
 		while(1){
-			xexp*e=toc_read_next_xexpr(tc);
+			xexp*e=ci_read_next_xexpr(tc);
 			if(xexpr_is_empty(e))
 				break;
 			dynp_add(&o->exprs,e);
@@ -66,7 +66,7 @@ inline static void code_read_next(xcode*o,toc*tc){
 		return;
 	}
 	o->super.bits&=~1;
-	xexp*e=toc_read_next_xexpr(tc);
+	xexp*e=ci_read_next_xexpr(tc);
 	dynp_add(&o->exprs,e);
 	if(*tc->srcp==';'){
 		tc->srcp++;

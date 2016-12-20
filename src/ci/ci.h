@@ -5,16 +5,18 @@
 #include"xife.h"
 #include"xloop.h"
 #include"xvar.h"
-#include"toc.h"
 #include"xconst.h"
 #include"xexpls.h"
 #include"xreturn.h"
 #include"xbreak.h"
-#include "xcode.h"
+#include"xcode.h"
 #include"xcont.h"
-#include "xtype.h"
+#include"xtype.h"
 
-inline static xtype*toc_get_type_by_name(toc*o,ccharp name){
+//typedef struct ci{}ci;
+//#define ci_def {}
+
+inline static xtype*ci_get_type_by_name(toc*o,ccharp name){
 	for(unsigned i=0;i<o->types.count;i++){
 		xtype*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name.data,name)){
@@ -23,61 +25,12 @@ inline static xtype*toc_get_type_by_name(toc*o,ccharp name){
 	}
 	return NULL;
 }
-//inline static ccharp toc_get_type_in_context(toc*tc,token tk){
-//	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-//		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
-//		if(s->type=='c'){
-//			return s->name;
-//		}
-//	}
-//	toc_print_source_location(tc,tk,4);
-//	printf("error: cannot find current class");
-//	printf("\n    %s %d",__FILE__,__LINE__);
-//	longjmp(_jmpbufenv,1);
-//}
-//inline static void toc_print_func_call_for_compile(toc*tc,
-//		token tk,ccharp funcnm){
-//	// get current class name
-//	ccharp typenm=0;
-//	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-//		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
-//		if(s->type=='c'){
-//			typenm=s->name;
-//			break;
-//		}
-//	}
-//
-//	if(typenm==0){
-//		toc_print_source_location(tc,tk,4);
-//		printf("could not find class scope");
-//		//? print toc
-//		longjmp(_jmpbufenv,1);
-//	}
-//
-//	type*tp=toc_get_type_by_name(tc,typenm);
-//	if(!tp){
-//		toc_print_source_location(tc,tk,4);
-//		printf("cannot find class scope");
-//		printf("\n    %s %d",__FILE__,__LINE__);
-//		longjmp(_jmpbufenv,1);
-//	}
-//
-//	func*fc=type_get_func_by_name(tp,funcnm);
-//	if(!fc){
-//		toc_print_source_location(tc,tk,4);
-//		printf("cannot find function '%s' in '%s'",funcnm,typenm);
-//		printf("\n    %s %d",__FILE__,__LINE__);
-//		longjmp(_jmpbufenv,1);
-//	}
-//
-//	printf("%s_%s((%s*)&%s",typenm,funcnm,typenm,"o");
-//}
 
-inline static void toc_add_type(toc*o,xtype*c){
+inline static void ci_add_type(toc*o,xtype*c){
 	dynp_add(&o->types,c);
 }
 
-inline static ccharp toc_get_type_for_accessor(toc*tc,
+inline static ccharp ci_get_type_for_accessor(toc*tc,
 			ccharp accessor,token tk){
 
 	ccharp current_accessor=accessor;
@@ -89,7 +42,7 @@ inline static ccharp toc_get_type_for_accessor(toc*tc,
 		longjmp(_jmpbufenv,1);
 	}
 	ccharp current_class_name=decl->type.data;
-	const xtype*current_type=toc_get_type_by_name(tc,current_class_name);
+	const xtype*current_type=ci_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
 			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -117,7 +70,7 @@ inline static ccharp toc_get_type_for_accessor(toc*tc,
 				longjmp(_jmpbufenv,1);
 			}
 			current_class_name=fld->type.data;
-			current_type=toc_get_type_by_name(tc,current_class_name);
+			current_type=ci_get_type_by_name(tc,current_class_name);
 			if(!current_type)
 				break;
 		}
@@ -125,7 +78,7 @@ inline static ccharp toc_get_type_for_accessor(toc*tc,
 	return current_class_name;
 }
 
-inline static void toc_assert_can_set(toc*tc,
+inline static void ci_assert_can_set(toc*tc,
 		ccharp accessor,ccharp settype,token tk){
 
 	ccharp current_accessor=accessor;
@@ -141,7 +94,7 @@ inline static void toc_assert_can_set(toc*tc,
 		return;
 
 	ccharp current_class_name=decl->type.data;
-	const xtype*current_type=toc_get_type_by_name(tc,current_class_name);
+	const xtype*current_type=ci_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
 			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -169,7 +122,7 @@ inline static void toc_assert_can_set(toc*tc,
 				longjmp(_jmpbufenv,1);
 			}
 			current_class_name=fld->type.data;
-			current_type=toc_get_type_by_name(tc,current_class_name);
+			current_type=ci_get_type_by_name(tc,current_class_name);
 			if(!current_type)
 				break;
 		}
@@ -191,59 +144,12 @@ inline static void toc_assert_can_set(toc*tc,
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmpbufenv,1);
 }
-//
-//inline static bool toc_can_assign(toc*tc,
-//		ccharp to_typenm,
-//		ccharp accessor,
-//		ccharp from_typenm){
-//
-//	type*c=toc_get_type_by_name(tc,to_typenm);
-//	ccharp endptr=accessor;
-//	while(1){
-//		ccharp p=strpbrk(endptr,".");
-//		str ident=str_def;
-//		if(p){
-//			str_add_list(&ident,endptr,p-endptr);
-//			str_add(&ident,0);
-//			endptr=p+1;
-//		}else{
-//			str_add_list(&ident,endptr,strlen(endptr));
-//			str_add(&ident,0);
-//		}
-//
-//		if(!c){// base type or class not found
-//			return !strcmp(to_typenm,from_typenm);
-//		}
-//		bool found=false;
-//		for(unsigned i=0;i<c->fields.count;i++){
-//			field*fld=(field*)dynp_get(&c->fields,i);
-//			if(!strcmp(fld->name.data,ident.data)){
-//				c=toc_get_type_by_name(tc,fld->type.data);
-//				if(!c){
-//					if(!from_typenm)
-//						return true;//?
-//					return !strcmp(fld->type.data,from_typenm);
-//				}
-//				found=true;
-//				break;
-//			}
-//		}
-//		if(found)continue;
-//		printf("<file> <line:col> cannot find '%s' in '%s'\n",
-//				accessor,c->name.data);
-//		longjmp(_jmpbufenv,1);
-//	}
-//}
 
 inline static void ci_init(){}
 
 inline static void ci_free(){}
 
-//inline static xexpls*toc_read_next_xexpls(toc*tc,token tk){
-//	return xexpls_read_next(tc,tk);
-//}
-
-inline static xexp*toc_read_next_xexpr(toc*tc){
+inline static xexp*ci_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
 		if(toc_is_srcp_take(tc,'"')){ // string
@@ -401,7 +307,7 @@ inline static xexp*toc_read_next_xexpr(toc*tc){
 	}
 
 	//  class instance
-	xtype*c=toc_get_type_by_name(tc,name.data);
+	xtype*c=ci_get_type_by_name(tc,name.data);
 	if(c){// instantiate
 		xvar*e=xvar_read_next(tc,name);
 		return(xexp*)e;
@@ -449,11 +355,11 @@ inline static xexp*toc_read_next_xexpr(toc*tc){
 	e->name=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
-	e->super.type=const_str(toc_get_type_for_accessor(tc,e->name.data,tk));
+	e->super.type=const_str(ci_get_type_for_accessor(tc,e->name.data,tk));
 	return(xexp*)e;
 }
 
-inline static xexp*toc_read_next_expression(toc*tc){
+inline static xexp*ci_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
 		if(toc_is_srcp_take(tc,'"')){ // string
@@ -648,11 +554,11 @@ inline static xexp*toc_read_next_expression(toc*tc){
 	e->name=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
-	e->super.type=const_str(toc_get_type_for_accessor(tc,e->name.data,tk));
+	e->super.type=const_str(ci_get_type_for_accessor(tc,e->name.data,tk));
 	return(xexp*)e;
 }
 
-inline static void toc_parse_func(toc*tc,xtype*c,token*type){
+inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
 	bool enclosed_args=false;
@@ -703,7 +609,7 @@ inline static void toc_parse_func(toc*tc,xtype*c,token*type){
 	toc_pop_scope(tc);
 }
 
-inline static void toc_parse_field(toc*tc,xtype*c,token*type,token*name){
+inline static void ci_parse_field(toc*tc,xtype*c,token*type,token*name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
 	token_setz(type,&f->type);
@@ -719,7 +625,7 @@ inline static void toc_parse_field(toc*tc,xtype*c,token*type,token*name){
 		xexpls_parse_next(&f->initval, tc,*type);
 //		f->initval=e;
 		if(strcmp(f->type.data,"var")){
-				toc_assert_can_set(tc,
+				ci_assert_can_set(tc,
 					f->name.data,
 					f->initval.super.type.data,
 					f->initval.super.token);
@@ -732,10 +638,10 @@ inline static void toc_parse_field(toc*tc,xtype*c,token*type,token*name){
 	return;
 }
 
-inline static xtype*toc_parse_type(toc*tc,token name){
+inline static xtype*ci_parse_type(toc*tc,token name){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
-	toc_add_type(tc,c);
+	ci_add_type(tc,c);
 	c->token=name;
 	token_setz(&c->token,&c->name);
 	toc_push_scope(tc,'c',c->name.data);
@@ -756,17 +662,17 @@ inline static xtype*toc_parse_type(toc*tc,token name){
 			break;
 		}
 		if(toc_is_srcp(tc,'(') || toc_is_srcp(tc,'{')){
-			toc_parse_func(tc,c,&type);
+			ci_parse_func(tc,c,&type);
 		}else if(toc_is_srcp(tc,'=') || toc_is_srcp(tc,';')){
 			token name=toc_next_token(tc);
-			toc_parse_field(tc,c,&type,&name);
+			ci_parse_field(tc,c,&type,&name);
 		}else{
 			token name=toc_next_token(tc);
 			if(toc_is_srcp(tc,'(') || toc_is_srcp(tc,'{')){
 				tc->srcp=name.content;
-				toc_parse_func(tc,c,&type);
+				ci_parse_func(tc,c,&type);
 			}else{
-				toc_parse_field(tc,c,&type,&name);
+				ci_parse_field(tc,c,&type,&name);
 			}
 		}
 	}
@@ -774,7 +680,7 @@ inline static xtype*toc_parse_type(toc*tc,token name){
 	return c;
 }
 
-inline static void _print_right_aligned_comment(ccharp comment){
+inline static void ci_print_right_aligned_comment(ccharp comment){
 	ccharp line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
 	const int maxlen=strlen(line);
 	const int ln=strlen(comment);
@@ -784,8 +690,8 @@ inline static void _print_right_aligned_comment(ccharp comment){
 	printf("%.*s %s\n",start_at,line,comment);
 }
 
-inline static void toc_compile_to_c(toc*tc){
-	_print_right_aligned_comment("generated c source");
+inline static void ci_compile_to_c(toc*tc){
+	ci_print_right_aligned_comment("generated c source");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
@@ -802,7 +708,7 @@ inline static void toc_compile_to_c(toc*tc){
 		xtype*c=dynp_get(&tc->types,i);
 		toc_push_scope(tc,'c',c->name.data);
 		// type
-		_print_right_aligned_comment(c->name.data);
+		ci_print_right_aligned_comment(c->name.data);
 		printf("typedef struct %s{",c->name.data);
 		// fields
 		if(c->fields.count)printf("\n");
@@ -837,7 +743,7 @@ inline static void toc_compile_to_c(toc*tc){
 
 		// functions
 		if(c->funcs.count){
-			_print_right_aligned_comment("funcs");
+			ci_print_right_aligned_comment("funcs");
 			for(unsigned i=0;i<c->funcs.count;i++){
 				xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
 				toc_push_scope(tc,'f',f->name.data);
@@ -862,7 +768,7 @@ inline static void toc_compile_to_c(toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
-inline static int toc_compile_file(ccharp path){
+inline static int ci_compile_file(ccharp path){
 	int val=setjmp(_jmpbufenv);
 	if(val==1){
 //		printf(" error occured");
@@ -876,10 +782,10 @@ inline static int toc_compile_file(ccharp path){
 	while(1){
 		token typenm=toc_next_token(&tc);
 		if(token_is_empty(&typenm))break;
-		toc_parse_type(&tc,typenm);
+		ci_parse_type(&tc,typenm);
 	}
 
-	toc_compile_to_c(&tc);
+	ci_compile_to_c(&tc);
 
 	return 0;
 }
