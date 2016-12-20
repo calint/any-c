@@ -12,7 +12,6 @@ simple framework with c++ like language that compiles
     
 	example code:
 ```
-	- - - - - -- -  - - - -  -  - - -  - -- - - - - - - - - - -  - -- - - - - 
 				entity{
 					var i=1
 					var f=2.2
