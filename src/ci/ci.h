@@ -811,7 +811,7 @@ inline static int ci_compile_file(cstr path){
 		token typenm=toc_next_token(&tc);
 		if(token_is_empty(&typenm))
 			break;
-		ci_parse_type(&tc,typenm);
+		xtype_read_next(&tc,typenm);
 	}
 	ci_compile_to_c(&tc);
 

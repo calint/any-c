@@ -81,7 +81,7 @@ inline static xfunc*xtype_get_func_by_name(const xtype*o,cstr field_name){
 }
 
 
-inline static void ci_parse_func(toc*tc,xtype*c,token*type){
+inline static void xfunc_read_next(toc*tc,xtype*c,token*type){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
 	bool enclosed_args=false;
@@ -132,7 +132,7 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 	toc_pop_scope(tc);
 }
 
-inline static void ci_parse_field(toc*tc,xtype*c,token*type,token*name){
+inline static void xfield_read_next(toc*tc,xtype*c,token*type,token*name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
 	f->type=token_to_new_cstr(type);//? leak
@@ -162,7 +162,7 @@ inline static void ci_parse_field(toc*tc,xtype*c,token*type,token*name){
 	return;
 }
 
-inline static xtype*ci_parse_type(toc*tc,token name){
+inline static xtype*xtype_read_next(toc*tc,token name){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
 	dynp_add(&tc->types,c);
@@ -186,17 +186,17 @@ inline static xtype*ci_parse_type(toc*tc,token name){
 			break;
 		}
 		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-			ci_parse_func(tc,c,&type);
+			xfunc_read_next(tc,c,&type);
 		}else if(toc_srcp_is(tc,'=') || toc_srcp_is(tc,';')){
 			token name=toc_next_token(tc);
-			ci_parse_field(tc,c,&type,&name);
+			xfield_read_next(tc,c,&type,&name);
 		}else{
 			token name=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 				tc->srcp=name.content;
-				ci_parse_func(tc,c,&type);
+				xfunc_read_next(tc,c,&type);
 			}else{
-				ci_parse_field(tc,c,&type,&name);
+				xfield_read_next(tc,c,&type,&name);
 			}
 		}
 	}
