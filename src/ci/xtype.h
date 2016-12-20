@@ -80,21 +80,20 @@ inline static xfunc*xtype_get_func_by_name(const xtype*o,cstr field_name){
 	return NULL;
 }
 
-
-inline static void xfunc_read_next(toc*tc,xtype*c,token*type){
+inline static xfunc*xfunc_read_next(toc*tc,token type){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
 	bool enclosed_args=false;
 	if(*tc->srcp=='{' || *tc->srcp=='('){
 		f->type="void";
-		f->name=token_to_new_cstr(type);//? leak
+		f->name=token_to_new_cstr(&type);
 	}else{
 		token tkname=toc_next_token(tc);
-		f->type=token_to_new_cstr(type);//? leak
-		f->name=token_to_new_cstr(&tkname);//? leak
+		f->type=token_to_new_cstr(&type);
+		f->name=token_to_new_cstr(&tkname);
 	}
 
-	dynp_add(&c->funcs,f);
+//	dynp_add(&c->funcs,f);
 
 	if(*tc->srcp=='('){
 		enclosed_args=true;
@@ -130,23 +129,24 @@ inline static void xfunc_read_next(toc*tc,xtype*c,token*type){
 	}
 	xcode_read_next(&f->code,tc);
 	toc_pop_scope(tc);
+	return f;
 }
 
-inline static void xfield_read_next(toc*tc,xtype*c,token*type,token*name){
+inline static xfield*xfield_read_next(toc*tc,token type,token name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
-	f->type=token_to_new_cstr(type);//? leak
+	f->type=token_to_new_cstr(&type);
 //	token_setz(type,&f->type);
-	if(token_is_empty(name)){
+	if(token_is_empty(&name)){
 		f->name=f->type;
 	}else{
-		f->name=token_to_new_cstr(name);//? leak
+		f->name=token_to_new_cstr(&name);
 	}
-	dynp_add(&c->fields,f);
+//	dynp_add(&c->fields,f);
 	toc_add_declaration(tc,f->type,f->name);
 	if(*tc->srcp=='='){
 		tc->srcp++;
-		xexpls_parse_next(&f->initval, tc,*type);
+		xexpls_parse_next(&f->initval,tc,type);
 //		f->initval=e;
 		if(strcmp(f->type,"var")){
 				ci_assert_set(tc,
@@ -159,7 +159,7 @@ inline static void xfield_read_next(toc*tc,xtype*c,token*type,token*name){
 	if(*tc->srcp==';'){
 		tc->srcp++;
 	}
-	return;
+	return f;
 }
 
 inline static xtype*xtype_read_next(toc*tc,token name){
@@ -186,17 +186,21 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 			break;
 		}
 		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-			xfunc_read_next(tc,c,&type);
+			xfunc*f=xfunc_read_next(tc,type);
+			dynp_add(&c->funcs,f);
 		}else if(toc_srcp_is(tc,'=') || toc_srcp_is(tc,';')){
 			token name=toc_next_token(tc);
-			xfield_read_next(tc,c,&type,&name);
+			xfield*f=xfield_read_next(tc,type,name);
+			dynp_add(&c->fields,f);
 		}else{
 			token name=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 				tc->srcp=name.content;
-				xfunc_read_next(tc,c,&type);
+				xfunc*f=xfunc_read_next(tc,type);
+				dynp_add(&c->funcs,f);
 			}else{
-				xfield_read_next(tc,c,&type,&name);
+				xfield*f=xfield_read_next(tc,type,name);
+				dynp_add(&c->fields,f);
 			}
 		}
 	}
