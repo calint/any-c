@@ -1,0 +1,24 @@
+id{
+	var i=0
+}
+
+entity{
+	id id
+	var f=2.2
+	print{
+		printf("entity: %d %f\n",id.i,f)
+	}
+}
+
+global{
+	entity e1
+	entity e2
+	main{
+		e1.id.i=1
+		e1.print()
+		e2.id.i=2
+		e2.print()
+		e1.id.i=3
+		e1.print()
+	}
+}

@@ -41,11 +41,7 @@ inline static void global_main(global*o){
 	o->e1.id.i=3;
 	entity_print((entity*)&o->e1);
 }
-inline static void global__free(global*o){
-	printf("free global\n");
-}
 inline static void global_free(global*o){
-    global__free(o);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
