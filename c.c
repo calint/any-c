@@ -16,13 +16,6 @@ typedef struct id{
     int i;
 }id;
 #define id_def (id){0}
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static void id__free(id*o){
-	printf("free id %d\n",o->i);
-}
-inline static void id_free(id*o){
-    id__free(o);
-}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
     id id;
@@ -38,7 +31,6 @@ inline static void entity__free(entity*o){
 }
 inline static void entity_free(entity*o){
     entity__free(o);
-    id_free(&o->id);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;
