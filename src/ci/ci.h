@@ -561,12 +561,12 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 	*f=xfunc_def;
 	bool enclosed_args=false;
 	if(*tc->srcp=='{' || *tc->srcp=='('){
-		f->type=const_str("void");
-		token_setz(type,&f->name);
+		f->type="void";
+		f->name=token_to_new_cstr(type);//? leak
 	}else{
 		token tkname=toc_next_token(tc);
-		token_setz(type,&f->type);
-		token_setz(&tkname,&f->name);
+		f->type=token_to_new_cstr(type);//? leak
+		f->name=token_to_new_cstr(&tkname);//? leak
 	}
 
 	dynp_add(&c->funcs,f);
@@ -576,7 +576,7 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 		tc->srcp++;
 	}
 
-	toc_push_scope(tc,'f',f->name.data);
+	toc_push_scope(tc,'f',f->name);
 	while(1){
 		token tkt=toc_next_token(tc);
 		if(token_is_empty(&tkt)){
@@ -745,9 +745,9 @@ inline static void ci_compile_to_c(toc*tc){
 			ci_print_right_aligned_comment("funcs");
 			for(unsigned i=0;i<c->funcs.count;i++){
 				xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
-				toc_push_scope(tc,'f',f->name.data);
+				toc_push_scope(tc,'f',f->name);
 				printf("inline static %s %s_%s(%s*o",
-						f->type.data,c->name,f->name.data,c->name);
+						f->type,c->name,f->name,c->name);
 				for(unsigned j=0;j<f->args.count;j++){
 					xfuncarg*a=(xfuncarg*)dynp_get(&f->args,j);
 					printf(",");

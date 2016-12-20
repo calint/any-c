@@ -20,14 +20,14 @@ typedef struct xfuncarg{
 #define xfuncarg_def (xfuncarg){str_def,str_def,token_def}
 
 typedef struct xfunc{
-	str type;
-	str name;
+	cstr type;
+	cstr name;
 	dynp args;
 	xcode code;
 	token token;
 }xfunc;
 
-#define xfunc_def (xfunc){str_def,str_def,dynp_def,xcode_def,token_def}
+#define xfunc_def (xfunc){cstr_def,cstr_def,dynp_def,xcode_def,token_def}
 
 typedef struct xtype{
 	cstr name;
@@ -50,7 +50,7 @@ inline static xfield*xtype_get_field_by_name(const xtype*o,cstr field_name){
 inline static xfunc*xtype_get_func_by_name(const xtype*o,cstr field_name){
 	for(unsigned i=0;i<o->funcs.count;i++){
 		xfunc*f=dynp_get(&o->funcs,i);
-		if(!strcmp(f->name.data,field_name))
+		if(!strcmp(f->name,field_name))
 				return f;
 	}
 	return NULL;
