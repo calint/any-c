@@ -13,7 +13,35 @@
 [x] optional cleanup before shutdown
 [x] valgrind
 [ ] foo fow
-[ ] xtype into an expression
+[ ] xtype, xfield, xfunc, xfuncarg expressions
 [ ] function in function
 [ ] class in class
 [ ] lambdas
+[ ] destructors at end of scope
+[ ] default values on funcargs
+[ ] function overloading
+[ ] operator overloading
+[ ] virtual functions
+[ ] packages
+[ ] class and member visibility public,package
+[ ] const correctness
+[ ] unconsted/mutable members during a const op
+[ ] threads
+[ ] atomic locks
+[ ] mutexes
+[ ] threadpools
+[ ] taskpools
+[ ] reflection, text based, offset addresses, fields, functions
+[ ] compilation of default print / read for types
+[ ]     1. table row
+[ ]     2. text in list
+[ ]     3. text in summary
+[ ]     4. full text in dump
+[ ]     5. full text standalone dump
+[ ]     6. binary
+[ ]     7. rebind references after read
+[ ] containers
+[ ]   alloc
+[ ]   free
+[ ]   foo
+[ ]   fow
