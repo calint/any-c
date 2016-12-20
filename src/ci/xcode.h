@@ -1,7 +1,7 @@
 #pragma once
 #include"xexp.h"
-
-inline static /*gives*/xexp*ci_read_next_statement(toc*o);
+#include"decouple.h"
+//inline static /*gives*/xexp*ci_read_next_statement(toc*o);
 
 typedef struct xcode{
 	xexp super;

@@ -2,6 +2,8 @@
 #include"xexpls.h"
 #include"xcode.h"
 
+//struct xtype;
+
 typedef struct xfield{
 	cstr type;
 	cstr name;
@@ -38,14 +40,19 @@ inline static void xfunc_free(xfunc*o){
 	_xcode_free_((xexp*)&o->code);
 }
 
+#include"decouple.h"
+
 typedef struct xtype{
 	cstr name;
 	dynp fields;
 	dynp funcs;
 	token token;
+	char bits; // 1: needs call to free
 }xtype;
 
-#define xtype_def (xtype){cstr_def,dynp_def,dynp_def,token_def}
+#define xtype_def (xtype){cstr_def,dynp_def,dynp_def,token_def,0}
+
+//inline static struct xtype*ci_get_type_by_name(const toc*o,cstr);
 
 inline static void xtype_free(xtype*o){
 	for(unsigned i=0;i<o->fields.count;i++){
@@ -54,6 +61,7 @@ inline static void xtype_free(xtype*o){
 		free(f);
 	}
 	dynp_free(&o->fields);
+
 	for(unsigned i=0;i<o->funcs.count;i++){
 		xfunc*f=(xfunc*)dynp_get(&o->funcs,i);
 		xfunc_free(f);
@@ -84,7 +92,7 @@ inline static xfunc*xfunc_read_next(toc*tc,token type){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
 	bool enclosed_args=false;
-	if(*tc->srcp=='{' || *tc->srcp=='('){
+	if(toc_srcp_is(tc,'{') || toc_srcp_is(tc,'(')){
 		f->type="void";
 		f->name=token_to_new_cstr(&type);
 	}else{
@@ -92,37 +100,27 @@ inline static xfunc*xfunc_read_next(toc*tc,token type){
 		f->type=token_to_new_cstr(&type);
 		f->name=token_to_new_cstr(&tkname);
 	}
-
-//	dynp_add(&c->funcs,f);
-
-	if(*tc->srcp=='('){
+	if(toc_srcp_is_take(tc,'(')){
 		enclosed_args=true;
-		tc->srcp++;
+//		tc->srcp++;
 	}
-
 	toc_push_scope(tc,'f',f->name);
 	while(1){
 		token tkt=toc_next_token(tc);
-		if(token_is_empty(&tkt)){
+		if(token_is_empty(&tkt))
 			break;
-		}
 		xfuncarg*fa=malloc(sizeof(xfuncarg));
 		dynp_add(&f->funcargs,fa);
 		*fa=xfuncarg_def;
 		token tkn=toc_next_token(tc);
 		fa->type=token_to_new_cstr(&tkt);
 		fa->name=token_to_new_cstr(&tkn);
-
 		toc_add_declaration(tc,fa->type,fa->name);
-
-		if(*tc->srcp==','){
-			tc->srcp++;
-		}
+		toc_srcp_is_take(tc,',');
 	}
 	if(enclosed_args){
-		if(*tc->srcp==')'){
-			tc->srcp++;
-		}else{
+		if(!toc_srcp_is_take(tc,')')){
+			//? errormsg
 			printf("<file> <line:col> expected ')' after arguments\n");
 			longjmp(_jmp_buf,1);
 		}
@@ -136,15 +134,9 @@ inline static xfield*xfield_read_next(toc*tc,token type,token name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
 	f->type=token_to_new_cstr(&type);
-//	if(token_is_empty(&name)){
-//		f->name=f->type;
-//	}else{
-//		f->name=token_to_new_cstr(&name);
-//	}
 	f->name=token_is_empty(&name)?f->type:token_to_new_cstr(&name);
 	toc_add_declaration(tc,f->type,f->name);
 	if(toc_srcp_is_take(tc,'=')){
-//		tc->srcp++;
 		xexpls_parse_next(&f->initval,tc,type);
 		if(strcmp(f->type,"var")){
 				ci_assert_set(tc,
@@ -155,9 +147,6 @@ inline static xfield*xfield_read_next(toc*tc,token type,token name){
 		f->type=f->initval.super.type;
 	}
 	toc_srcp_is_take(tc,';');
-//	if(*tc->srcp==';'){
-//		tc->srcp++;
-//	}
 	return f;
 }
 
@@ -200,6 +189,25 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 			}else{
 				xfield*f=xfield_read_next(tc,type,name);
 				dynp_add(&c->fields,f);
+			}
+		}
+	}
+	for(unsigned i=0;i<c->funcs.count;i++){
+		xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
+		if(!strcmp(f->name,"free")){
+			c->bits|=1; // needs free call
+			break;
+		}
+	}
+	if(!(c->bits&1)){
+		for(unsigned i=0;i<c->fields.count;i++){
+			xfield*f=(xfield*)dynp_get(&c->fields,i);
+			if(ci_is_type_builtin(f->type))
+				continue;
+			xtype*mc=ci_get_type_by_name(tc,f->type);
+			if(mc->bits&1){
+				c->bits|=1; // needs call to free
+				break;
 			}
 		}
 	}

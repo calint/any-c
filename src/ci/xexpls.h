@@ -1,7 +1,7 @@
 #pragma once
 #include"toc.h"
-
-inline static xexp*ci_read_next_expression(toc*);
+#include"decouple.h"
+//inline static xexp*ci_read_next_expression(toc*);
 
 typedef struct xexpls{
 	xexp super;

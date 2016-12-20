@@ -1,8 +1,8 @@
 #pragma once
 #include"xexpls.h"
-
-inline static void ci_assert_set(const toc*,cstr,cstr,token);
-inline static void ci_xset_compile(const toc*,token,cstr,cstr);
+#include"decouple.h"
+//inline static void ci_assert_set(const toc*,cstr,cstr,token);
+//inline static void ci_xset_compile(const toc*,token,cstr,cstr);
 
 typedef struct xset{
 	xexp super;

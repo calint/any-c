@@ -1,7 +1,7 @@
 #pragma once
 #include"xexpls.h"
-
-inline static void ci_xcall_compile(toc*,token,cstr,unsigned);
+#include"decouple.h"
+//inline static void ci_xcall_compile(toc*,token,cstr,unsigned);
 
 typedef struct xcall{
 	xexp super;

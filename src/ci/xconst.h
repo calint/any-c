@@ -1,6 +1,5 @@
 #pragma once
-#include"../lib.h"
-#include "toc.h"
+#include"xexp.h"
 
 typedef struct xconst{
 	xexp super;
@@ -16,11 +15,4 @@ inline static void _xconst_compile_(const xexp*oo,toc*tc){
 	if(!strcmp(o->super.type,"float"))
 		printf("f");
 }
-//
-//inline static void xconst_read_next(toc*tc,token tk,ccharp type){
-//	xconst*o=malloc(sizeof(xconst));
-//	*o=xconst_def;
-//	o->super.type=const_str(type);//?
-//	o->super.token=tk;
-//	token_setz(&tk,&o->name);
-//}
+

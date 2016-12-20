@@ -9,8 +9,9 @@ typedef struct toc{
 	cstr filepth;
 }toc;
 
-inline static void ci_assert_set(const toc*,cstr,cstr,token);
-inline static cstr ci_get_type_for_accessor(const toc*,cstr,token);
+#include"decouple.h"
+//inline static void ci_assert_set(const toc*,cstr,cstr,token);
+//inline static cstr ci_get_type_for_accessor(const toc*,cstr,token);
 
 #define toc_def {dynp_def,dynp_def,cstr_def,NULL,NULL}
 
