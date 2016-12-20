@@ -30,32 +30,26 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 	*o=xcall_def;
 	o->name=name;
 	o->super.token=tk;
-	if(*tc->srcp!='('){// arguments
+	if(!toc_srcp_is(tc,'(')){// arguments
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected '(' followed by arguments and ')'");
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmpbufenv,1);
 	}
-	tc->srcp++;
+	toc_srcp_inc(tc);
 	while(1){
-		if(*tc->srcp==')'){
-			tc->srcp++;
+		if(toc_srcp_if_is_then_take(tc,')'))
 			break;
-		}
 		xexp*a=(xexp*)xexpls_read_next(tc,tk);
 		if(xexpr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			longjmp(_jmpbufenv,1);
 		}
 		dynp_add(&o->args,a);
-		if(*tc->srcp==','){
-			tc->srcp++;
+		if(toc_srcp_if_is_then_take(tc,','))
 			continue;
-		}
-		if(*tc->srcp==')'){
-			tc->srcp++;
+		if(toc_srcp_if_is_then_take(tc,')'))
 			break;
-		}
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected ',' followed by more arguments to function '%s'",
 				name.data);
