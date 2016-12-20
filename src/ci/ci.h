@@ -586,10 +586,10 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 		dynp_add(&f->args,fa);
 		*fa=xfuncarg_def;
 		token tkn=toc_next_token(tc);
-		token_setz(&tkt,&fa->type);
-		token_setz(&tkn,&fa->name);
+		fa->type=token_to_new_cstr(&tkt);//? leak
+		fa->name=token_to_new_cstr(&tkn);//? leak
 
-		toc_add_declaration(tc,fa->type.data,fa->name.data);
+		toc_add_declaration(tc,fa->type,fa->name);
 
 		if(*tc->srcp==','){
 			tc->srcp++;
@@ -751,8 +751,8 @@ inline static void ci_compile_to_c(toc*tc){
 				for(unsigned j=0;j<f->args.count;j++){
 					xfuncarg*a=(xfuncarg*)dynp_get(&f->args,j);
 					printf(",");
-					printf("%s %s",a->type.data,a->name.data);
-					toc_add_declaration(tc,a->type.data,a->name.data);
+					printf("%s %s",a->type,a->name);
+					toc_add_declaration(tc,a->type,a->name);
 				}
 				printf(")");
 				f->code.super.compile((xexp*)&f->code,tc);

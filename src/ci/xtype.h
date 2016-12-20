@@ -12,12 +12,12 @@ typedef struct xfield{
 #define xfield_def (xfield){cstr_def,cstr_def,xexpls_def,token_def}
 
 typedef struct xfuncarg{
-	str type;
-	str name;
+	cstr type;
+	cstr name;
 	token token;
 }xfuncarg;
 
-#define xfuncarg_def (xfuncarg){str_def,str_def,token_def}
+#define xfuncarg_def (xfuncarg){cstr_def,cstr_def,token_def}
 
 typedef struct xfunc{
 	cstr type;
