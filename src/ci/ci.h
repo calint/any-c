@@ -695,15 +695,15 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
-	printf("typedef char bool;\n");
 	printf("typedef const char*cstr;\n");
+	printf("typedef char bool;\n");
 	printf("#define true 1\n");
 	printf("#define false 1\n");
+	printf("#define cstr_def ""\n");
+	printf("#define bool_def false\n");
 	printf("#define char_def 0\n");
-//	printf("#define var_def 0\n");
 	printf("#define int_def 0\n");
 	printf("#define float_def 0.0f\n");
-	printf("#define bool_def false\n");
 	for(unsigned i=0;i<tc->types.count;i++){
 		xtype*c=dynp_get(&tc->types,i);
 		toc_push_scope(tc,'c',c->name);

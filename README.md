@@ -40,14 +40,15 @@ compiles to
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
-typedef char bool;
 typedef const char*cstr;
+typedef char bool;
 #define true 1
 #define false 1
+#define cstr_def 
+#define bool_def false
 #define char_def 0
 #define int_def 0
 #define float_def 0.0f
-#define bool_def false
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
     int i;
