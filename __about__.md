@@ -1,7 +1,8 @@
 # any-c
 ```
-simple framework with c++ like language that compiles
-                            data and event model to c
+simple framework
+  compiles c++ like language to c
+  data and event model
 
   has
     : structs with functions
