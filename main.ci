@@ -1,17 +1,18 @@
-player{
-	var i=17
+entity{
+	var i=1
 	var f=2.2
-	var b=true
-	var s="hello \" world "
-	var ch='.'
 	print{
-		printf(" %f %d %d %s %c \n",f,i,b,s,ch);
+		printf("entity: %d %f\n",i,f)
 	}
 }
 
 global{
+	entity e1
+	entity e2
 	main{
-		player p
-		p.print()
+		e1.print()
+		e2.print()
+		e1.i=2
+		e1.print()
 	}
 }
