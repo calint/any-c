@@ -45,7 +45,6 @@ typedef const char* cstr;
 #define true 1
 #define false 1
 #define char_def 0
-#define var_def 0
 #define int_def 0
 #define float_def 0.0f
 #define bool_def false

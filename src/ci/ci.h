@@ -700,7 +700,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("#define true 1\n");
 	printf("#define false 1\n");
 	printf("#define char_def 0\n");
-	printf("#define var_def 0\n");
+//	printf("#define var_def 0\n");
 	printf("#define int_def 0\n");
 	printf("#define float_def 0.0f\n");
 	printf("#define bool_def false\n");
