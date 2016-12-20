@@ -1,7 +1,7 @@
 #/bin/sh -x
 
 f=README.md
-a=__about__
+a=__about__.md
 s=qa/18.ci
 b=./any-c
 c=c.c

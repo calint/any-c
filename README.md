@@ -1,5 +1,5 @@
 # any-c
-
+```
 simple framework with c++ like language that compiles
                             data and event model to c
 
@@ -8,6 +8,7 @@ simple framework with c++ like language that compiles
     : compile time type checking
     : deduced variable types
     : terse syntax
+```
 
 
 sample source
