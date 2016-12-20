@@ -136,18 +136,16 @@ inline static xfield*xfield_read_next(toc*tc,token type,token name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
 	f->type=token_to_new_cstr(&type);
-//	token_setz(type,&f->type);
-	if(token_is_empty(&name)){
-		f->name=f->type;
-	}else{
-		f->name=token_to_new_cstr(&name);
-	}
-//	dynp_add(&c->fields,f);
+//	if(token_is_empty(&name)){
+//		f->name=f->type;
+//	}else{
+//		f->name=token_to_new_cstr(&name);
+//	}
+	f->name=token_is_empty(&name)?f->type:token_to_new_cstr(&name);
 	toc_add_declaration(tc,f->type,f->name);
-	if(*tc->srcp=='='){
-		tc->srcp++;
+	if(toc_srcp_is_take(tc,'=')){
+//		tc->srcp++;
 		xexpls_parse_next(&f->initval,tc,type);
-//		f->initval=e;
 		if(strcmp(f->type,"var")){
 				ci_assert_set(tc,
 					f->name,
@@ -156,9 +154,10 @@ inline static xfield*xfield_read_next(toc*tc,token type,token name){
 		}
 		f->type=f->initval.super.type;
 	}
-	if(*tc->srcp==';'){
-		tc->srcp++;
-	}
+	toc_srcp_is_take(tc,';');
+//	if(*tc->srcp==';'){
+//		tc->srcp++;
+//	}
 	return f;
 }
 
