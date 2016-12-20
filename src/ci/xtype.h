@@ -199,7 +199,7 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 			break;
 		}
 	}
-	if(!(c->bits&1)){
+	if(!(c->bits&1)){// needs free
 		for(unsigned i=0;i<c->fields.count;i++){
 			xfield*f=(xfield*)dynp_get(&c->fields,i);
 			if(ci_is_type_builtin(f->type))

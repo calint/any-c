@@ -1,0 +1,8 @@
+entity: 1 2.200000
+entity: 2 2.200000
+entity: 3 2.200000
+free global
+free entity: 2
+free id
+free entity: 3
+free id

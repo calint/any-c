@@ -24,7 +24,7 @@ inline static void _xident_compile_(const xexp*oo,toc*tc){
 		const char idtype=toc_get_declaration_scope_type(tc,s.data);
 		if(idtype){
 			if(idtype=='c'){// class member
-				printf("%s->%s",s.data,o->name);
+				printf("o->%s",o->name);
 			}else{
 				printf("%s",o->name);
 			}

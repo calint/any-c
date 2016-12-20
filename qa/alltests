@@ -23,6 +23,6 @@ cd qa &&
 ./do-test 17 &&
 ./do-test 17 &&
 ./do-test 18 &&
-#./do-test 19 &&
+./do-test 19 &&
 date &&
 echo done. ok
