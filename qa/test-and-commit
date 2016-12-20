@@ -1,0 +1,7 @@
+#/bin/sh
+
+./alltests > log &&
+cat log && 
+xii-commit-project-in-workspace-to-github any-c &&
+echo done
+
