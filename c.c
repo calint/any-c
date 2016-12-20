@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<stdio.h>
 typedef char bool;
-typedef const char* cstr;
+typedef const char*cstr;
 #define true 1
 #define false 1
 #define char_def 0
