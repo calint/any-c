@@ -33,43 +33,43 @@ inline static type*toc_get_type_by_name(toc*o,ccharp name){
 //	printf("\n    %s %d",__FILE__,__LINE__);
 //	longjmp(_jmpbufenv,1);
 //}
-inline static void toc_print_func_call_for_compile(toc*tc,
-		token tk,ccharp funcnm){
-	// get current class name
-	ccharp typenm=0;
-	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
-		if(s->type=='c'){
-			typenm=s->name;
-			break;
-		}
-	}
-
-	if(typenm==0){
-		toc_print_source_location(tc,tk,4);
-		printf("could not find class scope");
-		//? print toc
-		longjmp(_jmpbufenv,1);
-	}
-
-	type*tp=toc_get_type_by_name(tc,typenm);
-	if(!tp){
-		toc_print_source_location(tc,tk,4);
-		printf("cannot find class scope");
-		printf("\n    %s %d",__FILE__,__LINE__);
-		longjmp(_jmpbufenv,1);
-	}
-
-	func*fc=type_get_func_by_name(tp,funcnm);
-	if(!fc){
-		toc_print_source_location(tc,tk,4);
-		printf("cannot find function '%s' in '%s'",funcnm,typenm);
-		printf("\n    %s %d",__FILE__,__LINE__);
-		longjmp(_jmpbufenv,1);
-	}
-
-	printf("%s_%s((%s*)&%s",typenm,funcnm,typenm,"o");
-}
+//inline static void toc_print_func_call_for_compile(toc*tc,
+//		token tk,ccharp funcnm){
+//	// get current class name
+//	ccharp typenm=0;
+//	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+//		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+//		if(s->type=='c'){
+//			typenm=s->name;
+//			break;
+//		}
+//	}
+//
+//	if(typenm==0){
+//		toc_print_source_location(tc,tk,4);
+//		printf("could not find class scope");
+//		//? print toc
+//		longjmp(_jmpbufenv,1);
+//	}
+//
+//	type*tp=toc_get_type_by_name(tc,typenm);
+//	if(!tp){
+//		toc_print_source_location(tc,tk,4);
+//		printf("cannot find class scope");
+//		printf("\n    %s %d",__FILE__,__LINE__);
+//		longjmp(_jmpbufenv,1);
+//	}
+//
+//	func*fc=type_get_func_by_name(tp,funcnm);
+//	if(!fc){
+//		toc_print_source_location(tc,tk,4);
+//		printf("cannot find function '%s' in '%s'",funcnm,typenm);
+//		printf("\n    %s %d",__FILE__,__LINE__);
+//		longjmp(_jmpbufenv,1);
+//	}
+//
+//	printf("%s_%s((%s*)&%s",typenm,funcnm,typenm,"o");
+//}
 
 inline static void toc_add_type(toc*o,type*c){
 	dynp_add(&o->types,c);
@@ -189,49 +189,49 @@ inline static void toc_assert_can_set(toc*tc,
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmpbufenv,1);
 }
-
-inline static bool toc_can_assign(toc*tc,
-		ccharp to_typenm,
-		ccharp accessor,
-		ccharp from_typenm){
-
-	type*c=toc_get_type_by_name(tc,to_typenm);
-	ccharp endptr=accessor;
-	while(1){
-		ccharp p=strpbrk(endptr,".");
-		str ident=str_def;
-		if(p){
-			str_add_list(&ident,endptr,p-endptr);
-			str_add(&ident,0);
-			endptr=p+1;
-		}else{
-			str_add_list(&ident,endptr,strlen(endptr));
-			str_add(&ident,0);
-		}
-
-		if(!c){// base type or class not found
-			return !strcmp(to_typenm,from_typenm);
-		}
-		bool found=false;
-		for(unsigned i=0;i<c->fields.count;i++){
-			field*fld=(field*)dynp_get(&c->fields,i);
-			if(!strcmp(fld->name.data,ident.data)){
-				c=toc_get_type_by_name(tc,fld->type.data);
-				if(!c){
-					if(!from_typenm)
-						return true;//?
-					return !strcmp(fld->type.data,from_typenm);
-				}
-				found=true;
-				break;
-			}
-		}
-		if(found)continue;
-		printf("<file> <line:col> cannot find '%s' in '%s'\n",
-				accessor,c->name.data);
-		longjmp(_jmpbufenv,1);
-	}
-}
+//
+//inline static bool toc_can_assign(toc*tc,
+//		ccharp to_typenm,
+//		ccharp accessor,
+//		ccharp from_typenm){
+//
+//	type*c=toc_get_type_by_name(tc,to_typenm);
+//	ccharp endptr=accessor;
+//	while(1){
+//		ccharp p=strpbrk(endptr,".");
+//		str ident=str_def;
+//		if(p){
+//			str_add_list(&ident,endptr,p-endptr);
+//			str_add(&ident,0);
+//			endptr=p+1;
+//		}else{
+//			str_add_list(&ident,endptr,strlen(endptr));
+//			str_add(&ident,0);
+//		}
+//
+//		if(!c){// base type or class not found
+//			return !strcmp(to_typenm,from_typenm);
+//		}
+//		bool found=false;
+//		for(unsigned i=0;i<c->fields.count;i++){
+//			field*fld=(field*)dynp_get(&c->fields,i);
+//			if(!strcmp(fld->name.data,ident.data)){
+//				c=toc_get_type_by_name(tc,fld->type.data);
+//				if(!c){
+//					if(!from_typenm)
+//						return true;//?
+//					return !strcmp(fld->type.data,from_typenm);
+//				}
+//				found=true;
+//				break;
+//			}
+//		}
+//		if(found)continue;
+//		printf("<file> <line:col> cannot find '%s' in '%s'\n",
+//				accessor,c->name.data);
+//		longjmp(_jmpbufenv,1);
+//	}
+//}
 
 inline static void ci_init(){}
 
@@ -711,14 +711,11 @@ inline static void toc_parse_field(toc*tc,type*c,token*type,token*name){
 		tc->srcp++;
 		xexpls_parse_next(&f->initval, tc,*type);
 //		f->initval=e;
-		if(strcmp(f->type.data,"var") && !toc_can_assign(tc,
-				f->type.data,
-				f->initval.super.type.data,
-				f->initval.super.type.data)){
-
-			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
-					f->initval.super.type.data,f->type.data);
-			longjmp(_jmpbufenv,1);
+		if(strcmp(f->type.data,"var")){
+				toc_assert_can_set(tc,
+					f->name.data,
+					f->initval.super.type.data,
+					f->initval.super.token);
 		}
 		f->type=f->initval.super.type;
 	}

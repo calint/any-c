@@ -1,39 +1,17 @@
-varray{}
-buffer{}
-material{}
-
-render_range{
-	buffer;
-	int from
-	int to
-	material m
-	
-	draw{
-		printf("draw_render_range\n")
+player{
+	int c=2
+	print{
+		printf(" player: %d\n",c);
 	}
 }
-
-glo{
-	buffer vertbuf;
-	render_range rendrngs;
-	
-	draw{
-		printf("draw_glo\n")
-		rendrngs.draw()
-	}
-}
-
 
 global{
-	glo gl
-	draw{printf("draw_global\n")}
-
 	main{
-		draw()
-		gl.draw()
-		
-		glo g
-		g.draw()
-		g.rendrngs.draw()
+		player p1
+		player p2
+		p1.c=1
+		p1.print()
+		p2.c=p1.c
+		p2.print()
 	}
 }

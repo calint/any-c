@@ -12,8 +12,9 @@ typedef struct toc{
 
 #define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
 
-inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,ccharp src);
-inline static void toc_print_func_call_for_compile(toc*,token,ccharp);
+//inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,ccharp src);
+inline static void toc_assert_can_set(toc*,ccharp,ccharp,token);
+//inline static void toc_print_func_call_for_compile(toc*,token,ccharp);
 inline static ccharp toc_get_type_for_accessor(toc*,ccharp,token);
 //inline static ccharp toc_get_type_in_context(toc*,token);
 
@@ -219,11 +220,7 @@ inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			longjmp(_jmpbufenv,1);
 		}
-		if(!toc_can_assign(tc,i->type.data,p+1,type)){
-			printf("<file> <line:col> cannot assign '%s' to '%s'\n",
-					type,i->type.data);
-			longjmp(_jmpbufenv,1);
-		}
+		toc_assert_can_set(tc,id,type,tk);
 		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
 		if(scopetype){
 			if(scopetype=='c'){// class member
