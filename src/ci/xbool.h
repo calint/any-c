@@ -2,15 +2,16 @@
 #include"../lib.h"
 #include "code.h"
 #include "toc.h"
+#include"xexpls.h"
 typedef struct xbool{
 	xexpr super;
 
 	// leaf
 	bool lh_negate;
-	struct xexpr*lh;
+	struct xexpls lh;
 	char op;
 	bool rh_negate;
-	struct xexpr*rh;
+	struct xexpls rh;
 
 	// list
 	str bool_op_list;
@@ -58,9 +59,9 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 	if(o->lh_negate)
 		printf("!");
 
-	o->lh->compile(o->lh,tc);
+	o->lh.super.compile((xexpr*)&o->lh,tc);
 
-	if(!o->rh)
+	if(!o->rh.exprs.count)
 		return;
 
 	if(o->op=='='){
@@ -83,7 +84,7 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 	if(o->rh_negate)
 		printf("!");
 
-	o->rh->compile(o->rh,tc);
+	o->rh.super.compile((xexpr*)&o->rh,tc);
 
 	if(o->is_encapsulated){
 		printf(")");
@@ -91,12 +92,12 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 }
 
 #define xbool_def (xbool){{_xbool_compile_,NULL,str_def,token_def,0},\
-	false,NULL,0,false,NULL,\
+	false,xexpls_def,0,false,xexpls_def,\
 	str_def,\
 	dynp_def,\
 	false,false}
 
-inline static void xbool_parse(xbool*o,toc*tc){
+inline static void xbool_parse(xbool*o,toc*tc,token tk){
 	o->super.type=str_from_string("bool");
 	token_skip_empty_space(&tc->srcp);
 	bool neg=false;
@@ -119,7 +120,9 @@ inline static void xbool_parse(xbool*o,toc*tc){
 		}
 
 
-		o->lh=toc_read_next_xexpr(tc);
+		xexpls_parse_next(&o->lh,tc,tk);
+
+//		o->lh=toc_read_next_xexpr(tc);
 
 		if(*tc->srcp=='='){
 			tc->srcp++;
@@ -163,7 +166,8 @@ inline static void xbool_parse(xbool*o,toc*tc){
 			o->rh_negate=true;
 		}
 
-		o->rh=toc_read_next_xexpr(tc);
+		xexpls_parse_next(&o->rh,tc,tk);
+//		o->rh=toc_read_next_xexpr(tc);
 
 		if(*tc->srcp==')'){
 			return;
@@ -205,7 +209,7 @@ inline static void xbool_parse(xbool*o,toc*tc){
 	while(1){
 		xbool*e=malloc(sizeof(xbool));
 		*e=xbool_def;
-		xbool_parse(e,tc);
+		xbool_parse(e,tc,tk);
 		dynp_add(&o->bool_list,e);
 		token_skip_empty_space(&tc->srcp);
 		if(*tc->srcp==')'){

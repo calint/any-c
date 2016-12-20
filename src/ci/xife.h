@@ -20,11 +20,11 @@ inline static void _xif_compile_(const xexpr*oo,toc*tc){
 
 #define xif_def (xif){{_xif_compile_,NULL,str_def,token_def,0},xbool_def,code_def}
 
-inline static xif*xif_read_next(toc*tc){
+inline static xif*xif_read_next(toc*tc,token tk){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
 	toc_charp_skip_if(tc,'(');
-	xbool_parse(&o->cond,tc);
+	xbool_parse(&o->cond,tc,tk);
 	toc_charp_skip_if(tc,')');
 	code_read_next(&o->code,tc);
 	return o;
@@ -77,7 +77,7 @@ inline static xife*xife_read_next(toc*tc,token tk){
 	*o=xife_def;
 	o->super.token=tk;
 	while(1){
-		xif*i=xif_read_next(tc);
+		xif*i=xif_read_next(tc,tk);
 		dynp_add(&o->ifs,i);
 		token t=toc_next_token(tc);
 		if(!token_equals(&t,"else")){
