@@ -226,20 +226,29 @@ inline static void token_setz(token*o,str*s){
 	str_add(s,0);
 }
 
-inline static /*gives*/str token_to_str2(token*o){
-	str s=str_def;
-	str_add_list(&s,o->content,(unsigned)(o->content_end-o->content));
-	str_add(&s,0);
-	return s;
+inline static /*gives*/cstr token_to_new_cstr(token*o){
+	const unsigned len=o->content_end-o->content;
+	char*s=malloc(len+1);
+	memcpy(s,o->content,len);
+	s[len]='\0';
+	return(cstr)s;
 }
 
-inline static /*gives*/str*token_to_str(token*o){
-	str*s=malloc(sizeof(str));
-	*s=str_def;
-	str_add_list(s,o->content,(unsigned)(o->content_end-o->content));
-	str_add(s,0);
-	return s;
-}
+//
+//inline static /*gives*/str token_to_str2(token*o){
+//	str s=str_def;
+//	str_add_list(&s,o->content,(unsigned)(o->content_end-o->content));
+//	str_add(&s,0);
+//	return s;
+//}
+//
+//inline static /*gives*/str*token_to_str(token*o){
+//	str*s=malloc(sizeof(str));
+//	*s=str_def;
+//	str_add_list(s,o->content,(unsigned)(o->content_end-o->content));
+//	str_add(s,0);
+//	return s;
+//}
 
 inline static bool token_is_empty(token*o){
 	return o->content_end==o->content;

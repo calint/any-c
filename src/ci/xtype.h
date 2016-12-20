@@ -30,13 +30,13 @@ typedef struct xfunc{
 #define xfunc_def (xfunc){str_def,str_def,dynp_def,xcode_def,token_def}
 
 typedef struct xtype{
-	str name;
+	cstr name;
 	dynp fields;
 	dynp funcs;
 	token token;
 }xtype;
 
-#define xtype_def (xtype){str_def,dynp_def,dynp_def,token_def}
+#define xtype_def (xtype){cstr_def,dynp_def,dynp_def,token_def}
 
 inline static xfield*xtype_get_field_by_name(const xtype*o,cstr field_name){
 	for(unsigned i=0;i<o->fields.count;i++){

@@ -21,7 +21,7 @@ typedef struct ci{
 inline static xtype*ci_get_type_by_name(const toc*o,cstr name){
 	for(unsigned i=0;i<o->types.count;i++){
 		xtype*c=dynp_get(&o->types,i);
-		if(!strcmp(c->name.data,name)){
+		if(!strcmp(c->name,name)){
 			return c;
 		}
 	}
@@ -61,7 +61,7 @@ inline static cstr ci_get_type_for_accessor(const toc*tc,
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
 						current_accessor,
-						current_type->name.data,
+						current_type->name,
 						accessor
 				);
 				printf("\n    %s %d",__FILE__,__LINE__);
@@ -113,7 +113,7 @@ inline static void ci_assert_set(const toc*tc,
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
 						current_accessor,
-						current_type->name.data,
+						current_type->name,
 						accessor
 				);
 				printf("\n    %s %d",__FILE__,__LINE__);
@@ -640,10 +640,9 @@ inline static xtype*ci_parse_type(toc*tc,token name){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
 	dynp_add(&tc->types,c);
-//	ci_add_type(tc,c);
 	c->token=name;
-	token_setz(&c->token,&c->name);
-	toc_push_scope(tc,'c',c->name.data);
+	c->name=token_to_new_cstr(&c->token);//? leak
+	toc_push_scope(tc,'c',c->name);
 	if(!toc_srcp_is(tc,'{')){
 		toc_print_source_location(tc,c->token,4);
 		printf("expected '{' to open class body\n");
@@ -705,10 +704,10 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("#define bool_def false\n");
 	for(unsigned i=0;i<tc->types.count;i++){
 		xtype*c=dynp_get(&tc->types,i);
-		toc_push_scope(tc,'c',c->name.data);
+		toc_push_scope(tc,'c',c->name);
 		// type
-		ci_print_right_aligned_comment(c->name.data);
-		printf("typedef struct %s{",c->name.data);
+		ci_print_right_aligned_comment(c->name);
+		printf("typedef struct %s{",c->name);
 		// fields
 		if(c->fields.count)printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
@@ -724,10 +723,10 @@ inline static void ci_compile_to_c(toc*tc){
 			}
 			printf("    %s %s;\n",f->type.data,f->name.data);
 		}
-		printf("}%s;\n",c->name.data);
+		printf("}%s;\n",c->name);
 
 		// #define object_def {...}
-		printf("#define %s_def (%s){",c->name.data,c->name.data);
+		printf("#define %s_def (%s){",c->name,c->name);
 		for(unsigned i=0;i<c->fields.count;i++){
 			xfield*s=(xfield*)dynp_get(&c->fields,i);
 			if(s->initval.exprs.count){
@@ -747,7 +746,7 @@ inline static void ci_compile_to_c(toc*tc){
 				xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
 				toc_push_scope(tc,'f',f->name.data);
 				printf("inline static %s %s_%s(%s*o",
-						f->type.data,c->name.data,f->name.data,c->name.data);
+						f->type.data,c->name,f->name.data,c->name);
 				for(unsigned j=0;j<f->args.count;j++){
 					xfuncarg*a=(xfuncarg*)dynp_get(&f->args,j);
 					printf(",");
