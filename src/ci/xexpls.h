@@ -1,6 +1,5 @@
 #pragma once
-#include"../lib.h"
-#include "toc.h"
+#include"toc.h"
 
 inline static xexp*ci_read_next_expression(toc*);
 
@@ -72,7 +71,7 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 			toc_print_source_location(tc,o->super.token,4);
 			printf("expected ')'");
 			printf("\n    %s %d",__FILE__,__LINE__);
-			longjmp(_jmpbufenv,1);
+			longjmp(_jmp_buf,1);
 		}
 	}
 

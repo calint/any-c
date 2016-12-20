@@ -26,7 +26,7 @@ inline static void _xset_init(toc*tc,xset*o,str name,token tk){
 		toc_print_source_location(tc,o->super.token,4);
 		printf("'%s' not found",o->name.data);
 		printf("\n    %s %d",__FILE__,__LINE__);
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 		return;
 	}
 

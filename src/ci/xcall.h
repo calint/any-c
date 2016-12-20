@@ -13,8 +13,8 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	xcall*o=(xcall*)oo;
 	ci_xcall_compile(tc,o->super.token,o->name.data,o->args.count);
 	for(unsigned i=0;i<o->args.count;i++){
-		xexp*a=(xexp*)dynp_get(&o->args,i);
-		a->compile(a,tc);
+		xexp*e=(xexp*)dynp_get(&o->args,i);
+		e->compile(e,tc);
 		if(i!=o->args.count-1){
 			printf(",");
 		}
@@ -34,7 +34,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected '(' followed by arguments and ')'");
 		printf("\n    %s %d",__FILE__,__LINE__);
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 	}
 	toc_srcp_inc(tc);
 	while(1){
@@ -43,10 +43,10 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 		xexp*a=(xexp*)xexpls_read_next(tc,tk);
 		if(xexpr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
-			longjmp(_jmpbufenv,1);
+			longjmp(_jmp_buf,1);
 		}
 		dynp_add(&o->args,a);
-		//? assert can set
+		//? assert can set  ci_assert_xcall_arg_type(name.data,i)
 		if(toc_srcp_if_is_then_take(tc,','))
 			continue;
 		if(toc_srcp_if_is_then_take(tc,')'))
@@ -55,7 +55,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 		printf("expected ',' followed by more arguments to function '%s'",
 				name.data);
 		printf("\n    %s %d",__FILE__,__LINE__);
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 	}
 	return o;
 }

@@ -37,7 +37,7 @@ inline static cstr ci_get_type_for_accessor(const toc*tc,
 		toc_print_source_location(tc,tk,4);
 		printf("'%s' not found",current_accessor);
 		printf("\n    %s %d",__FILE__,__LINE__);
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 	}
 	cstr current_class_name=decl->type.data;
 	const xtype*current_type=ci_get_type_by_name(tc,current_class_name);
@@ -65,7 +65,7 @@ inline static cstr ci_get_type_for_accessor(const toc*tc,
 						accessor
 				);
 				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			current_class_name=fld->type.data;
 			current_type=ci_get_type_by_name(tc,current_class_name);
@@ -85,7 +85,7 @@ inline static void ci_assert_set(const toc*tc,
 		toc_print_source_location(tc,tk,4);
 		printf("'%s' not found",current_accessor);
 		printf("\n    %s %d",__FILE__,__LINE__);
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 	}
 
 	if(!strcmp(decl->type.data,"var"))// if dest is var
@@ -117,7 +117,7 @@ inline static void ci_assert_set(const toc*tc,
 						accessor
 				);
 				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			current_class_name=fld->type.data;
 			current_type=ci_get_type_by_name(tc,current_class_name);
@@ -140,7 +140,7 @@ inline static void ci_assert_set(const toc*tc,
 			accessor,current_class_name
 	);
 	printf("\n    %s %d",__FILE__,__LINE__);
-	longjmp(_jmpbufenv,1);
+	longjmp(_jmp_buf,1);
 }
 
 inline static void ci_init(){}
@@ -156,12 +156,12 @@ inline static xexp*ci_read_next_statement(toc*tc){
 				if(c==0){
 					printf("<file> <line:col> did not find the "
 							" end of string\n");
-					longjmp(_jmpbufenv,1);
+					longjmp(_jmp_buf,1);
 				}
 				if(c=='\n'){
 					printf("<file> <line:col> did not find the "
 							" end of string on the same line\n");
-					longjmp(_jmpbufenv,1);
+					longjmp(_jmp_buf,1);
 				}
 				tc->srcp++;
 				if(c=='\\'){
@@ -185,7 +185,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 				toc_print_source_location(tc,tk,4);
 				printf("expected a character, example 'a'");
 				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			toc_srcp_inc(tc);
 			tk.end=tk.content_end=tc->srcp;
@@ -366,12 +366,12 @@ inline static xexp*ci_read_next_expression(toc*tc){
 				if(c==0){
 					printf("<file> <line:col> did not find the "
 							" end of string\n");
-					longjmp(_jmpbufenv,1);
+					longjmp(_jmp_buf,1);
 				}
 				if(c=='\n'){
 					printf("<file> <line:col> did not find the "
 							" end of string on the same line\n");
-					longjmp(_jmpbufenv,1);
+					longjmp(_jmp_buf,1);
 				}
 				tc->srcp++;
 				if(c=='\\'){
@@ -395,7 +395,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 				toc_print_source_location(tc,tk,4);
 				printf("expected a character, example 'a'");
 				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			toc_srcp_inc(tc);
 			tk.end=tk.content_end=tc->srcp;
@@ -600,7 +600,7 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 			tc->srcp++;
 		}else{
 			printf("<file> <line:col> expected ')' after arguments\n");
-			longjmp(_jmpbufenv,1);
+			longjmp(_jmp_buf,1);
 		}
 	}
 	code_read_next(&f->code,tc);
@@ -647,7 +647,7 @@ inline static xtype*ci_parse_type(toc*tc,token name){
 	if(!toc_srcp_is(tc,'{')){
 		toc_print_source_location(tc,c->token,4);
 		printf("expected '{' to open class body\n");
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 	}
 	toc_srcp_inc(tc);
 	while(1){
@@ -655,7 +655,7 @@ inline static xtype*ci_parse_type(toc*tc,token name){
 		if(token_is_empty(&type)){
 			if(*tc->srcp!='}'){
 				printf("<file> <line:col> expected '}' to close class body\n");
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			tc->srcp++;
 			break;
@@ -717,7 +717,7 @@ inline static void ci_compile_to_c(toc*tc){
 			if(!strcmp(f->type.data,"var")){
 				if(!f->initval.exprs.count){
 					printf("<file> <line:col> expected initializer with auto");
-					longjmp(_jmpbufenv,1);
+					longjmp(_jmp_buf,1);
 				}
 				f->initval.super.compile((xexp*)&f->initval,tc);
 				f->type=f->initval.super.type;
@@ -768,24 +768,20 @@ inline static void ci_compile_to_c(toc*tc){
 }
 
 inline static int ci_compile_file(cstr path){
-	int val=setjmp(_jmpbufenv);
-	if(val==1){
-//		printf(" error occured");
-		return -1;
-	}
-
+	const int ret=setjmp(_jmp_buf);
+	if(ret)
+		return ret;
 	toc tc=toc_def;
 	tc.filepth=path;
 	tc.src=str_from_file(path);
 	tc.srcp=tc.src.data;
 	while(1){
 		token typenm=toc_next_token(&tc);
-		if(token_is_empty(&typenm))break;
+		if(token_is_empty(&typenm))
+			break;
 		ci_parse_type(&tc,typenm);
 	}
-
 	ci_compile_to_c(&tc);
-
 	return 0;
 }
 
@@ -799,7 +795,7 @@ inline static void ci_xset_compile(const toc*tc,token tk,cstr id,cstr type){
 		const tocdecl*i=toc_get_declaration(tc,sid.data);
 		if(!i){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
-			longjmp(_jmpbufenv,1);
+			longjmp(_jmp_buf,1);
 		}
 		ci_assert_set(tc,id,type,tk);
 		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
@@ -827,7 +823,7 @@ inline static void ci_xset_compile(const toc*tc,token tk,cstr id,cstr type){
 
 	toc_print_source_location(tc,tk,4);
 	printf("could not find var '%s'\n",id);
-	longjmp(_jmpbufenv,1);
+	longjmp(_jmp_buf,1);
 }
 
 

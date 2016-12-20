@@ -38,7 +38,7 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 					printf(" || ");
 				}else{
 					printf("<file> <line:col> unknown op '%d' '%c'\n",op,op);
-					longjmp(_jmpbufenv,1);
+					longjmp(_jmp_buf,1);
 				}
 			}
 			_xbool_compile_((xexp*)b,tc);
@@ -76,7 +76,7 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 		printf("<=");
 	}else{
 		printf("<file> <line:col> unknown op '%d' ')'\n",o->op);
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 	}
 
 	if(o->rh_negate)
@@ -112,7 +112,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			o->lh_negate=true;
 		}else if(neg && *tc->srcp=='!'){// if(!!ok){}
 			printf("<file> <line:col> did not expect !!\n");
-			longjmp(_jmpbufenv,1);
+			longjmp(_jmp_buf,1);
 		}else{
 			o->lh_negate=neg;
 		}
@@ -126,7 +126,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			tc->srcp++;
 			if(*tc->srcp!='='){
 				printf("<file> <line:col> expected '=='\n");
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			o->op='=';
 			tc->srcp++;
@@ -134,7 +134,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			tc->srcp++;
 			if(*tc->srcp!='='){
 				printf("<file> <line:col> expected '!='\n");
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			o->op='!';
 			tc->srcp++;
@@ -182,14 +182,14 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 				return;
 			}else{
 				printf("<file> <line:col> expected &&\n");
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 		}else if(*tc->srcp=='|'){
 			tc->srcp++;
 			if(*tc->srcp=='|'){
 				tc->srcp--;
 				printf("<file> <line:col> expected ||\n");
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 		}else{
 			// not encapsulated, could be if b==2 break
@@ -218,7 +218,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			tc->srcp++;
 			if(*tc->srcp!='&'){
 				printf("<file> <line:col> expected && \n");
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			tc->srcp++;
 			str_add(&o->bool_op_list,'&');
@@ -226,13 +226,13 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			tc->srcp++;
 			if(*tc->srcp!='|'){
 				printf("<file> <line:col> expected || \n");
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 			tc->srcp++;
 			str_add(&o->bool_op_list,'|');
 		}else{
 			printf("<file> <line:col> expected && or ||\n");
-			longjmp(_jmpbufenv,1);
+			longjmp(_jmp_buf,1);
 		}
 
 	}

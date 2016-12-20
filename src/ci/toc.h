@@ -73,7 +73,7 @@ inline static cstr toc_get_type_in_context(const toc*tc,token tk){
 	toc_print_source_location(tc,tk,4);
 	printf("error: cannot find current class");
 	printf("\n    %s %d",__FILE__,__LINE__);
-	longjmp(_jmpbufenv,1);
+	longjmp(_jmp_buf,1);
 }
 
 inline static void toc_scope_free(tocscope*o){

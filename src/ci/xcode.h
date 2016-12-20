@@ -1,6 +1,5 @@
 #pragma once
 #include"xexp.h"
-#include"toc.h"
 
 inline static /*gives*/xexp*ci_read_next_statement(toc*o);
 
@@ -59,7 +58,7 @@ inline static void code_read_next(xcode*o,toc*tc){
 		}
 		if(*tc->srcp!='}'){
 			printf("<file> <line:col> expected '}' to end block\n");
-			longjmp(_jmpbufenv,1);
+			longjmp(_jmp_buf,1);
 		}
 		tc->srcp++;
 		toc_pop_scope(tc);

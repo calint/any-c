@@ -14,7 +14,7 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 	if(idtype){
 		toc_print_source_location(tc,o->super.token,4);
 		printf("'%s' is already declared at ...",o->name.data);
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 		return;
 	}
 
@@ -40,7 +40,7 @@ inline static xvar*xvar_read_next(toc*tc,str type){
 	if(!strcmp("o",o->name.data)){
 		toc_print_source_location(tc,o->super.token,4);
 		printf("identifier 'o' is reserved, equivalent of 'this'");
-		longjmp(_jmpbufenv,1);
+		longjmp(_jmp_buf,1);
 	}
 
 	toc_add_ident(tc,o->super.type.data,o->name.data);
@@ -57,7 +57,7 @@ inline static xvar*xvar_read_next(toc*tc,str type){
 						o->initval.name.data,
 						o->super.type.data,
 						o->initval.super.type.data);
-				longjmp(_jmpbufenv,1);
+				longjmp(_jmp_buf,1);
 			}
 		}
 	}else{
