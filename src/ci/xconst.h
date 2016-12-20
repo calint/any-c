@@ -4,15 +4,15 @@
 
 typedef struct xconst{
 	xexp super;
-	str name;
+	cstr name;
 }xconst;
 
-#define xconst_def (xconst){{_xconst_compile_,NULL,str_def,token_def,0},\
-							str_def}
+#define xconst_def (xconst){{_xconst_compile_,NULL,cstr_def,token_def,0},\
+							cstr_def}
 
 inline static void _xconst_compile_(const xexp*oo,toc*tc){
 	const xident*o=(xident*)oo;
-	printf("%s",o->name.data);
+	printf("%s",o->name);
 }
 //
 //inline static void xconst_read_next(toc*tc,token tk,ccharp type){

@@ -12,7 +12,7 @@ inline static void _xloop_compile_(const xexp*oo,toc*tc){
 	o->code.super.compile((xexp*)&o->code,tc);
 }
 
-#define xloop_def (xloop){{_xloop_compile_,NULL,str_def,token_def,1},\
+#define xloop_def (xloop){{_xloop_compile_,NULL,cstr_def,token_def,1},\
 							xcode_def}
 
 inline static xloop*xloop_read_next(toc*tc){

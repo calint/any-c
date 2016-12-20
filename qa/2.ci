@@ -1,6 +1,6 @@
 player{
 	var i=1
-	var f=2.2f
+	var f=2.2
 	var b=true
 	var s="hello"
 	var ch='.'

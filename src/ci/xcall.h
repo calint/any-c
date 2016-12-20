@@ -5,13 +5,13 @@ inline static void ci_xcall_compile(toc*,token,cstr,unsigned);
 
 typedef struct xcall{
 	xexp super;
-	str name;
+	cstr name;
 	dynp args;
 }xcall;
 
 inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	xcall*o=(xcall*)oo;
-	ci_xcall_compile(tc,o->super.token,o->name.data,o->args.count);
+	ci_xcall_compile(tc,o->super.token,o->name,o->args.count);
 	for(unsigned i=0;i<o->args.count;i++){
 		xexp*e=(xexp*)dynp_get(&o->args,i);
 		e->compile(e,tc);
@@ -22,10 +22,10 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	printf(")");
 }
 
-#define xcall_def (xcall){{_xcall_compile_,NULL,str_def,token_def,0},\
-	str_def,dynp_def}
+#define xcall_def (xcall){{_xcall_compile_,NULL,cstr_def,token_def,0},\
+	cstr_def,dynp_def}
 
-inline static xcall*xcall_read_next(toc*tc,token tk,str name){
+inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
 	xcall*o=malloc(sizeof(xcall));
 	*o=xcall_def;
 	o->name=name;
@@ -53,7 +53,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 			break;
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected ',' followed by more arguments to function '%s'",
-				name.data);
+				name);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}

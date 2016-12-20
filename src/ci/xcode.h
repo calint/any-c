@@ -8,7 +8,7 @@ typedef struct xcode{
 	dynp exprs;
 }xcode;
 
-#define xcode_def (xcode){{_code_compile_,NULL,str_def,token_def,1},dynp_def}
+#define xcode_def (xcode){{_code_compile_,NULL,cstr_def,token_def,1},dynp_def}
 
 inline static void _code_compile_(const xexp*oo,toc*tc){
 	xcode*o=(xcode*)oo;

@@ -9,7 +9,7 @@ typedef struct xexpls{
 	str ops;
 }xexpls;
 
-#define xexpls_def (xexpls){{_xexpls_compile_,NULL,str_def,token_def,0},\
+#define xexpls_def (xexpls){{_xexpls_compile_,NULL,cstr_def,token_def,0},\
 							dynp_def,str_def}
 
 inline static void _xexpls_compile_(const xexp*oo,toc*tc){

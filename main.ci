@@ -1,38 +1,17 @@
-buffer{}
-material{}
-
-rrange{
-	buffer;
-	int from
-	int to
-	material m
-	
-	draw{
-		printf("draw_render_range\n")
+player{
+	var i=17
+	var f=2.2
+	var b=true
+	var s="hello \" world "
+	var ch='.'
+	print{
+		printf(" %f %d %d %s %c \n",f,i,b,s,ch);
 	}
 }
-
-glo{
-	buffer vertbuf;
-	rrange rendrngs;
-	
-	draw{
-		printf("draw_glo\n")
-		rendrngs.draw()
-	}
-}
-
 
 global{
-	glo gl
-	draw{printf("draw_global\n")}
-
 	main{
-		draw()
-		gl.draw()
-		
-		glo g
-		g.draw()
-		g.rendrngs.draw()
+		player p
+		p.print()
 	}
 }

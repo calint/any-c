@@ -5,12 +5,12 @@ struct toc;
 typedef struct xexp{
 	void (*compile)(const struct xexp*,struct toc*);
 	void (*free)(struct xexp*);
-	str type;
+	cstr type;
 	token token;
 	char bits;
 }xexp;
 
-#define xexp_def (xexp){NULL,NULL,str_def,token_def,0}
+#define xexp_def (xexp){NULL,NULL,cstr_def,token_def,0}
 
 inline static int xexpr_is_empty(const xexp*o){return o->compile==NULL;}
 inline static bool xexpr_is_encapsulated(const xexp*o){return(o->bits&1)==1;}

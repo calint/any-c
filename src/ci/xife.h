@@ -18,7 +18,7 @@ inline static void _xif_compile_(const xexp*oo,toc*tc){
 	_code_compile_((xexp*)&o->code,tc);
 }
 
-#define xif_def (xif){{_xif_compile_,NULL,str_def,token_def,0},\
+#define xif_def (xif){{_xif_compile_,NULL,cstr_def,token_def,0},\
 	xbool_def,xcode_def}
 
 inline static xif*xif_read_next(toc*tc,token tk){
@@ -70,7 +70,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 	}
 }
 
-#define xife_def (xife){{_xife_compile_,NULL,str_def,token_def,2},\
+#define xife_def (xife){{_xife_compile_,NULL,cstr_def,token_def,2},\
 						dynp_def,xcode_def}
 
 inline static xife*xife_read_next(toc*tc,token tk){

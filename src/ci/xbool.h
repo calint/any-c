@@ -89,14 +89,14 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 	}
 }
 
-#define xbool_def (xbool){{_xbool_compile_,NULL,str_def,token_def,0},\
+#define xbool_def (xbool){{_xbool_compile_,NULL,cstr_def,token_def,0},\
 	false,xexpls_def,0,false,xexpls_def,\
 	str_def,\
 	dynp_def,\
 	false,false}
 
 inline static void xbool_parse(xbool*o,toc*tc,token tk){
-	o->super.type=str_from_string("bool");
+	o->super.type="bool";
 	token_skip_empty_space(&tc->srcp);
 	bool neg=false;
 	if(*tc->srcp=='!'){// if(!ok){}

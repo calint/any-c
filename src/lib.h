@@ -19,10 +19,10 @@ static jmp_buf _jmp_buf;
 #include"lib/str.h"
 #include"lib/dynp.h"
 #include"lib/token.h"
-
-inline static str const_str(cstr s){
-	str st=str_def;
-	st.data=s;
-	st.cap=st.count=strlen(s)+1;
-	return st;
-}
+//
+//inline static str const_str(cstr s){
+//	str st=str_def;
+//	st.data=s;
+//	st.cap=st.count=strlen(s)+1;
+//	return st;
+//}

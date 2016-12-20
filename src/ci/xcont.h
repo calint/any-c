@@ -9,7 +9,7 @@ inline static void _xcont_compile_(const xexp*oo,toc*tc){
 	printf("continue");
 }
 
-#define xcont_def (xcont){{_xcont_compile_,NULL,str_def,token_def,0}}
+#define xcont_def (xcont){{_xcont_compile_,NULL,cstr_def,token_def,0}}
 
 inline static xcont*xcont_read_next(toc*tc,token tk){
 	toc_srcp_skip_if(tc,';');

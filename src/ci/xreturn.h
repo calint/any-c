@@ -1,5 +1,4 @@
 #pragma once
-#include"../lib.h"
 #include"xexpls.h"
 
 typedef struct xreturn{
@@ -13,7 +12,7 @@ inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
-#define xreturn_def (xreturn){{_xreturn_compile_,NULL,str_def,token_def,0},\
+#define xreturn_def (xreturn){{_xreturn_compile_,NULL,cstr_def,token_def,0},\
 	xexpls_def}
 
 inline static xreturn*xreturn_read_next(toc*tc,token tk){

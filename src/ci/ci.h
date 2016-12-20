@@ -175,8 +175,9 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			token_setz(&tk,&e->name);
-			e->super.type=str_from_string("ccharp");
+			e->name=token_to_new_cstr(&tk);//? leak
+//			token_setz(&tk,&e->name);
+			e->super.type="cstr";
 			return(xexp*)e;
 
 		}else if(toc_srcp_is_take(tc,'\'')){
@@ -193,8 +194,9 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			token_setz(&tk,&e->name);
-			e->super.type=str_from_string("char");
+			e->name=token_to_new_cstr(&tk);
+//			token_setz(&tk,&e->name);
+			e->super.type="char";
 			return(xexp*)e;
 
 		}else{
@@ -205,62 +207,62 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	}
 
 	// constant
-	str tks=str_def;
-	token_setz(&tk,&tks);
+	cstr tks=token_to_new_cstr(&tk);//? leak
 
 	// boolean
-	if(!strcmp("true",tks.data) || !strcmp("false",tks.data)){
+	if(!strcmp("true",tks) || !strcmp("false",tks)){
 		xconst*e=malloc(sizeof(xconst));
 		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
-		e->super.type=const_str("bool");
+		e->super.type="bool";
 		return(xexp*)e;
 	}
 
 	// int
-	char*endptr;strtol(tks.data,&endptr,10);
-	if(endptr==tks.data+tks.count-1){
+	char*endptr;strtol(tks,&endptr,10);
+	if(!*endptr){
 		xconst*e=malloc(sizeof(xconst));
 		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
-		e->super.type=const_str("int");
+		e->super.type="int";
 		return(xexp*)e;
 	}
 
 	// float
-	strtof(tks.data,&endptr);
-	if(*endptr=='f' && tks.count>2){
+	strtof(tks,&endptr);
+	if(!*endptr){
 		xconst*e=malloc(sizeof(xconst));
 		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
-		e->super.type=const_str("float");
+		e->super.type="float";
 		return(xexp*)e;
 	}
 
 	// hex
-	if(tks.count>1){
-		if((tks.data[0]=='0' && tks.data[1]=='x')){
-			strtol(tks.data+2,&endptr,16);
-			if(endptr==tks.data+tks.count-2+1){
+	const unsigned tkslen=strlen(tks);
+	if(tkslen>1){
+		if((tks[0]=='0' && tks[1]=='x')){
+			strtol(tks+2,&endptr,16);
+			if(!*endptr){
 				xconst*e=malloc(sizeof(xconst));
 				*e=xconst_def;
 				e->super.token=tk;
 				e->name=tks;
-				e->super.type=const_str("int");
+				e->super.type="int";
 				return(xexp*)e;
 			}
 		}
-		if((tks.data[0]=='0' && tks.data[1]=='b')){
-			strtol(tks.data+2,&endptr,2);
-			if(endptr==tks.data+tks.count-2+1){
+		if((tks[0]=='0' && tks[1]=='b')){
+			strtol(tks+2,&endptr,2);
+			if(!*endptr){
 				xconst*e=malloc(sizeof(xconst));
 				*e=xconst_def;
 				e->super.token=tk;
 				e->name=tks;
-				e->super.type=const_str("int");
+				e->super.type="int";
 				return(xexp*)e;
 			}
 		}
@@ -295,8 +297,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	}
 
 	// built in types
-	str name=str_def;
-	token_setz(&tk,&name);
+	cstr name=token_to_new_cstr(&tk);//? leak
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
@@ -305,7 +306,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	}
 
 	//  class instance
-	xtype*c=ci_get_type_by_name(tc,name.data);
+	xtype*c=ci_get_type_by_name(tc,name);
 	if(c){// instantiate
 		xvar*e=xvar_read_next(tc,name);
 		return(xexp*)e;
@@ -353,7 +354,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	e->name=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
-	e->super.type=const_str(ci_get_type_for_accessor(tc,e->name.data,tk));
+	e->super.type=ci_get_type_for_accessor(tc,e->name,tk);
 	return(xexp*)e;
 }
 
@@ -385,8 +386,9 @@ inline static xexp*ci_read_next_expression(toc*tc){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			token_setz(&tk,&e->name);
-			e->super.type=str_from_string("ccharp");
+			e->name=token_to_new_cstr(&tk);//? leak
+//			token_setz(&tk,&e->name);
+			e->super.type="cstr";
 			return(xexp*)e;
 
 		}else if(toc_srcp_is_take(tc,'\'')){
@@ -403,8 +405,9 @@ inline static xexp*ci_read_next_expression(toc*tc){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			token_setz(&tk,&e->name);
-			e->super.type=str_from_string("char");
+			e->name=token_to_new_cstr(&tk);//? leak
+//			token_setz(&tk,&e->name);
+			e->super.type="char";
 			return(xexp*)e;
 
 		}else{
@@ -415,62 +418,62 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	}
 
 	// constant
-	str tks=str_def;
-	token_setz(&tk,&tks);
+	cstr tks=token_to_new_cstr(&tk);//? leak
+	const unsigned tkslen=strlen(tks);
 
 	// boolean
-	if(!strcmp("true",tks.data) || !strcmp("false",tks.data)){
+	if(!strcmp("true",tks) || !strcmp("false",tks)){
 		xconst*e=malloc(sizeof(xconst));
 		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
-		e->super.type=const_str("bool");
+		e->super.type="bool";
 		return(xexp*)e;
 	}
 
 	// int
-	char*endptr;strtol(tks.data,&endptr,10);
-	if(endptr==tks.data+tks.count-1){
+	char*endptr;strtol(tks,&endptr,10);
+	if(!*endptr){
 		xconst*e=malloc(sizeof(xconst));
 		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
-		e->super.type=const_str("int");
+		e->super.type="int";
 		return(xexp*)e;
 	}
 
 	// float
-	strtof(tks.data,&endptr);
-	if(*endptr=='f' && tks.count>2){
+	strtof(tks,&endptr);
+	if(!*endptr){
 		xconst*e=malloc(sizeof(xconst));
 		*e=xconst_def;
 		e->super.token=tk;
 		e->name=tks;
-		e->super.type=const_str("float");
+		e->super.type="float";
 		return(xexp*)e;
 	}
 
 	// hex
-	if(tks.count>1){
-		if((tks.data[0]=='0' && tks.data[1]=='x')){
-			strtol(tks.data+2,&endptr,16);
-			if(endptr==tks.data+tks.count-2+1){
+	if(tkslen>1){
+		if(tks[0]=='0' && tks[1]=='x'){
+			strtol(tks+2,&endptr,16);
+			if(!*endptr){
 				xconst*e=malloc(sizeof(xconst));
 				*e=xconst_def;
 				e->super.token=tk;
 				e->name=tks;
-				e->super.type=const_str("int");
+				e->super.type="int";
 				return(xexp*)e;
 			}
 		}
-		if((tks.data[0]=='0' && tks.data[1]=='b')){
-			strtol(tks.data+2,&endptr,2);
-			if(endptr==tks.data+tks.count-2+1){
+		if(tks[0]=='0' && tks[1]=='b'){
+			strtol(tks+2,&endptr,2);
+			if(!*endptr){
 				xconst*e=malloc(sizeof(xconst));
 				*e=xconst_def;
 				e->super.token=tk;
 				e->name=tks;
-				e->super.type=const_str("int");
+				e->super.type="int";
 				return(xexp*)e;
 			}
 		}
@@ -500,8 +503,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 //	}
 
 	// built in types
-	str name=str_def;
-	token_setz(&tk,&name);
+	cstr name=token_to_new_cstr(&tk); //? leak
 //	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 //			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 //			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
@@ -552,7 +554,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	e->name=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
-	e->super.type=const_str(ci_get_type_for_accessor(tc,e->name.data,tk));
+	e->super.type=ci_get_type_for_accessor(tc,e->name,tk);
 	return(xexp*)e;
 }
 
@@ -626,10 +628,10 @@ inline static void ci_parse_field(toc*tc,xtype*c,token*type,token*name){
 		if(strcmp(f->type,"var")){
 				ci_assert_set(tc,
 					f->name,
-					f->initval.super.type.data,
+					f->initval.super.type,
 					f->initval.super.token);
 		}
-		f->type=f->initval.super.type.data;
+		f->type=f->initval.super.type;
 	}
 	if(*tc->srcp==';'){
 		tc->srcp++;
@@ -695,7 +697,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
 	printf("typedef char bool;\n");
-	printf("typedef const char* ccharp;\n");
+	printf("typedef const char* cstr;\n");
 	printf("#define true 1\n");
 	printf("#define false 1\n");
 	printf("#define char_def 0\n");
@@ -720,7 +722,7 @@ inline static void ci_compile_to_c(toc*tc){
 					longjmp(_jmp_buf,1);
 				}
 				f->initval.super.compile((xexp*)&f->initval,tc);
-				f->type=f->initval.super.type.data;
+				f->type=f->initval.super.type;
 			}
 			printf("    %s %s;\n",f->type,f->name);
 		}
