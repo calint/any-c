@@ -1,11 +1,11 @@
 #/bin/sh -x
 
 f=README.md
+a=__about__
 s=qa/18.ci
 b=./any-c
 c=c.c
 o=con.out
-a=__about__.md
 
 cat $a               >  $f  &&
 echo                 >> $f  &&

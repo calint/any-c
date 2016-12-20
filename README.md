@@ -29,7 +29,8 @@ global{
 		e1.i=2
 		e1.print()
 	}
-}```
+}
+```
 
 
 compiles to
