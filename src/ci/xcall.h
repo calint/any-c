@@ -3,7 +3,7 @@
 #include "toc.h"
 #include"xexpls.h"
 
-inline static xexpls*toc_read_next_xexpls(toc*,token);
+//inline static xexpls*toc_read_next_xexpls(toc*,token);
 
 typedef struct xcall{
 	xexpr super;
@@ -44,7 +44,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 			tc->srcp++;
 			break;
 		}
-		xexpr*a=(xexpr*)toc_read_next_xexpls(tc,tk);
+		xexpr*a=(xexpr*)xexpls_read_next(tc,tk);
 		if(xexpr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			longjmp(_jmpbufenv,1);

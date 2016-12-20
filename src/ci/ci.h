@@ -237,9 +237,9 @@ inline static void ci_init(){}
 
 inline static void ci_free(){}
 
-inline static xexpls*toc_read_next_xexpls(toc*tc,token tk){
-	return xexpls_read_next(tc,tk);
-}
+//inline static xexpls*toc_read_next_xexpls(toc*tc,token tk){
+//	return xexpls_read_next(tc,tk);
+//}
 
 inline static xexpr*toc_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
