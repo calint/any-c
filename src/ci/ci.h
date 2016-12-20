@@ -699,7 +699,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("typedef char bool;\n");
 	printf("#define true 1\n");
 	printf("#define false 1\n");
-	printf("#define cstr_def ""\n");
+	printf("#define cstr_def \"\"\n");
 	printf("#define bool_def false\n");
 	printf("#define char_def 0\n");
 	printf("#define int_def 0\n");

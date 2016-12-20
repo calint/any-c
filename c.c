@@ -6,7 +6,7 @@ typedef const char*cstr;
 typedef char bool;
 #define true 1
 #define false 1
-#define cstr_def 
+#define cstr_def ""
 #define bool_def false
 #define char_def 0
 #define int_def 0
