@@ -1,10 +1,17 @@
+id{
+	var i=0
+}
+
 entity{
-	var i=1
+	id;
 	var f=2.2
 	print{
-		printf("entity: %d %f\n",i,f)
+		printf("entity: %d %f\n",id,f)
 	}
 	
+	_free{
+		printf("free entity: %d",id)
+	}
 
 }
 
@@ -14,7 +21,7 @@ global{
 	main{
 		e1.print()
 		e2.print()
-		e1.i=2
+		e1.id.i=2
 		e1.print()
 	}
 }
