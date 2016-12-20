@@ -202,18 +202,18 @@ inline static void toc_srcp_skip_if(toc*o,const char ch){
 	if(toc_srcp_is(o,ch))
 		toc_srcp_inc(o);
 }
-inline static bool toc_is_type_builtin(const toc*o,cstr typenm){
-	if(!strcmp("int",typenm))return true;
-	if(!strcmp("str",typenm))return true;
-	if(!strcmp("float",typenm))return true;
-	if(!strcmp("bool",typenm))return true;
-	if(!strcmp("char",typenm))return true;
-	if(!strcmp("ccharp",typenm))return true;
-//	if(!strcmp("short",typenm))return true;
-//	if(!strcmp("long",typenm))return true;
-//	if(!strcmp("double",typenm))return true;
-	return false;
-}
+//inline static bool toc_is_type_builtin(const toc*o,cstr typenm){
+//	if(!strcmp("int",typenm))return true;
+//	if(!strcmp("str",typenm))return true;
+//	if(!strcmp("float",typenm))return true;
+//	if(!strcmp("bool",typenm))return true;
+//	if(!strcmp("char",typenm))return true;
+//	if(!strcmp("ccharp",typenm))return true;
+////	if(!strcmp("short",typenm))return true;
+////	if(!strcmp("long",typenm))return true;
+////	if(!strcmp("double",typenm))return true;
+//	return false;
+//}
 
 
 

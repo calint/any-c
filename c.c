@@ -17,6 +17,7 @@ typedef struct entity{
     float f;
 }entity;
 #define entity_def (entity){1,2.2f}
+inline static void entity_free(entity*o){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
 	printf("entity: %d %f\n",o->i,o->f);
@@ -27,6 +28,10 @@ typedef struct global{
     entity e2;
 }global;
 #define global_def (global){entity_def,entity_def}
+inline static void global_free(global*o){
+    entity_free(&o->e1);
+    entity_free(&o->e2);
+}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
 	entity_print((entity*)&o->e1);
@@ -35,5 +40,5 @@ inline static void global_main(global*o){
 	entity_print((entity*)&o->e1);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-int main(int c,char**a){global g=global_def;global_main(&g);}
+int main(int c,char**a){global g=global_def;global_main(&g);global_free(&g);}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -

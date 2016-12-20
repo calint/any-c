@@ -18,6 +18,19 @@ typedef struct ci{
 }ci;
 #define ci_def {dynp_def}
 
+inline static bool ci_is_type_builtin(cstr typenm){
+	if(!strcmp("int",typenm))return true;
+	if(!strcmp("str",typenm))return true;
+	if(!strcmp("float",typenm))return true;
+	if(!strcmp("bool",typenm))return true;
+	if(!strcmp("char",typenm))return true;
+	if(!strcmp("ccharp",typenm))return true;
+//	if(!strcmp("short",typenm))return true;
+//	if(!strcmp("long",typenm))return true;
+//	if(!strcmp("double",typenm))return true;
+	return false;
+}
+
 inline static xtype*ci_get_type_by_name(const toc*o,cstr name){
 	for(unsigned i=0;i<o->types.count;i++){
 		xtype*c=dynp_get(&o->types,i);
@@ -127,7 +140,7 @@ inline static void ci_assert_set(const toc*tc,
 	}
 
 	if(!current_type)// builtin
-		if(toc_is_type_builtin(tc,current_class_name))
+		if(ci_is_type_builtin(current_class_name))
 			if(!strcmp(current_class_name,settype))
 				return;
 
@@ -730,14 +743,27 @@ inline static void ci_compile_to_c(toc*tc){
 		// #define object_def {...}
 		printf("#define %s_def (%s){",c->name,c->name);
 		for(unsigned i=0;i<c->fields.count;i++){
-			xfield*s=(xfield*)dynp_get(&c->fields,i);
-			if(s->initval.exps.count){
-				s->initval.super.compile((xexp*)&s->initval,tc);
+			xfield*f=(xfield*)dynp_get(&c->fields,i);
+			if(f->initval.exps.count){
+				f->initval.super.compile((xexp*)&f->initval,tc);
 			}else{
-				printf("%s_def",s->type);
+				printf("%s_def",f->type);
 			}
 			if(i!=c->fields.count-1)
 				printf(",");
+		}
+		printf("}\n");
+		printf("inline static void %s_free(%s*o){",c->name,c->name);
+		bool first=true;
+		for(unsigned i=0;i<c->fields.count;i++){
+			xfield*f=(xfield*)dynp_get(&c->fields,i);
+			if(ci_is_type_builtin(f->type))
+				continue;
+			if(first){
+				printf("\n");
+				first=false;
+			}
+			printf("    %s_free(&o->%s);\n",f->type,f->name);
 		}
 		printf("}\n");
 
@@ -764,7 +790,7 @@ inline static void ci_compile_to_c(toc*tc){
 		toc_pop_scope(tc);
 	}
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
-	printf("int main(int c,char**a){global g=global_def;global_main(&g);}\n");
+	printf("int main(int c,char**a){global g=global_def;global_main(&g);global_free(&g);}\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
@@ -895,4 +921,6 @@ inline static void ci_xcall_compile(
 	if(argcount)
 		printf(",");
 }
+
+
 
