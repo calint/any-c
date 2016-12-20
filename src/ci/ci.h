@@ -24,7 +24,7 @@ inline static bool ci_is_type_builtin(cstr typenm){
 	if(!strcmp("float",typenm))return true;
 	if(!strcmp("bool",typenm))return true;
 	if(!strcmp("char",typenm))return true;
-	if(!strcmp("ccharp",typenm))return true;
+	if(!strcmp("cstr",typenm))return true;
 //	if(!strcmp("short",typenm))return true;
 //	if(!strcmp("long",typenm))return true;
 //	if(!strcmp("double",typenm))return true;
