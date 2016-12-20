@@ -11,6 +11,7 @@
 #include"toc.h"
 #include"xconst.h"
 #include"xexpls.h"
+#include"xreturn.h"
 
 inline static type*toc_get_type_by_name(toc*o,ccharp name){
 	for(unsigned i=0;i<o->types.count;i++){
@@ -380,6 +381,11 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 
 	if(token_equals(&tk,"if")){
 		xife*e=xife_read_next(tc,tk);
+		return (xexpr*)e;
+	}
+
+	if(token_equals(&tk,"return")){
+		xreturn*e=xreturn_read_next(tc,tk);
 		return (xexpr*)e;
 	}
 
