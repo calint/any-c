@@ -21,4 +21,7 @@ global{
 		e1.id.i=3
 		e1.print()
 	}
+	_free{
+		printf("free global\n");
+	}
 }
