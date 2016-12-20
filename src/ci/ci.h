@@ -39,7 +39,7 @@ inline static cstr ci_get_type_for_accessor(const toc*tc,
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	cstr current_class_name=decl->type.data;
+	cstr current_class_name=decl->type;
 	const xtype*current_type=ci_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
@@ -88,10 +88,10 @@ inline static void ci_assert_set(const toc*tc,
 		longjmp(_jmp_buf,1);
 	}
 
-	if(!strcmp(decl->type.data,"var"))// if dest is var
+	if(!strcmp(decl->type,"var"))// if dest is var
 		return;
 
-	cstr current_class_name=decl->type.data;
+	cstr current_class_name=decl->type;
 	const xtype*current_type=ci_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
@@ -150,7 +150,7 @@ inline static void ci_free(){}
 inline static xexp*ci_read_next_statement(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(toc_srcp_if_is_then_take(tc,'"')){ // string
+		if(toc_srcp_is_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
@@ -179,7 +179,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			e->super.type=str_from_string("ccharp");
 			return(xexp*)e;
 
-		}else if(toc_srcp_if_is_then_take(tc,'\'')){
+		}else if(toc_srcp_is_take(tc,'\'')){
 			toc_srcp_inc(tc);
 			if(*tc->srcp!='\''){
 				toc_print_source_location(tc,tk,4);
@@ -360,7 +360,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 inline static xexp*ci_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(toc_srcp_if_is_then_take(tc,'"')){ // string
+		if(toc_srcp_is_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
@@ -389,7 +389,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 			e->super.type=str_from_string("ccharp");
 			return(xexp*)e;
 
-		}else if(toc_srcp_if_is_then_take(tc,'\'')){
+		}else if(toc_srcp_is_take(tc,'\'')){
 			toc_srcp_inc(tc);
 			if(*tc->srcp!='\''){
 				toc_print_source_location(tc,tk,4);
@@ -533,14 +533,14 @@ inline static xexp*ci_read_next_expression(toc*tc){
 //	}
 
 	char incdecbits=0;
-	if(toc_srcp_if_is_then_take(tc,'+')){
-		if(toc_srcp_if_is_then_take(tc,'+')){
+	if(toc_srcp_is_take(tc,'+')){
+		if(toc_srcp_is_take(tc,'+')){
 			incdecbits|=1;
 		}else{
 			tc->srcp--;
 		}
-	}else if(toc_srcp_if_is_then_take(tc,'-')){
-		if(toc_srcp_if_is_then_take(tc,'-')){
+	}else if(toc_srcp_is_take(tc,'-')){
+		if(toc_srcp_is_take(tc,'-')){
 			incdecbits|=2;
 		}else{
 			tc->srcp--;
@@ -589,7 +589,7 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 		token_setz(&tkt,&fa->type);
 		token_setz(&tkn,&fa->name);
 
-		toc_add_ident(tc,fa->type.data,fa->name.data);
+		toc_add_declaration(tc,fa->type.data,fa->name.data);
 
 		if(*tc->srcp==','){
 			tc->srcp++;
@@ -617,7 +617,7 @@ inline static void ci_parse_field(toc*tc,xtype*c,token*type,token*name){
 		token_setz(name,&f->name);
 	}
 	dynp_add(&c->fields,f);
-	toc_add_ident(tc,f->type.data,f->name.data);
+	toc_add_declaration(tc,f->type.data,f->name.data);
 	if(*tc->srcp=='='){
 		tc->srcp++;
 		xexpls_parse_next(&f->initval, tc,*type);
@@ -713,7 +713,7 @@ inline static void ci_compile_to_c(toc*tc){
 		if(c->fields.count)printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
 			xfield*f=(xfield*)dynp_get(&c->fields,i);
-			toc_add_ident(tc,f->type.data,f->name.data);
+			toc_add_declaration(tc,f->type.data,f->name.data);
 			if(!strcmp(f->type.data,"var")){
 				if(!f->initval.exprs.count){
 					printf("<file> <line:col> expected initializer with auto");
@@ -752,7 +752,7 @@ inline static void ci_compile_to_c(toc*tc){
 					xfuncarg*a=(xfuncarg*)dynp_get(&f->args,j);
 					printf(",");
 					printf("%s %s",a->type.data,a->name.data);
-					toc_add_ident(tc,a->type.data,a->name.data);
+					toc_add_declaration(tc,a->type.data,a->name.data);
 				}
 				printf(")");
 				f->code.super.compile((xexp*)&f->code,tc);

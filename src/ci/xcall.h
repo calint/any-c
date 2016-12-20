@@ -38,7 +38,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 	}
 	toc_srcp_inc(tc);
 	while(1){
-		if(toc_srcp_if_is_then_take(tc,')'))
+		if(toc_srcp_is_take(tc,')'))
 			break;
 		xexp*a=(xexp*)xexpls_read_next(tc,tk);
 		if(xexpr_is_empty(a)){
@@ -47,9 +47,9 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 		}
 		dynp_add(&o->args,a);
 		//? assert can set  ci_assert_xcall_arg_type(name.data,i)
-		if(toc_srcp_if_is_then_take(tc,','))
+		if(toc_srcp_is_take(tc,','))
 			continue;
-		if(toc_srcp_if_is_then_take(tc,')'))
+		if(toc_srcp_is_take(tc,')'))
 			break;
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected ',' followed by more arguments to function '%s'",

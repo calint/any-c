@@ -17,17 +17,17 @@ inline static cstr ci_get_type_for_accessor(const toc*,cstr,token);
 typedef struct tocscope{
 	char type;
 	cstr name;
-	dynp idents;
+	dynp tocdecls;
 }tocscope;
 
 #define ci_toc_scope_def (tocscope){0,NULL,dynp_def}
 
 typedef struct tocdecl{
-	str type;
-	str name;
+	cstr type;
+	cstr name;
 }tocdecl;
 
-#define toctn_def (tocdecl){str_def,str_def}
+#define toctn_def (tocdecl){cstr_def,cstr_def}
 
 
 typedef struct tocloc{
@@ -76,8 +76,12 @@ inline static cstr toc_get_type_in_context(const toc*tc,token tk){
 	longjmp(_jmp_buf,1);
 }
 
-inline static void toc_scope_free(tocscope*o){
-	dynp_free(&o->idents);
+inline static void tocscope_free(tocscope*o){
+	for(unsigned i=0;i<o->tocdecls.count;i++){
+		tocdecl*td=dynp_get(&o->tocdecls,i);
+		free(td);//? leaks strings
+	}
+	dynp_free(&o->tocdecls);
 	free(o);
 }
 
@@ -100,23 +104,23 @@ inline static void toc_print(const toc*o){
 	for(unsigned j=0;j<o->scopes.count;j++){
 		tocscope*s=dynp_get(&o->scopes,j);
 		printf("%c %s\n",s->type,s->name);
-		for(unsigned i=0;i<s->idents.count;i++){
-			tocdecl*id=(tocdecl*)dynp_get(&s->idents,i);
+		for(unsigned i=0;i<s->tocdecls.count;i++){
+			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
 			for(unsigned k=0;k<=j;k++){
 				printf("    ");
 			}
-			printf("%s %s\n",id->type.data,id->name.data);
+			printf("%s %s\n",id->type,id->name);
 		}
 	}
 }
 
-inline static void toc_add_ident(toc*o,cstr type,cstr name){
+inline static void toc_add_declaration(toc*o,cstr type,cstr name){
 	tocdecl*id=(tocdecl*)malloc(sizeof(tocdecl));
 	*id=toctn_def;
-	str_setz(&id->type,type);
-	str_setz(&id->name,name);
+	id->type=type;
+	id->name=name;
 	tocscope*s=dynp_get_last(&o->scopes);
-	dynp_add(&s->idents,id);
+	dynp_add(&s->tocdecls,id);
 //	ci_toc_print(o);
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
 }
@@ -124,9 +128,9 @@ inline static void toc_add_ident(toc*o,cstr type,cstr name){
 inline static char toc_get_declaration_scope_type(const toc*oo,cstr name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
-		for(unsigned i=0;i<s->idents.count;i++){
-			tocdecl*id=(tocdecl*)dynp_get(&s->idents,i);
-			if(!strcmp(id->name.data,name))
+		for(unsigned i=0;i<s->tocdecls.count;i++){
+			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
+			if(!strcmp(id->name,name))
 				return s->type;
 		}
 	}
@@ -148,9 +152,9 @@ inline static const tocdecl*toc_get_declaration(const toc*o,cstr name){
 
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
-		for(unsigned i=0;i<s->idents.count;i++){
-			const tocdecl*td=(const tocdecl*)dynp_get(&s->idents,i);
-			if(!strcmp(td->name.data,variable_name))
+		for(unsigned i=0;i<s->tocdecls.count;i++){
+			const tocdecl*td=(const tocdecl*)dynp_get(&s->tocdecls,i);
+			if(!strcmp(td->name,variable_name))
 				return td;
 		}
 	}
@@ -160,10 +164,10 @@ inline static const tocdecl*toc_get_declaration(const toc*o,cstr name){
 inline static void toc_set_declaration_type(toc*o,cstr name,cstr type){
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
-		for(unsigned i=0;i<s->idents.count;i++){
-			tocdecl*id=(tocdecl*)dynp_get(&s->idents,i);
-			if(!strcmp(id->name.data,name)){
-				id->type=const_str(type);
+		for(unsigned i=0;i<s->tocdecls.count;i++){
+			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
+			if(!strcmp(id->name,name)){
+				id->type=type;
 				return;
 			}
 		}
@@ -173,7 +177,7 @@ inline static void toc_set_declaration_type(toc*o,cstr name,cstr type){
 
 inline static void toc_pop_scope(toc*o){
 	tocscope*s=dynp_get_last(&o->scopes);
-	toc_scope_free(s);
+	tocscope_free(s);
 	o->scopes.count--;//? pop
 }
 
@@ -187,14 +191,14 @@ inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
 inline static void toc_srcp_inc(toc*o){o->srcp++;}
 inline static bool toc_srcp_is(const toc*o,const char ch)
 	{return *o->srcp==ch;}
-inline static bool toc_srcp_if_is_then_take(toc*o,const char ch){
+inline static bool toc_srcp_is_take(toc*o,const char ch){
 	if(*o->srcp==ch){
 		o->srcp++;
 		return true;
 	}
 	return false;
 }
-inline static void toc_charp_skip_if(toc*o,const char ch){
+inline static void toc_srcp_skip_if(toc*o,const char ch){
 	if(toc_srcp_is(o,ch))
 		toc_srcp_inc(o);
 }

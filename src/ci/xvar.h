@@ -19,7 +19,7 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 	}
 
 	printf("%s ",o->super.type.data);
-	toc_add_ident(tc,o->super.type.data,o->name.data);
+	toc_add_declaration(tc,o->super.type.data,o->name.data);
 	if(o->initval.super.compile){
 		_xset_compile_((xexp*)&o->initval,tc);
 	}else{
@@ -43,9 +43,9 @@ inline static xvar*xvar_read_next(toc*tc,str type){
 		longjmp(_jmp_buf,1);
 	}
 
-	toc_add_ident(tc,o->super.type.data,o->name.data);
+	toc_add_declaration(tc,o->super.type.data,o->name.data);
 	bool is_var=!strcmp(o->super.type.data,"var");
-	if(toc_srcp_if_is_then_take(tc,'=')){
+	if(toc_srcp_is_take(tc,'=')){
 		xset_parse_next(&o->initval,tc,o->name,o->super.token);
 		if(is_var){
 			o->super.type=o->initval.super.type;

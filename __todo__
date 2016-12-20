@@ -9,3 +9,5 @@
 [ ] pointers/references
 [ ] compile containers
 [ ] compile templates
+[ ] assert member type exists
+

@@ -1,12 +1,38 @@
-player{
-	int ret(int a){
-		return a+2;
+buffer{}
+material{}
+
+rrange{
+	buffer;
+	int from
+	int to
+	material m
+	
+	draw{
+		printf("draw_render_range\n")
 	}
 }
 
+glo{
+	buffer vertbuf;
+	rrange rendrngs;
+	
+	draw{
+		printf("draw_glo\n")
+		rendrngs.draw()
+	}
+}
+
+
 global{
+	glo gl
+	draw{printf("draw_global\n")}
+
 	main{
-		player p
-		printf("4=%d\n",p.ret(2));
+		draw()
+		gl.draw()
+		
+		glo g
+		g.draw()
+		g.rendrngs.draw()
 	}
 }

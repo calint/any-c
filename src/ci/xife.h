@@ -24,9 +24,9 @@ inline static void _xif_compile_(const xexp*oo,toc*tc){
 inline static xif*xif_read_next(toc*tc,token tk){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
-	toc_charp_skip_if(tc,'(');
+	toc_srcp_skip_if(tc,'(');
 	xbool_parse(&o->cond,tc,tk);
-	toc_charp_skip_if(tc,')');
+	toc_srcp_skip_if(tc,')');
 	code_read_next(&o->code,tc);
 	return o;
 }

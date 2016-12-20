@@ -11,37 +11,34 @@ typedef const char* ccharp;
 #define int_def 0
 #define float_def 0.0f
 #define bool_def false
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  varray
-typedef struct varray{}varray;
-#define varray_def (varray){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  buffer
 typedef struct buffer{}buffer;
 #define buffer_def (buffer){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - - material
 typedef struct material{}material;
 #define material_def (material){}
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - render_range
-typedef struct render_range{
+//--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  rrange
+typedef struct rrange{
     buffer buffer;
     int from;
     int to;
     material m;
-}render_range;
-#define render_range_def (render_range){buffer_def,int_def,int_def,material_def}
+}rrange;
+#define rrange_def (rrange){buffer_def,int_def,int_def,material_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static void render_range_draw(render_range*o){
+inline static void rrange_draw(rrange*o){
 	printf("draw_render_range\n");
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - glo
 typedef struct glo{
     buffer vertbuf;
-    render_range rendrngs;
+    rrange rendrngs;
 }glo;
-#define glo_def (glo){buffer_def,render_range_def}
+#define glo_def (glo){buffer_def,rrange_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void glo_draw(glo*o){
 	printf("draw_glo\n");
-	render_range_draw((render_range*)&o->rendrngs);
+	rrange_draw((rrange*)&o->rendrngs);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{
@@ -57,8 +54,8 @@ inline static void global_main(global*o){
 	glo_draw((glo*)&o->gl);
 	glo g=glo_def;
 	glo_draw((glo*)&g);
-	render_range_draw((render_range*)&g.rendrngs);
+	rrange_draw((rrange*)&g.rendrngs);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-int main(int c,char** a){global_main(0);}
+int main(int c,char**a){global_main(0);}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -

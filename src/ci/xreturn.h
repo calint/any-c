@@ -17,7 +17,7 @@ inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 	xexpls_def}
 
 inline static xreturn*xreturn_read_next(toc*tc,token tk){
-	toc_charp_skip_if(tc,';');
+	toc_srcp_skip_if(tc,';');
 	xreturn*o=malloc(sizeof(xreturn));
 	*o=xreturn_def;
 	o->super.token=tk;
