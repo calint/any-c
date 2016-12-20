@@ -10,7 +10,7 @@ simple framework with c++ like language that compiles
     : terse syntax
     
     
-	example code:
+	example code:```
 	- - - - - -- -  - - - -  -  - - -  - -- - - - - - - - - - -  - -- - - - - 
 				entity{
 					var i=1
@@ -70,7 +70,7 @@ inline static void global_main(global*o){
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){global g=global_def;global_main(&g);}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-
+```
 
 			 :: ./run.sh 
 			-rwxrwxr-x 1 c c 72416 ธ.ค.  21 03:20 any-c
