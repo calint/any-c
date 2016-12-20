@@ -1,8 +1,5 @@
 #pragma once
-#include"../lib.h"
-#include "code.h"
-#include "toc.h"
-#include"xexpls.h"
+
 typedef struct xbool{
 	xexp super;
 

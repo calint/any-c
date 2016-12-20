@@ -1,18 +1,18 @@
 #pragma once
-#include"../lib.h"
+#include"xexp.h"
 #include"toc.h"
 
 inline static /*gives*/xexp*toc_read_next_xexpr(toc*o);
 
-typedef struct code{
+typedef struct xcode{
 	xexp super;
 	dynp exprs;
-}code;
+}xcode;
 
-#define code_def (code){{_code_compile_,NULL,str_def,token_def,1},dynp_def}
+#define xcode_def (xcode){{_code_compile_,NULL,str_def,token_def,1},dynp_def}
 
 inline static void _code_compile_(const xexp*oo,toc*tc){
-	code*o=(code*)oo;
+	xcode*o=(xcode*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->super.bits&1){
 		printf("{");
@@ -41,7 +41,7 @@ inline static void _code_compile_(const xexp*oo,toc*tc){
 
 }
 
-inline static void code_read_next(code*o,toc*tc){
+inline static void code_read_next(xcode*o,toc*tc){
 	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
 	if(*tc->srcp=='{'){

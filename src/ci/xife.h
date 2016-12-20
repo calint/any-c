@@ -1,13 +1,13 @@
 #pragma once
 #include"../lib.h"
-#include "code.h"
 #include "toc.h"
 #include "xbool.h"
+#include "xcode.h"
 
 typedef struct xif{
 	xexp super;
 	xbool cond;
-	code code;
+	xcode code;
 }xif;
 
 inline static void _xif_compile_(const xexp*oo,toc*tc){
@@ -18,7 +18,8 @@ inline static void _xif_compile_(const xexp*oo,toc*tc){
 	_code_compile_((xexp*)&o->code,tc);
 }
 
-#define xif_def (xif){{_xif_compile_,NULL,str_def,token_def,0},xbool_def,code_def}
+#define xif_def (xif){{_xif_compile_,NULL,str_def,token_def,0},\
+	xbool_def,xcode_def}
 
 inline static xif*xif_read_next(toc*tc,token tk){
 	xif*o=malloc(sizeof(xif));
@@ -33,7 +34,7 @@ inline static xif*xif_read_next(toc*tc,token tk){
 typedef struct xife{
 	xexp super;
 	dynp ifs;
-	code elsecode;
+	xcode elsecode;
 }xife;
 
 inline static void _xife_compile_(const xexp*oo,toc*tc){
@@ -70,7 +71,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 }
 
 #define xife_def (xife){{_xife_compile_,NULL,str_def,token_def,2},\
-						dynp_def,code_def}
+						dynp_def,xcode_def}
 
 inline static xife*xife_read_next(toc*tc,token tk){
 	xife*o=malloc(sizeof(xife));

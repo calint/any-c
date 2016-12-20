@@ -1,8 +1,5 @@
 #pragma once
-#include <setjmp.h>
-#include"../lib.h"
-#include"code.h"
-#include"type.h"
+#include<setjmp.h>
 #include"xcall.h"
 #include"xident.h"
 #include"xife.h"
@@ -13,11 +10,13 @@
 #include"xexpls.h"
 #include"xreturn.h"
 #include"xbreak.h"
+#include "xcode.h"
 #include"xcont.h"
+#include "xtype.h"
 
-inline static type*toc_get_type_by_name(toc*o,ccharp name){
+inline static xtype*toc_get_type_by_name(toc*o,ccharp name){
 	for(unsigned i=0;i<o->types.count;i++){
-		type*c=dynp_get(&o->types,i);
+		xtype*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name.data,name)){
 			return c;
 		}
@@ -74,7 +73,7 @@ inline static type*toc_get_type_by_name(toc*o,ccharp name){
 //	printf("%s_%s((%s*)&%s",typenm,funcnm,typenm,"o");
 //}
 
-inline static void toc_add_type(toc*o,type*c){
+inline static void toc_add_type(toc*o,xtype*c){
 	dynp_add(&o->types,c);
 }
 
@@ -90,7 +89,7 @@ inline static ccharp toc_get_type_for_accessor(toc*tc,
 		longjmp(_jmpbufenv,1);
 	}
 	ccharp current_class_name=decl->type.data;
-	const type*current_type=toc_get_type_by_name(tc,current_class_name);
+	const xtype*current_type=toc_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
 			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -106,7 +105,7 @@ inline static ccharp toc_get_type_for_accessor(toc*tc,
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
-			const field*fld=type_get_field_by_name(current_type,lookup);
+			const xfield*fld=type_get_field_by_name(current_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
@@ -142,7 +141,7 @@ inline static void toc_assert_can_set(toc*tc,
 		return;
 
 	ccharp current_class_name=decl->type.data;
-	const type*current_type=toc_get_type_by_name(tc,current_class_name);
+	const xtype*current_type=toc_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
 			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -158,7 +157,7 @@ inline static void toc_assert_can_set(toc*tc,
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
-			const field*fld=type_get_field_by_name(current_type,lookup);
+			const xfield*fld=type_get_field_by_name(current_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
@@ -402,7 +401,7 @@ inline static xexp*toc_read_next_xexpr(toc*tc){
 	}
 
 	//  class instance
-	type*c=toc_get_type_by_name(tc,name.data);
+	xtype*c=toc_get_type_by_name(tc,name.data);
 	if(c){// instantiate
 		xvar*e=xvar_read_next(tc,name);
 		return(xexp*)e;
@@ -653,9 +652,9 @@ inline static xexp*toc_read_next_expression(toc*tc){
 	return(xexp*)e;
 }
 
-inline static void toc_parse_func(toc*tc,type*c,token*type){
-	func*f=malloc(sizeof(func));
-	*f=func_def;
+inline static void toc_parse_func(toc*tc,xtype*c,token*type){
+	xfunc*f=malloc(sizeof(xfunc));
+	*f=xfunc_def;
 	bool enclosed_args=false;
 	if(*tc->srcp=='{' || *tc->srcp=='('){
 		f->type=const_str("void");
@@ -679,9 +678,9 @@ inline static void toc_parse_func(toc*tc,type*c,token*type){
 		if(token_is_empty(&tkt)){
 			break;
 		}
-		funcarg*fa=malloc(sizeof(funcarg));
+		xfuncarg*fa=malloc(sizeof(xfuncarg));
 		dynp_add(&f->args,fa);
-		*fa=funcarg_def;
+		*fa=xfuncarg_def;
 		token tkn=toc_next_token(tc);
 		token_setz(&tkt,&fa->type);
 		token_setz(&tkn,&fa->name);
@@ -704,9 +703,9 @@ inline static void toc_parse_func(toc*tc,type*c,token*type){
 	toc_pop_scope(tc);
 }
 
-inline static void toc_parse_field(toc*tc,type*c,token*type,token*name){
-	field*f=malloc(sizeof(field));
-	*f=field_def;
+inline static void toc_parse_field(toc*tc,xtype*c,token*type,token*name){
+	xfield*f=malloc(sizeof(xfield));
+	*f=xfield_def;
 	token_setz(type,&f->type);
 	if(token_is_empty(name)){
 		token_setz(type,&f->name);
@@ -733,9 +732,9 @@ inline static void toc_parse_field(toc*tc,type*c,token*type,token*name){
 	return;
 }
 
-inline static type*toc_parse_type(toc*tc,token name){
-	type*c=malloc(sizeof(type));
-	*c=type_def;
+inline static xtype*toc_parse_type(toc*tc,token name){
+	xtype*c=malloc(sizeof(xtype));
+	*c=xtype_def;
 	toc_add_type(tc,c);
 	c->token=name;
 	token_setz(&c->token,&c->name);
@@ -800,7 +799,7 @@ inline static void toc_compile_to_c(toc*tc){
 	printf("#define float_def 0.0f\n");
 	printf("#define bool_def false\n");
 	for(unsigned i=0;i<tc->types.count;i++){
-		type*c=dynp_get(&tc->types,i);
+		xtype*c=dynp_get(&tc->types,i);
 		toc_push_scope(tc,'c',c->name.data);
 		// type
 		_print_right_aligned_comment(c->name.data);
@@ -808,7 +807,7 @@ inline static void toc_compile_to_c(toc*tc){
 		// fields
 		if(c->fields.count)printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
-			field*f=(field*)dynp_get(&c->fields,i);
+			xfield*f=(xfield*)dynp_get(&c->fields,i);
 			toc_add_ident(tc,f->type.data,f->name.data);
 			if(!strcmp(f->type.data,"var")){
 				if(!f->initval.exprs.count){
@@ -825,7 +824,7 @@ inline static void toc_compile_to_c(toc*tc){
 		// #define object_def {...}
 		printf("#define %s_def (%s){",c->name.data,c->name.data);
 		for(unsigned i=0;i<c->fields.count;i++){
-			field*s=(field*)dynp_get(&c->fields,i);
+			xfield*s=(xfield*)dynp_get(&c->fields,i);
 			if(s->initval.exprs.count){
 				s->initval.super.compile((xexp*)&s->initval,tc);
 			}else{
@@ -840,12 +839,12 @@ inline static void toc_compile_to_c(toc*tc){
 		if(c->funcs.count){
 			_print_right_aligned_comment("funcs");
 			for(unsigned i=0;i<c->funcs.count;i++){
-				func*f=(func*)dynp_get(&c->funcs,i);
+				xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
 				toc_push_scope(tc,'f',f->name.data);
 				printf("inline static %s %s_%s(%s*o",
 						f->type.data,c->name.data,f->name.data,c->name.data);
 				for(unsigned j=0;j<f->args.count;j++){
-					funcarg*a=(funcarg*)dynp_get(&f->args,j);
+					xfuncarg*a=(xfuncarg*)dynp_get(&f->args,j);
 					printf(",");
 					printf("%s %s",a->type.data,a->name.data);
 					toc_add_ident(tc,a->type.data,a->name.data);

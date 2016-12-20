@@ -1,9 +1,9 @@
 #pragma once
-#include"toc.h"
+#include "xcode.h"
 
 typedef struct xloop{
 	xexp super;
-	code code;
+	xcode code;
 }xloop;
 
 inline static void _xloop_compile_(const xexp*oo,toc*tc){
@@ -12,7 +12,8 @@ inline static void _xloop_compile_(const xexp*oo,toc*tc){
 	o->code.super.compile((xexp*)&o->code,tc);
 }
 
-#define xloop_def (xloop){{_xloop_compile_,NULL,str_def,token_def,1},code_def}
+#define xloop_def (xloop){{_xloop_compile_,NULL,str_def,token_def,1},\
+							xcode_def}
 
 inline static xloop*xloop_read_next(toc*tc){
 	toc_push_scope(tc,'l',"");
