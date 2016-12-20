@@ -9,6 +9,17 @@ typedef struct xcall{
 	dynp args;
 }xcall;
 
+inline static void _xcall_free_(xexp*oo){
+	xcall*o=(xcall*)oo;
+	for(unsigned i=0;i<o->args.count;i++){
+		xexp*e=(xexp*)dynp_get(&o->args,i);
+		if(e->free)
+			e->free(e);
+		free(e);
+	}
+	dynp_free(&o->args);
+}
+
 inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	xcall*o=(xcall*)oo;
 	ci_xcall_compile(tc,o->super.token,o->name,o->args.count);
@@ -22,8 +33,10 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	printf(")");
 }
 
-#define xcall_def (xcall){{_xcall_compile_,NULL,cstr_def,token_def,0},\
-	cstr_def,dynp_def}
+#define xcall_def (xcall){\
+	{_xcall_compile_,_xcall_free_,cstr_def,token_def,0},\
+	cstr_def,dynp_def\
+}
 
 inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
 	xcall*o=malloc(sizeof(xcall));

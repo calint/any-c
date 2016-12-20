@@ -175,8 +175,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			e->name=token_to_new_cstr(&tk);//? leak
-//			token_setz(&tk,&e->name);
+			e->name=token_to_new_cstr(&tk);
 			e->super.type="cstr";
 			return(xexp*)e;
 
@@ -195,19 +194,19 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			*e=xconst_def;
 			e->super.token=tk;
 			e->name=token_to_new_cstr(&tk);
-//			token_setz(&tk,&e->name);
 			e->super.type="char";
 			return(xexp*)e;
 
 		}else{
-			xexp*e=malloc(sizeof(xexp));
-			*e=xexp_def;
-			return e;
+			return null;
+//			xexp*e=malloc(sizeof(xexp));
+//			*e=xexp_def;
+//			return e;
 		}
 	}
 
 	// constant
-	cstr tks=token_to_new_cstr(&tk);//? leak
+	cstr tks=token_to_new_cstr(&tk);
 
 	// boolean
 	if(!strcmp("true",tks) || !strcmp("false",tks)){
@@ -585,7 +584,7 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 			break;
 		}
 		xfuncarg*fa=malloc(sizeof(xfuncarg));
-		dynp_add(&f->args,fa);
+		dynp_add(&f->funcargs,fa);
 		*fa=xfuncarg_def;
 		token tkn=toc_next_token(tc);
 		fa->type=token_to_new_cstr(&tkt);//? leak
@@ -605,7 +604,7 @@ inline static void ci_parse_func(toc*tc,xtype*c,token*type){
 			longjmp(_jmp_buf,1);
 		}
 	}
-	code_read_next(&f->code,tc);
+	xcode_read_next(&f->code,tc);
 	toc_pop_scope(tc);
 }
 
@@ -717,7 +716,7 @@ inline static void ci_compile_to_c(toc*tc){
 			xfield*f=(xfield*)dynp_get(&c->fields,i);
 			toc_add_declaration(tc,f->type,f->name);
 			if(!strcmp(f->type,"var")){
-				if(!f->initval.exprs.count){
+				if(!f->initval.exps.count){
 					printf("<file> <line:col> expected initializer with auto");
 					longjmp(_jmp_buf,1);
 				}
@@ -732,7 +731,7 @@ inline static void ci_compile_to_c(toc*tc){
 		printf("#define %s_def (%s){",c->name,c->name);
 		for(unsigned i=0;i<c->fields.count;i++){
 			xfield*s=(xfield*)dynp_get(&c->fields,i);
-			if(s->initval.exprs.count){
+			if(s->initval.exps.count){
 				s->initval.super.compile((xexp*)&s->initval,tc);
 			}else{
 				printf("%s_def",s->type);
@@ -750,8 +749,8 @@ inline static void ci_compile_to_c(toc*tc){
 				toc_push_scope(tc,'f',f->name);
 				printf("inline static %s %s_%s(%s*o",
 						f->type,c->name,f->name,c->name);
-				for(unsigned j=0;j<f->args.count;j++){
-					xfuncarg*a=(xfuncarg*)dynp_get(&f->args,j);
+				for(unsigned j=0;j<f->funcargs.count;j++){
+					xfuncarg*a=(xfuncarg*)dynp_get(&f->funcargs,j);
 					printf(",");
 					printf("%s %s",a->type,a->name);
 					toc_add_declaration(tc,a->type,a->name);
@@ -775,8 +774,8 @@ inline static int ci_compile_file(cstr path){
 		return ret;
 	toc tc=toc_def;
 	tc.filepth=path;
-	tc.src=str_from_file(path);
-	tc.srcp=tc.src.data;
+	str srcstr=str_from_file(path);//? leak
+	tc.srcp=tc.src=srcstr.data;
 	while(1){
 		token typenm=toc_next_token(&tc);
 		if(token_is_empty(&typenm))
@@ -784,6 +783,18 @@ inline static int ci_compile_file(cstr path){
 		ci_parse_type(&tc,typenm);
 	}
 	ci_compile_to_c(&tc);
+
+	//? toc_free
+	for(unsigned i=0;i<tc.types.count;i++){
+		xtype*t=(xtype*)dynp_get(&tc.types,i);
+		xtype_free(t);
+		free(t);
+	}
+	dynp_free(&tc.types);
+	dynp_free(&tc.scopes);
+	token_free();
+	str_free(&srcstr);
+	ci_free();
 	return 0;
 }
 

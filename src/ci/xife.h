@@ -15,7 +15,7 @@ inline static void _xif_compile_(const xexp*oo,toc*tc){
 	printf("if (");
 	_xbool_compile_((xexp*)&o->cond,tc);
 	printf(") ");
-	_code_compile_((xexp*)&o->code,tc);
+	_xcode_compile_((xexp*)&o->code,tc);
 }
 
 #define xif_def (xif){{_xif_compile_,NULL,cstr_def,token_def,0},\
@@ -27,7 +27,7 @@ inline static xif*xif_read_next(toc*tc,token tk){
 	toc_srcp_skip_if(tc,'(');
 	xbool_parse(&o->cond,tc,tk);
 	toc_srcp_skip_if(tc,')');
-	code_read_next(&o->code,tc);
+	xcode_read_next(&o->code,tc);
 	return o;
 }
 
@@ -53,14 +53,14 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 		_xif_compile_((xexp*)fi,tc);
 	}
 	xif*lastif=(xif*)dynp_get_last(&o->ifs);
-	if(o->elsecode.exprs.count){
+	if(o->elsecode.exps.count){
 		if(xexpr_is_encapsulated(&lastif->code.super))
 			printf(" else ");
 		else{
 			toc_indent_for_compile(tc);
 			printf("else ");
 		}
-		_code_compile_((xexp*)&o->elsecode,tc);
+		_xcode_compile_((xexp*)&o->elsecode,tc);
 		if(xexpr_is_encapsulated(&o->elsecode.super)){
 			printf("\n");
 		}
@@ -88,7 +88,7 @@ inline static xife*xife_read_next(toc*tc,token tk){
 		token t2=toc_next_token(tc);
 		if(!token_equals(&t2,"if")){
 			tc->srcp=t2.begin;
-			code_read_next(&o->elsecode,tc);
+			xcode_read_next(&o->elsecode,tc);
 			return o;
 		}
 	}

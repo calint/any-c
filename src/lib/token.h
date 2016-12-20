@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<ctype.h>
+#include"dynp.h"
 
 typedef struct token{
 	const char*begin;
@@ -226,12 +227,22 @@ inline static void token_setz(token*o,str*s){
 	str_add(s,0);
 }
 
+static dynp _token_to_new_cstr_=dynp_def;
 inline static /*gives*/cstr token_to_new_cstr(token*o){
 	const unsigned len=o->content_end-o->content;
 	char*s=malloc(len+1);
 	memcpy(s,o->content,len);
 	s[len]='\0';
+
+	dynp_add(&_token_to_new_cstr_,s);
 	return(cstr)s;
+}
+inline static void token_free(){
+	for(unsigned i=0;i<_token_to_new_cstr_.count;i++){
+		char*s=(char*)dynp_get(&_token_to_new_cstr_,i);
+		free(s);
+	}
+	dynp_free(&_token_to_new_cstr_);
 }
 
 //

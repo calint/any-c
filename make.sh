@@ -7,7 +7,9 @@ BIN=any-c
 WARNINGS='-Wall -Wextra -Wfatal-errors -Wno-unused-parameter -Wno-discarded-qualifiers'
 
 LIBS=
-OPTIMIZATION=-O3
+
+#OPTIMIZATION=-O3
+OPTIMIZATION='-O0 -g'
 
 #REMARKS=-Rpass=inline
 REMARKS=

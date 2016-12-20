@@ -5,22 +5,36 @@ inline static /*gives*/xexp*ci_read_next_statement(toc*o);
 
 typedef struct xcode{
 	xexp super;
-	dynp exprs;
+	dynp exps;
 }xcode;
 
-#define xcode_def (xcode){{_code_compile_,NULL,cstr_def,token_def,1},dynp_def}
+#define xcode_def (xcode){\
+	{_xcode_compile_,_xcode_free_,cstr_def,token_def,1},\
+	dynp_def\
+}
 
-inline static void _code_compile_(const xexp*oo,toc*tc){
+inline static void _xcode_free_(xexp*oo){
+	xcode*o=(xcode*)oo;
+	for(unsigned i=0;i<o->exps.count;i++){
+		xexp*e=(xexp*)dynp_get(&o->exps,i);
+		if(e->free)
+			e->free(e);
+		free(e);
+	}
+	dynp_free(&o->exps);
+}
+
+inline static void _xcode_compile_(const xexp*oo,toc*tc){
 	xcode*o=(xcode*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->super.bits&1){
 		printf("{");
 	}
-	if(o->exprs.count)
+	if(o->exps.count)
 		printf("\n");
 
-	for(unsigned i=0;i<o->exprs.count;i++){
-		xexp*e=dynp_get(&o->exprs,i);
+	for(unsigned i=0;i<o->exps.count;i++){
+		xexp*e=dynp_get(&o->exps,i);
 		toc_indent_for_compile(tc);
 		e->compile(e,tc);
 		if(xexpr_is_block(e))
@@ -35,12 +49,12 @@ inline static void _code_compile_(const xexp*oo,toc*tc){
 		toc_indent_for_compile(tc);
 		printf("}");
 	}
-	if(!o->exprs.count)// typedef struct empty {}
+	if(!o->exps.count)// typedef struct empty {}
 		printf("\n");
 
 }
 
-inline static void code_read_next(xcode*o,toc*tc){
+inline static void xcode_read_next(xcode*o,toc*tc){
 	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
 	if(*tc->srcp=='{'){
@@ -48,9 +62,9 @@ inline static void code_read_next(xcode*o,toc*tc){
 		o->super.bits|=1;
 		while(1){
 			xexp*e=ci_read_next_statement(tc);
-			if(xexpr_is_empty(e))
+			if(!e)
 				break;
-			dynp_add(&o->exprs,e);
+			dynp_add(&o->exps,e);
 			if(*tc->srcp==';'){
 				tc->srcp++;
 				continue;
@@ -66,7 +80,7 @@ inline static void code_read_next(xcode*o,toc*tc){
 	}
 	o->super.bits&=~1;
 	xexp*e=ci_read_next_statement(tc);
-	dynp_add(&o->exprs,e);
+	dynp_add(&o->exps,e);
 	if(*tc->srcp==';'){
 		tc->srcp++;
 	}

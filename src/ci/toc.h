@@ -4,7 +4,7 @@
 typedef struct toc{
 	dynp types;
 	dynp scopes;
-	str src;
+	cstr src;
 	cstr srcp;
 	cstr filepth;
 }toc;
@@ -12,7 +12,7 @@ typedef struct toc{
 inline static void ci_assert_set(const toc*,cstr,cstr,token);
 inline static cstr ci_get_type_for_accessor(const toc*,cstr,token);
 
-#define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
+#define toc_def {dynp_def,dynp_def,cstr_def,NULL,NULL}
 
 typedef struct tocscope{
 	char type;
@@ -40,7 +40,7 @@ typedef struct tocloc{
 inline static tocloc toc_get_line_number_from_pp(const toc*o,cstr p,
 		unsigned tabsize){
 
-	cstr pt=o->src.data;
+	cstr pt=o->src;
 	int line=1,col=1;
 	while(pt<p){
 		if(*pt!='\n'){

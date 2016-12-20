@@ -59,7 +59,7 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 
 	o->lh.super.compile((xexp*)&o->lh,tc);
 
-	if(!o->rh.exprs.count)
+	if(!o->rh.exps.count)
 		return;
 
 	if(o->op=='='){
