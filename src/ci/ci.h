@@ -148,7 +148,7 @@ inline static void ci_free(){}
 inline static xexp*ci_read_next_statement(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(toc_is_srcp_take(tc,'"')){ // string
+		if(toc_srcp_if_is_then_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
@@ -177,7 +177,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			e->super.type=str_from_string("ccharp");
 			return(xexp*)e;
 
-		}else if(toc_is_srcp_take(tc,'\'')){
+		}else if(toc_srcp_if_is_then_take(tc,'\'')){
 			toc_srcp_inc(tc);
 			if(*tc->srcp!='\''){
 				toc_print_source_location(tc,tk,4);
@@ -358,7 +358,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 inline static xexp*ci_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
-		if(toc_is_srcp_take(tc,'"')){ // string
+		if(toc_srcp_if_is_then_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
@@ -387,7 +387,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 			e->super.type=str_from_string("ccharp");
 			return(xexp*)e;
 
-		}else if(toc_is_srcp_take(tc,'\'')){
+		}else if(toc_srcp_if_is_then_take(tc,'\'')){
 			toc_srcp_inc(tc);
 			if(*tc->srcp!='\''){
 				toc_print_source_location(tc,tk,4);
@@ -531,14 +531,14 @@ inline static xexp*ci_read_next_expression(toc*tc){
 //	}
 
 	char incdecbits=0;
-	if(toc_is_srcp_take(tc,'+')){
-		if(toc_is_srcp_take(tc,'+')){
+	if(toc_srcp_if_is_then_take(tc,'+')){
+		if(toc_srcp_if_is_then_take(tc,'+')){
 			incdecbits|=1;
 		}else{
 			tc->srcp--;
 		}
-	}else if(toc_is_srcp_take(tc,'-')){
-		if(toc_is_srcp_take(tc,'-')){
+	}else if(toc_srcp_if_is_then_take(tc,'-')){
+		if(toc_srcp_if_is_then_take(tc,'-')){
 			incdecbits|=2;
 		}else{
 			tc->srcp--;
@@ -642,7 +642,7 @@ inline static xtype*ci_parse_type(toc*tc,token name){
 	c->token=name;
 	token_setz(&c->token,&c->name);
 	toc_push_scope(tc,'c',c->name.data);
-	if(!toc_is_srcp(tc,'{')){
+	if(!toc_srcp_is(tc,'{')){
 		toc_print_source_location(tc,c->token,4);
 		printf("expected '{' to open class body\n");
 		longjmp(_jmpbufenv,1);
@@ -658,14 +658,14 @@ inline static xtype*ci_parse_type(toc*tc,token name){
 			tc->srcp++;
 			break;
 		}
-		if(toc_is_srcp(tc,'(') || toc_is_srcp(tc,'{')){
+		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 			ci_parse_func(tc,c,&type);
-		}else if(toc_is_srcp(tc,'=') || toc_is_srcp(tc,';')){
+		}else if(toc_srcp_is(tc,'=') || toc_srcp_is(tc,';')){
 			token name=toc_next_token(tc);
 			ci_parse_field(tc,c,&type,&name);
 		}else{
 			token name=toc_next_token(tc);
-			if(toc_is_srcp(tc,'(') || toc_is_srcp(tc,'{')){
+			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 				tc->srcp=name.content;
 				ci_parse_func(tc,c,&type);
 			}else{

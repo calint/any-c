@@ -45,7 +45,7 @@ inline static xvar*xvar_read_next(toc*tc,str type){
 
 	toc_add_ident(tc,o->super.type.data,o->name.data);
 	bool is_var=!strcmp(o->super.type.data,"var");
-	if(toc_is_srcp_take(tc,'=')){
+	if(toc_srcp_if_is_then_take(tc,'=')){
 		xset_parse_next(&o->initval,tc,o->name,o->super.token);
 		if(is_var){
 			o->super.type=o->initval.super.type;

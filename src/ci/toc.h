@@ -157,31 +157,6 @@ inline static const tocdecl*toc_get_declaration(toc*o,ccharp name){
 	return 0;
 }
 
-//inline static const char toc_get_scope_type_for_declaration(const toc*o,
-//		ccharp name){
-//
-//	ccharp p=strpbrk(name,".");
-//	ccharp variable_name;
-//	if(p){
-//		str s=str_def;//? leakcase
-//		str_add_list(&s,name,p-name);
-//		str_add(&s,0);
-//		variable_name=s.data;
-//	}else{
-//		variable_name=name;
-//	}
-//
-//	for(int j=(signed)o->scopes.count-1;j>=0;j--){
-//		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
-//		for(unsigned i=0;i<s->idents.count;i++){
-//			const tocdecl*td=(const tocdecl*)dynp_get(&s->idents,i);
-//			if(!strcmp(td->name.data,variable_name))
-//				return s->type;
-//		}
-//	}
-//	return 0;
-//}
-
 inline static void toc_set_declaration_type(toc*o,ccharp name,ccharp type){
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
@@ -198,108 +173,9 @@ inline static void toc_set_declaration_type(toc*o,ccharp name,ccharp type){
 
 inline static void toc_pop_scope(toc*o){
 	tocscope*s=dynp_get_last(&o->scopes);
-//	printf("    popped   %s  \n\n\n",s->name);
 	toc_scope_free(s);
 	o->scopes.count--;//? pop
 }
-
-//inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
-//	ccharp p=strpbrk(id,".");
-//	if(p){
-//		str sid=str_def;
-//		str_add_list(&sid,id,p-id);
-//		str_add(&sid,0);
-//
-//		const tocdecl*i=toc_get_declaration(tc,sid.data);
-//		if(!i){
-//			printf("<file> <line:col> identifier '%s' not found\n",id);
-//			longjmp(_jmpbufenv,1);
-//		}
-//		ci_assert_set(tc,id,type,tk);
-//		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
-//		if(scopetype){
-//			if(scopetype=='c'){// class member
-//				printf("o->%s",id);
-//			}else{// local identifier
-//				printf("%s",id);
-//			}
-//			printf("=");
-//			return;
-//		}
-//	}
-//	const char scopetype=toc_get_declaration_scope_type(tc,id);
-//	if(scopetype=='c'){// class member
-//		printf("o->%s=",id);
-//		return;
-//	}
-//	if(scopetype){// local identifier
-//		printf("%s=",id);
-//		return;
-//	}
-//
-////	tocloc tl=toc_get_line_number_from_pp(tc, p)
-//
-//	toc_print_source_location(tc,tk,4);
-//	printf("could not find var '%s'\n",id);
-//	longjmp(_jmpbufenv,1);
-//}
-//
-//#define toc_id_max_len 1024
-//inline static void toc_compile_for_call(
-//		toc*tc,token tk,ccharp accessor,unsigned argcount){
-//
-//	if(!strcmp("printf",accessor)){
-//		printf("%s(",accessor);
-//		return;
-//	}
-//	if(!strcmp("p",accessor)){
-//		printf("printf(");
-//		return;
-//	}
-////
-//	char cb[toc_id_max_len];
-//	strcpy(cb,accessor);
-//	const char*path_ptr=cb;
-//	const char*varnm_ptr=cb;
-//	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
-//	if(funcnm_ptr){                           //
-//		cb[funcnm_ptr-cb]=0;
-////		*funcnm_ptr=0;                        // path: g.gl
-//		funcnm_ptr++;                         // func: print
-//		ccharp target_type=ci_get_type_for_accessor(tc,varnm_ptr,tk);
-//		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
-//		printf("%s_%s((%s*)&",target_type,funcnm_ptr,target_type);
-//		if(scope=='c'){
-//			printf("o->%s",path_ptr);
-//			if(argcount)
-//				printf(",");
-//			return;
-//		}
-//		char*first_dot=strchr(cb,'.'); // g.gl
-//		if(first_dot){
-//			*first_dot=0;                        // var: g
-//			path_ptr=first_dot+1;
-//			printf("%s.%s",varnm_ptr,path_ptr);
-//			if(argcount)
-//				printf(",");
-//			return;
-//		}
-//		printf("%s",varnm_ptr);
-//		if(argcount)
-//			printf(",");
-//		return;
-//	}
-//	funcnm_ptr=cb;       // func: draw
-//	ccharp target_type=toc_get_type_in_context(tc,tk);
-//	printf("%s_%s((%s*)&o",
-//		target_type,
-//		funcnm_ptr,
-//		target_type
-//	);
-//	if(argcount)
-//		printf(",");
-//}
-
 
 inline static void toc_indent_for_compile(toc*o){
 	for(unsigned i=2;i<o->scopes.count;i++){
@@ -309,9 +185,9 @@ inline static void toc_indent_for_compile(toc*o){
 
 inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
 inline static void toc_srcp_inc(toc*o){o->srcp++;}
-inline static bool toc_is_srcp(const toc*o,const char ch)
+inline static bool toc_srcp_is(const toc*o,const char ch)
 	{return *o->srcp==ch;}
-inline static bool toc_is_srcp_take(toc*o,const char ch){
+inline static bool toc_srcp_if_is_then_take(toc*o,const char ch){
 	if(*o->srcp==ch){
 		o->srcp++;
 		return true;
@@ -319,7 +195,7 @@ inline static bool toc_is_srcp_take(toc*o,const char ch){
 	return false;
 }
 inline static void toc_charp_skip_if(toc*o,const char ch){
-	if(toc_is_srcp(o,ch))
+	if(toc_srcp_is(o,ch))
 		toc_srcp_inc(o);
 }
 inline static bool toc_is_type_builtin(const toc*o,ccharp typenm){

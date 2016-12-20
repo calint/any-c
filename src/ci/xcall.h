@@ -1,9 +1,6 @@
 #pragma once
-#include"../lib.h"
-#include "toc.h"
 #include"xexpls.h"
 
-//inline static xexpls*toc_read_next_xexpls(toc*,token);
 inline static void ci_xcall_compile(toc*,token,ccharp,unsigned);
 
 typedef struct xcall{
