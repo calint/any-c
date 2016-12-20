@@ -9,7 +9,7 @@ typedef struct toc{
 	ccharp filepth;
 }toc;
 
-inline static void ci_assert_can_set(toc*,ccharp,ccharp,token);
+inline static void ci_assert_set(toc*,ccharp,ccharp,token);
 inline static ccharp ci_get_type_for_accessor(toc*,ccharp,token);
 
 #define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
@@ -203,102 +203,102 @@ inline static void toc_pop_scope(toc*o){
 	o->scopes.count--;//? pop
 }
 
-inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
-	ccharp p=strpbrk(id,".");
-	if(p){
-		str sid=str_def;
-		str_add_list(&sid,id,p-id);
-		str_add(&sid,0);
-
-		const tocdecl*i=toc_get_declaration(tc,sid.data);
-		if(!i){
-			printf("<file> <line:col> identifier '%s' not found\n",id);
-			longjmp(_jmpbufenv,1);
-		}
-		ci_assert_can_set(tc,id,type,tk);
-		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
-		if(scopetype){
-			if(scopetype=='c'){// class member
-				printf("o->%s",id);
-			}else{// local identifier
-				printf("%s",id);
-			}
-			printf("=");
-			return;
-		}
-	}
-	const char scopetype=toc_get_declaration_scope_type(tc,id);
-	if(scopetype=='c'){// class member
-		printf("o->%s=",id);
-		return;
-	}
-	if(scopetype){// local identifier
-		printf("%s=",id);
-		return;
-	}
-
-//	tocloc tl=toc_get_line_number_from_pp(tc, p)
-
-	toc_print_source_location(tc,tk,4);
-	printf("could not find var '%s'\n",id);
-	longjmp(_jmpbufenv,1);
-}
-
-#define toc_id_max_len 1024
-inline static void toc_compile_for_call(
-		toc*tc,token tk,ccharp accessor,unsigned argcount){
-
-	if(!strcmp("printf",accessor)){
-		printf("%s(",accessor);
-		return;
-	}
-	if(!strcmp("p",accessor)){
-		printf("printf(");
-		return;
-	}
+//inline static void toc_compile_for_xset(toc*tc,token tk,ccharp id,ccharp type){
+//	ccharp p=strpbrk(id,".");
+//	if(p){
+//		str sid=str_def;
+//		str_add_list(&sid,id,p-id);
+//		str_add(&sid,0);
 //
-	char cb[toc_id_max_len];
-	strcpy(cb,accessor);
-	const char*path_ptr=cb;
-	const char*varnm_ptr=cb;
-	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
-	if(funcnm_ptr){                           //
-		cb[funcnm_ptr-cb]=0;
-//		*funcnm_ptr=0;                        // path: g.gl
-		funcnm_ptr++;                         // func: print
-		ccharp target_type=ci_get_type_for_accessor(tc,varnm_ptr,tk);
-		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
-		printf("%s_%s((%s*)&",target_type,funcnm_ptr,target_type);
-		if(scope=='c'){
-			printf("o->%s",path_ptr);
-			if(argcount)
-				printf(",");
-			return;
-		}
-		char*first_dot=strchr(cb,'.'); // g.gl
-		if(first_dot){
-			*first_dot=0;                        // var: g
-			path_ptr=first_dot+1;
-			printf("%s.%s",varnm_ptr,path_ptr);
-			if(argcount)
-				printf(",");
-			return;
-		}
-		printf("%s",varnm_ptr);
-		if(argcount)
-			printf(",");
-		return;
-	}
-	funcnm_ptr=cb;       // func: draw
-	ccharp target_type=toc_get_type_in_context(tc,tk);
-	printf("%s_%s((%s*)&o",
-		target_type,
-		funcnm_ptr,
-		target_type
-	);
-	if(argcount)
-		printf(",");
-}
+//		const tocdecl*i=toc_get_declaration(tc,sid.data);
+//		if(!i){
+//			printf("<file> <line:col> identifier '%s' not found\n",id);
+//			longjmp(_jmpbufenv,1);
+//		}
+//		ci_assert_set(tc,id,type,tk);
+//		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
+//		if(scopetype){
+//			if(scopetype=='c'){// class member
+//				printf("o->%s",id);
+//			}else{// local identifier
+//				printf("%s",id);
+//			}
+//			printf("=");
+//			return;
+//		}
+//	}
+//	const char scopetype=toc_get_declaration_scope_type(tc,id);
+//	if(scopetype=='c'){// class member
+//		printf("o->%s=",id);
+//		return;
+//	}
+//	if(scopetype){// local identifier
+//		printf("%s=",id);
+//		return;
+//	}
+//
+////	tocloc tl=toc_get_line_number_from_pp(tc, p)
+//
+//	toc_print_source_location(tc,tk,4);
+//	printf("could not find var '%s'\n",id);
+//	longjmp(_jmpbufenv,1);
+//}
+//
+//#define toc_id_max_len 1024
+//inline static void toc_compile_for_call(
+//		toc*tc,token tk,ccharp accessor,unsigned argcount){
+//
+//	if(!strcmp("printf",accessor)){
+//		printf("%s(",accessor);
+//		return;
+//	}
+//	if(!strcmp("p",accessor)){
+//		printf("printf(");
+//		return;
+//	}
+////
+//	char cb[toc_id_max_len];
+//	strcpy(cb,accessor);
+//	const char*path_ptr=cb;
+//	const char*varnm_ptr=cb;
+//	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
+//	if(funcnm_ptr){                           //
+//		cb[funcnm_ptr-cb]=0;
+////		*funcnm_ptr=0;                        // path: g.gl
+//		funcnm_ptr++;                         // func: print
+//		ccharp target_type=ci_get_type_for_accessor(tc,varnm_ptr,tk);
+//		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
+//		printf("%s_%s((%s*)&",target_type,funcnm_ptr,target_type);
+//		if(scope=='c'){
+//			printf("o->%s",path_ptr);
+//			if(argcount)
+//				printf(",");
+//			return;
+//		}
+//		char*first_dot=strchr(cb,'.'); // g.gl
+//		if(first_dot){
+//			*first_dot=0;                        // var: g
+//			path_ptr=first_dot+1;
+//			printf("%s.%s",varnm_ptr,path_ptr);
+//			if(argcount)
+//				printf(",");
+//			return;
+//		}
+//		printf("%s",varnm_ptr);
+//		if(argcount)
+//			printf(",");
+//		return;
+//	}
+//	funcnm_ptr=cb;       // func: draw
+//	ccharp target_type=toc_get_type_in_context(tc,tk);
+//	printf("%s_%s((%s*)&o",
+//		target_type,
+//		funcnm_ptr,
+//		target_type
+//	);
+//	if(argcount)
+//		printf(",");
+//}
 
 
 inline static void toc_indent_for_compile(toc*o){

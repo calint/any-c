@@ -4,6 +4,7 @@
 #include"xexpls.h"
 
 //inline static xexpls*toc_read_next_xexpls(toc*,token);
+inline static void ci_xcall_compile(toc*,token,ccharp,unsigned);
 
 typedef struct xcall{
 	xexp super;
@@ -11,13 +12,13 @@ typedef struct xcall{
 	dynp args;
 }xcall;
 
-inline static void _xcall_compile_(const xexp*o,toc*tc){
-	xcall*e=(xcall*)o;
-	toc_compile_for_call(tc,e->super.token,e->name.data,e->args.count);
-	for(unsigned i=0;i<e->args.count;i++){
-		xexp*a=(xexp*)dynp_get(&e->args,i);
+inline static void _xcall_compile_(const xexp*oo,toc*tc){
+	xcall*o=(xcall*)oo;
+	ci_xcall_compile(tc,o->super.token,o->name.data,o->args.count);
+	for(unsigned i=0;i<o->args.count;i++){
+		xexp*a=(xexp*)dynp_get(&o->args,i);
 		a->compile(a,tc);
-		if(i!=e->args.count-1){
+		if(i!=o->args.count-1){
 			printf(",");
 		}
 	}
