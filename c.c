@@ -37,23 +37,22 @@ inline static void entity_free(entity*o){
     id_free(&o->id);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
-typedef struct global{
-    entity e1;
-    entity e2;
-}global;
-#define global_def (global){entity_def,entity_def}
+typedef struct global{}global;
+#define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	o->e1.id.i=1;
-	entity_print((entity*)&o->e1);
-	o->e2.id.i=2;
-	entity_print((entity*)&o->e2);
-	o->e1.id.i=3;
-	entity_print((entity*)&o->e1);
+	entity e1=entity_def;
+	entity e2=entity_def;
+	e1.id.i=1;
+	entity_print((entity*)&e1);
+	e2.id.i=2;
+	entity_print((entity*)&e2);
+	e1.id.i=3;
+	entity_print((entity*)&e1);
+	entity_free(&e2);
+	entity_free(&e1);
 }
 inline static void global_free(global*o){
-    entity_free(&o->e2);
-    entity_free(&o->e1);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){

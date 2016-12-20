@@ -8,3 +8,4 @@ inline static /*gives*/xexp*ci_read_next_statement(toc*o);
 inline static /*gives*/xexp*ci_read_next_expression(toc*);
 inline static void ci_xcall_compile(toc*,token,cstr,unsigned);
 inline static void ci_xset_compile(const toc*,token,cstr,cstr);
+inline static void ci_xcode_compile_free_current_scope();

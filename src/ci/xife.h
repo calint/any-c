@@ -46,7 +46,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 			if(xexpr_is_encapsulated(&prvfi->super)){
 				printf(" else ");
 			}else{
-				toc_indent_for_compile(tc);
+				toc_print_indent_for_compile(tc);
 				printf("else ");
 			}
 		}
@@ -57,7 +57,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 		if(xexpr_is_encapsulated(&lastif->code.super))
 			printf(" else ");
 		else{
-			toc_indent_for_compile(tc);
+			toc_print_indent_for_compile(tc);
 			printf("else ");
 		}
 		_xcode_compile_((xexp*)&o->elsecode,tc);

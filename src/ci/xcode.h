@@ -35,7 +35,7 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 
 	for(unsigned i=0;i<o->exps.count;i++){
 		xexp*e=dynp_get(&o->exps,i);
-		toc_indent_for_compile(tc);
+		toc_print_indent_for_compile(tc);
 		e->compile(e,tc);
 		if(xexpr_is_block(e))
 			continue;
@@ -44,9 +44,10 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 		else
 			printf("\n");
 	}
+	ci_xcode_compile_free_current_scope(tc);
 	toc_pop_scope(tc);
 	if(xexpr_is_encapsulated(&o->super)){
-		toc_indent_for_compile(tc);
+		toc_print_indent_for_compile(tc);
 		printf("}");
 	}
 	if(!o->exps.count)// typedef struct empty {}

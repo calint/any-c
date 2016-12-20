@@ -182,7 +182,7 @@ inline static void toc_pop_scope(toc*o){
 	o->scopes.count--;//? pop
 }
 
-inline static void toc_indent_for_compile(const toc*o){
+inline static void toc_print_indent_for_compile(const toc*o){
 	for(unsigned i=2;i<o->scopes.count;i++){
 		printf("\t");
 	}

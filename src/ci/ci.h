@@ -18,6 +18,20 @@ typedef struct ci{
 }ci;
 #define ci_def {dynp_def}
 
+inline static void ci_xcode_compile_free_current_scope(toc*tc){
+	const tocscope*ts=dynp_get_last(&tc->scopes);
+	for(int i=ts->tocdecls.count-1;i>=0;i--){
+		const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
+		if(ci_is_type_builtin(td->type))
+			continue;
+		const xtype*t=ci_get_type_by_name(tc,td->type);
+		if(!(t->bits&1)) // needs free
+			continue;
+		toc_print_indent_for_compile(tc);
+		printf("%s_free(&%s);\n",t->name,td->name);
+	}
+}
+
 inline static bool ci_is_type_builtin(cstr typenm){
 	if(!strcmp("int",typenm))return true;
 	if(!strcmp("str",typenm))return true;
