@@ -47,7 +47,7 @@ typedef struct xtype{
 	dynp fields;
 	dynp funcs;
 	token token;
-	char bits; // 1: needs call to free
+	char bits; // 1: needs call to free   2: has function _free
 }xtype;
 
 #define xtype_def (xtype){cstr_def,dynp_def,dynp_def,token_def,0}
@@ -194,8 +194,8 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 	}
 	for(unsigned i=0;i<c->funcs.count;i++){
 		xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
-		if(!strcmp(f->name,"free")){
-			c->bits|=1; // needs free call
+		if(!strcmp(f->name,"_free")){
+			c->bits|=3; // needs free and has _free
 			break;
 		}
 	}
@@ -206,7 +206,7 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 				continue;
 			xtype*mc=ci_get_type_by_name(tc,f->type);
 			if(mc->bits&1){
-				c->bits|=1; // needs call to free
+				c->bits|=1; // needs free
 				break;
 			}
 		}

@@ -629,20 +629,24 @@ inline static void ci_compile_to_c(toc*tc){
 				printf(",");
 		}
 		printf("}\n");
-		printf("inline static void %s_free(%s*o){",c->name,c->name);
-		bool first=true;
-		for(unsigned i=0;i<c->fields.count;i++){
-			xfield*f=(xfield*)dynp_get(&c->fields,i);
-			if(ci_is_type_builtin(f->type))
-				continue;
-			if(first){
-				printf("\n");
-				first=false;
+		if((c->bits&1) || !strcmp(c->name,"global")){// needs call to free
+			printf("inline static void %s_free(%s*o){",c->name,c->name);
+			bool first=true;
+			for(unsigned i=0;i<c->fields.count;i++){
+				xfield*f=(xfield*)dynp_get(&c->fields,i);
+				if(ci_is_type_builtin(f->type))
+					continue;
+				xtype*cc=ci_get_type_by_name(tc,f->type);
+				if(!(cc->bits&1)) // needs _free?
+					continue;
+				if(first){
+					printf("\n");
+					first=false;
+				}
+				printf("    %s_free(&o->%s);\n",f->type,f->name);
 			}
-			printf("    %s_free(&o->%s);\n",f->type,f->name);
+			printf("}\n");
 		}
-		printf("}\n");
-
 		// functions
 		if(c->funcs.count){
 			ci_print_right_aligned_comment("funcs");

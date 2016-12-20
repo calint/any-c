@@ -4,6 +4,8 @@ entity{
 	print{
 		printf("entity: %d %f\n",i,f)
 	}
+	
+
 }
 
 global{
