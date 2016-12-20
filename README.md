@@ -8,9 +8,9 @@ simple framework with c++ like language that compiles
     : compile time type checking
     : deduced variable types
     : terse syntax
-    
-    
-	example code:
+
+
+sample source
 ```
 entity{
 	var i=1
@@ -29,9 +29,10 @@ global{
 		e1.i=2
 		e1.print()
 	}
-}
-```
-	compiles to following c code:
+}```
+
+
+compiles to
 ```
 //--- - - -------------------  - -- - - - - - - -- - - -  generated c source
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
@@ -73,14 +74,12 @@ inline static void global_main(global*o){
 int main(int c,char**a){global g=global_def;global_main(&g);}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 ```
-	program output:
+
+
+outputs
 ```
- :: ./run
--rwxrwxr-x 1 c c 72416 ธ.ค.  21 03:20 any-c
 entity: 1 2.200000
 entity: 1 2.200000
 entity: 2 2.200000
- ::
 ```
-	
-	
+
