@@ -149,7 +149,7 @@ inline static void ci_init(){}
 
 inline static void ci_free(){}
 
-inline static xexp*ci_read_next_xexpr(toc*tc){
+inline static xexp*ci_read_next_statement(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
 		if(toc_is_srcp_take(tc,'"')){ // string
