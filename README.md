@@ -77,8 +77,12 @@ inline static void global_main(global*o){
 	entity_print((entity*)&o->e1);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-int main(int c,char**a){global g=global_def;global_main(&g);global_free(&g);}
-//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
+int main(int c,char**a){
+    global g=global_def;
+    global_main(&g);
+    global_free(&g);
+    return 0;
+}//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 ```
 
 
@@ -92,8 +96,8 @@ entity: 2 2.200000
 source size
 ```
 cat src/ci/* | wc
-   2131    3323   47212
+   2136    3333   47310
 cat src/ci/* | gzip | wc
-     40     199    9424
+     35     184    9434
 ```
 

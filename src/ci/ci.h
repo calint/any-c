@@ -790,7 +790,12 @@ inline static void ci_compile_to_c(toc*tc){
 		toc_pop_scope(tc);
 	}
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
-	printf("int main(int c,char**a){global g=global_def;global_main(&g);global_free(&g);}\n");
+	printf("int main(int c,char**a){\n");
+	printf("    global g=global_def;\n");
+	printf("    global_main(&g);\n");
+	printf("    global_free(&g);\n");
+	printf("    return 0;\n");
+	printf("}");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 

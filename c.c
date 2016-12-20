@@ -40,5 +40,9 @@ inline static void global_main(global*o){
 	entity_print((entity*)&o->e1);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
-int main(int c,char**a){global g=global_def;global_main(&g);global_free(&g);}
-//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
+int main(int c,char**a){
+    global g=global_def;
+    global_main(&g);
+    global_free(&g);
+    return 0;
+}//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
