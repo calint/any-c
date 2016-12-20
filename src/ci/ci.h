@@ -18,7 +18,7 @@ typedef struct ci{
 }ci;
 #define ci_def {dynp_def}
 
-inline static xtype*ci_get_type_by_name(const toc*o,ccharp name){
+inline static xtype*ci_get_type_by_name(const toc*o,cstr name){
 	for(unsigned i=0;i<o->types.count;i++){
 		xtype*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name.data,name)){
@@ -28,10 +28,10 @@ inline static xtype*ci_get_type_by_name(const toc*o,ccharp name){
 	return NULL;
 }
 
-inline static ccharp ci_get_type_for_accessor(const toc*tc,
-						ccharp accessor,token tk){
+inline static cstr ci_get_type_for_accessor(const toc*tc,
+						cstr accessor,token tk){
 
-	ccharp current_accessor=accessor;
+	cstr current_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration(tc,current_accessor);
 	if(!decl){
 		toc_print_source_location(tc,tk,4);
@@ -39,17 +39,17 @@ inline static ccharp ci_get_type_for_accessor(const toc*tc,
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmpbufenv,1);
 	}
-	ccharp current_class_name=decl->type.data;
+	cstr current_class_name=decl->type.data;
 	const xtype*current_type=ci_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
-			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
+			cstr p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
 			if(!p){// a=2
 				break;
 			}
 			current_accessor=p+1; // anim.frame
 			p=strpbrk(current_accessor,".");
-			ccharp lookup=current_accessor;
+			cstr lookup=current_accessor;
 			if(p){
 				str s=str_def;
 				str_add_list(&s,current_accessor,p-current_accessor);
@@ -77,9 +77,9 @@ inline static ccharp ci_get_type_for_accessor(const toc*tc,
 }
 
 inline static void ci_assert_set(const toc*tc,
-		ccharp accessor,ccharp settype,token tk){
+		cstr accessor,cstr settype,token tk){
 
-	ccharp current_accessor=accessor;
+	cstr current_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration(tc,current_accessor);
 	if(!decl){
 		toc_print_source_location(tc,tk,4);
@@ -91,17 +91,17 @@ inline static void ci_assert_set(const toc*tc,
 	if(!strcmp(decl->type.data,"var"))// if dest is var
 		return;
 
-	ccharp current_class_name=decl->type.data;
+	cstr current_class_name=decl->type.data;
 	const xtype*current_type=ci_get_type_by_name(tc,current_class_name);
 	if(current_type){
 		while(1){
-			ccharp p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
+			cstr p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
 			if(!p){// a=2
 				break;
 			}
 			current_accessor=p+1; // anim.frame
 			p=strpbrk(current_accessor,".");
-			ccharp lookup=current_accessor;
+			cstr lookup=current_accessor;
 			if(p){
 				str s=str_def;
 				str_add_list(&s,current_accessor,p-current_accessor);
@@ -679,8 +679,8 @@ inline static xtype*ci_parse_type(toc*tc,token name){
 	return c;
 }
 
-inline static void ci_print_right_aligned_comment(ccharp comment){
-	ccharp line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
+inline static void ci_print_right_aligned_comment(cstr comment){
+	cstr line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
 	const int maxlen=strlen(line);
 	const int ln=strlen(comment);
 	int start_at=maxlen-ln-4;
@@ -767,7 +767,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
-inline static int ci_compile_file(ccharp path){
+inline static int ci_compile_file(cstr path){
 	int val=setjmp(_jmpbufenv);
 	if(val==1){
 //		printf(" error occured");
@@ -789,8 +789,8 @@ inline static int ci_compile_file(ccharp path){
 	return 0;
 }
 
-inline static void ci_xset_compile(const toc*tc,token tk,ccharp id,ccharp type){
-	ccharp p=strpbrk(id,".");
+inline static void ci_xset_compile(const toc*tc,token tk,cstr id,cstr type){
+	cstr p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
 		str_add_list(&sid,id,p-id);
@@ -833,7 +833,7 @@ inline static void ci_xset_compile(const toc*tc,token tk,ccharp id,ccharp type){
 
 #define ci_identifier_maxlen 1024
 inline static void ci_xcall_compile(
-		toc*tc,token tk,ccharp accessor,unsigned argcount){
+		toc*tc,token tk,cstr accessor,unsigned argcount){
 
 	if(!strcmp("printf",accessor)){
 		printf("%s(",accessor);
@@ -853,7 +853,7 @@ inline static void ci_xcall_compile(
 		cb[funcnm_ptr-cb]=0;
 //		*funcnm_ptr=0;                        // path: g.gl
 		funcnm_ptr++;                         // func: print
-		ccharp target_type=ci_get_type_for_accessor(tc,varnm_ptr,tk);
+		cstr target_type=ci_get_type_for_accessor(tc,varnm_ptr,tk);
 		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
 		printf("%s_%s((%s*)&",target_type,funcnm_ptr,target_type);
 		if(scope=='c'){
@@ -877,7 +877,7 @@ inline static void ci_xcall_compile(
 		return;
 	}
 	funcnm_ptr=cb;       // func: draw
-	ccharp target_type=toc_get_type_in_context(tc,tk);
+	cstr target_type=toc_get_type_in_context(tc,tk);
 	printf("%s_%s((%s*)&o",
 		target_type,
 		funcnm_ptr,

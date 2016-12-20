@@ -10,8 +10,8 @@
 #define bool_def false
 #define true 1
 
-#define ccharp const char*
-#define ccharp_def ""
+#define cstr const char*
+#define cstr_def ""
 
 #define null 0
 
@@ -21,7 +21,7 @@
 
 static jmp_buf _jmpbufenv;
 
-inline static str const_str(ccharp s){
+inline static str const_str(cstr s){
 	str st=str_def;
 	st.data=s;
 	st.cap=st.count=strlen(s)+1;

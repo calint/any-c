@@ -38,7 +38,7 @@ typedef struct xtype{
 
 #define xtype_def (xtype){str_def,dynp_def,dynp_def,token_def}
 
-inline static xfield*xtype_get_field_by_name(const xtype*o,ccharp field_name){
+inline static xfield*xtype_get_field_by_name(const xtype*o,cstr field_name){
 	for(unsigned i=0;i<o->fields.count;i++){
 		xfield*f=dynp_get(&o->fields,i);
 		if(!strcmp(f->name.data,field_name))
@@ -47,7 +47,7 @@ inline static xfield*xtype_get_field_by_name(const xtype*o,ccharp field_name){
 	return NULL;
 }
 
-inline static xfunc*xtype_get_func_by_name(const xtype*o,ccharp field_name){
+inline static xfunc*xtype_get_func_by_name(const xtype*o,cstr field_name){
 	for(unsigned i=0;i<o->funcs.count;i++){
 		xfunc*f=dynp_get(&o->funcs,i);
 		if(!strcmp(f->name.data,field_name))

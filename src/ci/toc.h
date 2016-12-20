@@ -5,18 +5,18 @@ typedef struct toc{
 	dynp types;
 	dynp scopes;
 	str src;
-	ccharp srcp;
-	ccharp filepth;
+	cstr srcp;
+	cstr filepth;
 }toc;
 
-inline static void ci_assert_set(const toc*,ccharp,ccharp,token);
-inline static ccharp ci_get_type_for_accessor(const toc*,ccharp,token);
+inline static void ci_assert_set(const toc*,cstr,cstr,token);
+inline static cstr ci_get_type_for_accessor(const toc*,cstr,token);
 
 #define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
 
 typedef struct tocscope{
 	char type;
-	ccharp name;
+	cstr name;
 	dynp idents;
 }tocscope;
 
@@ -31,16 +31,16 @@ typedef struct tocdecl{
 
 
 typedef struct tocloc{
-	ccharp filenm;
+	cstr filenm;
 	unsigned line;
 	unsigned col;
 }tocloc;
 
 
-inline static tocloc toc_get_line_number_from_pp(const toc*o,ccharp p,
+inline static tocloc toc_get_line_number_from_pp(const toc*o,cstr p,
 		unsigned tabsize){
 
-	ccharp pt=o->src.data;
+	cstr pt=o->src.data;
 	int line=1,col=1;
 	while(pt<p){
 		if(*pt!='\n'){
@@ -63,7 +63,7 @@ inline static void toc_print_source_location(const toc*o,token tk,int tabsize){
 	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
 }
 
-inline static ccharp toc_get_type_in_context(const toc*tc,token tk){
+inline static cstr toc_get_type_in_context(const toc*tc,token tk){
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
 		if(s->type=='c'){
@@ -81,7 +81,7 @@ inline static void toc_scope_free(tocscope*o){
 	free(o);
 }
 
-inline static void toc_push_scope(toc*o,char type,ccharp name){
+inline static void toc_push_scope(toc*o,char type,cstr name){
 	tocscope*s=malloc(sizeof(tocscope));
 	*s=ci_toc_scope_def;
 	s->type=type;
@@ -110,7 +110,7 @@ inline static void toc_print(const toc*o){
 	}
 }
 
-inline static void toc_add_ident(toc*o,ccharp type,ccharp name){
+inline static void toc_add_ident(toc*o,cstr type,cstr name){
 	tocdecl*id=(tocdecl*)malloc(sizeof(tocdecl));
 	*id=toctn_def;
 	str_setz(&id->type,type);
@@ -121,7 +121,7 @@ inline static void toc_add_ident(toc*o,ccharp type,ccharp name){
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
 }
 
-inline static char toc_get_declaration_scope_type(const toc*oo,ccharp name){
+inline static char toc_get_declaration_scope_type(const toc*oo,cstr name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
@@ -134,9 +134,9 @@ inline static char toc_get_declaration_scope_type(const toc*oo,ccharp name){
 }
 
 
-inline static const tocdecl*toc_get_declaration(const toc*o,ccharp name){
-	ccharp p=strpbrk(name,".");
-	ccharp variable_name;
+inline static const tocdecl*toc_get_declaration(const toc*o,cstr name){
+	cstr p=strpbrk(name,".");
+	cstr variable_name;
 	if(p){
 		str s=str_def;//? leakcase
 		str_add_list(&s,name,p-name);
@@ -157,7 +157,7 @@ inline static const tocdecl*toc_get_declaration(const toc*o,ccharp name){
 	return 0;
 }
 
-inline static void toc_set_declaration_type(toc*o,ccharp name,ccharp type){
+inline static void toc_set_declaration_type(toc*o,cstr name,cstr type){
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
@@ -198,7 +198,7 @@ inline static void toc_charp_skip_if(toc*o,const char ch){
 	if(toc_srcp_is(o,ch))
 		toc_srcp_inc(o);
 }
-inline static bool toc_is_type_builtin(const toc*o,ccharp typenm){
+inline static bool toc_is_type_builtin(const toc*o,cstr typenm){
 	if(!strcmp("int",typenm))return true;
 	if(!strcmp("str",typenm))return true;
 	if(!strcmp("float",typenm))return true;

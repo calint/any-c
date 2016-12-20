@@ -15,7 +15,7 @@ inline static void _xident_compile_(const xexp*oo,toc*tc){
 	const xident*o=(xident*)oo;
 
 	// identifier ie  p.member  vs  localvar;
-	ccharp p=strpbrk(o->name.data,".");
+	cstr p=strpbrk(o->name.data,".");
 	if(p){// object.type.size
 		str s=str_def;
 		str_add_list(&s,o->name.data,p-o->name.data);
