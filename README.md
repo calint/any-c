@@ -31,7 +31,9 @@ simple framework with c++ like language that compiles
 						e1.print()
 					}
 				}
-
+```
+	compiles to following c code:
+```
 //--- - - -------------------  - -- - - - - - - -- - - -  generated c source
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
