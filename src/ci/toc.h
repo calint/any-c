@@ -9,8 +9,8 @@ typedef struct toc{
 	ccharp filepth;
 }toc;
 
-inline static void ci_assert_set(toc*,ccharp,ccharp,token);
-inline static ccharp ci_get_type_for_accessor(toc*,ccharp,token);
+inline static void ci_assert_set(const toc*,ccharp,ccharp,token);
+inline static ccharp ci_get_type_for_accessor(const toc*,ccharp,token);
 
 #define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
 
@@ -37,7 +37,7 @@ typedef struct tocloc{
 }tocloc;
 
 
-inline static tocloc toc_get_line_number_from_pp(toc*o,ccharp p,
+inline static tocloc toc_get_line_number_from_pp(const toc*o,ccharp p,
 		unsigned tabsize){
 
 	ccharp pt=o->src.data;
@@ -58,12 +58,12 @@ inline static tocloc toc_get_line_number_from_pp(toc*o,ccharp p,
 	return (tocloc){o->filepth,line,col};
 }
 
-inline static void toc_print_source_location(toc*o,token tk,int tabsize){
+inline static void toc_print_source_location(const toc*o,token tk,int tabsize){
 	tocloc tl=toc_get_line_number_from_pp(o,tk.content,tabsize);
 	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
 }
 
-inline static ccharp toc_get_type_in_context(toc*tc,token tk){
+inline static ccharp toc_get_type_in_context(const toc*tc,token tk){
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
 		if(s->type=='c'){
@@ -96,7 +96,7 @@ inline static void toc_push_scope(toc*o,char type,ccharp name){
 //	printf("\n");
 }
 
-inline static void toc_print(toc*o){
+inline static void toc_print(const toc*o){
 	for(unsigned j=0;j<o->scopes.count;j++){
 		tocscope*s=dynp_get(&o->scopes,j);
 		printf("%c %s\n",s->type,s->name);
@@ -121,7 +121,7 @@ inline static void toc_add_ident(toc*o,ccharp type,ccharp name){
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
 }
 
-inline static char toc_get_declaration_scope_type(toc*oo,ccharp name){
+inline static char toc_get_declaration_scope_type(const toc*oo,ccharp name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->idents.count;i++){
@@ -134,7 +134,7 @@ inline static char toc_get_declaration_scope_type(toc*oo,ccharp name){
 }
 
 
-inline static const tocdecl*toc_get_declaration(toc*o,ccharp name){
+inline static const tocdecl*toc_get_declaration(const toc*o,ccharp name){
 	ccharp p=strpbrk(name,".");
 	ccharp variable_name;
 	if(p){
@@ -177,7 +177,7 @@ inline static void toc_pop_scope(toc*o){
 	o->scopes.count--;//? pop
 }
 
-inline static void toc_indent_for_compile(toc*o){
+inline static void toc_indent_for_compile(const toc*o){
 	for(unsigned i=2;i<o->scopes.count;i++){
 		printf("\t");
 	}

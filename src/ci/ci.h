@@ -13,10 +13,12 @@
 #include"xife.h"
 #include"xtype.h"
 
-//typedef struct ci{}ci;
-//#define ci_def {}
+typedef struct ci{
+	dynp types;
+}ci;
+#define ci_def {dynp_def}
 
-inline static xtype*ci_get_type_by_name(toc*o,ccharp name){
+inline static xtype*ci_get_type_by_name(const toc*o,ccharp name){
 	for(unsigned i=0;i<o->types.count;i++){
 		xtype*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name.data,name)){
@@ -26,7 +28,7 @@ inline static xtype*ci_get_type_by_name(toc*o,ccharp name){
 	return NULL;
 }
 
-inline static ccharp ci_get_type_for_accessor(toc*tc,
+inline static ccharp ci_get_type_for_accessor(const toc*tc,
 						ccharp accessor,token tk){
 
 	ccharp current_accessor=accessor;
@@ -74,7 +76,7 @@ inline static ccharp ci_get_type_for_accessor(toc*tc,
 	return current_class_name;
 }
 
-inline static void ci_assert_set(toc*tc,
+inline static void ci_assert_set(const toc*tc,
 		ccharp accessor,ccharp settype,token tk){
 
 	ccharp current_accessor=accessor;
@@ -787,7 +789,7 @@ inline static int ci_compile_file(ccharp path){
 	return 0;
 }
 
-inline static void ci_xset_compile(toc*tc,token tk,ccharp id,ccharp type){
+inline static void ci_xset_compile(const toc*tc,token tk,ccharp id,ccharp type){
 	ccharp p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
