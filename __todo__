@@ -12,3 +12,8 @@
 [ ] assert member type exists
 [x] optional cleanup before shutdown
 [x] valgrind
+[ ] foo fow
+[ ] xtype into an expression
+[ ] function in function
+[ ] class in class
+[ ] lambdas
