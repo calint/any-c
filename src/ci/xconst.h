@@ -13,6 +13,8 @@ typedef struct xconst{
 inline static void _xconst_compile_(const xexp*oo,toc*tc){
 	const xident*o=(xident*)oo;
 	printf("%s",o->name);
+	if(!strcmp(o->super.type,"float"))
+		printf("f");
 }
 //
 //inline static void xconst_read_next(toc*tc,token tk,ccharp type){

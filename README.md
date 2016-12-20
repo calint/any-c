@@ -53,7 +53,7 @@ typedef struct entity{
     int i;
     float f;
 }entity;
-#define entity_def (entity){1,2.2}
+#define entity_def (entity){1,2.2f}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
 	printf("entity: %d %f\n",o->i,o->f);
