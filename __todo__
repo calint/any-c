@@ -33,9 +33,9 @@
 [ ] taskpools
 [ ] reflection, text based, offset addresses, fields, functions
 [o] compilation of default print / read for types
-[ ]     1. table column span
-[ ]     2. text in list
-[ ]     3. text in summary
+[ ]     1. table column span      | apple | red |  name,attribute
+[ ]     2. text in list      ex: apple, orange etc
+[ ]     3. text in summary    ex: red apple
 [ ]     4. full text in dump
 [ ]     5. full text standalone dump
 [ ]     6. binary
