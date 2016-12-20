@@ -32,7 +32,7 @@
 [ ] threadpools
 [ ] taskpools
 [ ] reflection, text based, offset addresses, fields, functions
-[ ] compilation of default print / read for types
+[o] compilation of default print / read for types
 [ ]     1. table column span
 [ ]     2. text in list
 [ ]     3. text in summary
@@ -40,7 +40,7 @@
 [ ]     5. full text standalone dump
 [ ]     6. binary
 [ ]     7. rebind references after read
-[ ] containers
+[o] containers
 [ ]   alloc
 [ ]   free
 [ ]   foo
