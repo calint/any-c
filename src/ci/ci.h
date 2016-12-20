@@ -54,7 +54,7 @@ inline static ccharp ci_get_type_for_accessor(toc*tc,
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
-			const xfield*fld=type_get_field_by_name(current_type,lookup);
+			const xfield*fld=xtype_get_field_by_name(current_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
@@ -106,7 +106,7 @@ inline static void ci_assert_set(toc*tc,
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
-			const xfield*fld=type_get_field_by_name(current_type,lookup);
+			const xfield*fld=xtype_get_field_by_name(current_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",

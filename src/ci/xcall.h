@@ -46,6 +46,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 			longjmp(_jmpbufenv,1);
 		}
 		dynp_add(&o->args,a);
+		//? assert can set
 		if(toc_srcp_if_is_then_take(tc,','))
 			continue;
 		if(toc_srcp_if_is_then_take(tc,')'))
