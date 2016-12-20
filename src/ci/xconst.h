@@ -3,14 +3,14 @@
 #include "toc.h"
 
 typedef struct xconst{
-	xexpr super;
+	xexp super;
 	str name;
 }xconst;
 
 #define xconst_def (xconst){{_xconst_compile_,NULL,str_def,token_def,0},\
 							str_def}
 
-inline static void _xconst_compile_(const xexpr*oo,toc*tc){
+inline static void _xconst_compile_(const xexp*oo,toc*tc){
 	const xident*o=(xident*)oo;
 	printf("%s",o->name.data);
 }

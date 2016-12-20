@@ -6,17 +6,17 @@
 //inline static void toc_assert_can_set(toc*,ccharp,ccharp,token);
 
 typedef struct xset{
-	xexpr super;
+	xexp super;
 	str name;
 	xexpls expls;//? xexpls
 }xset;
 
-inline static void _xset_compile_(const xexpr*oo,toc*tc){
+inline static void _xset_compile_(const xexp*oo,toc*tc){
 	xset*o=(xset*)oo;
 	toc_compile_for_xset(tc,o->super.token,o->name.data,
 	o->expls.super.type.data);
 
-	o->expls.super.compile((xexpr*)&o->expls,tc);
+	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
 #define xset_def (xset){{_xset_compile_,NULL,str_def,token_def,0},str_def,\
@@ -53,12 +53,12 @@ inline static void xset_parse_next(xset*o,toc*tc,str name,token tk){
 }
 
 typedef struct xvar{
-	xexpr super;
+	xexp super;
 	str name;
 	xset initval;
 }xvar;
 
-inline static void _xvar_compile_(const xexpr*oo,toc*tc){
+inline static void _xvar_compile_(const xexp*oo,toc*tc){
 	xvar*o=(xvar*)oo;
 	const char idtype=toc_get_declaration_scope_type(tc,o->name.data);
 	if(idtype){
@@ -71,7 +71,7 @@ inline static void _xvar_compile_(const xexpr*oo,toc*tc){
 	printf("%s ",o->super.type.data);
 	toc_add_ident(tc,o->super.type.data,o->name.data);
 	if(o->initval.super.compile){
-		_xset_compile_((xexpr*)&o->initval,tc);
+		_xset_compile_((xexp*)&o->initval,tc);
 	}else{
 		printf("%s=%s_def",o->name.data,o->super.type.data);
 	}

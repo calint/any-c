@@ -2,10 +2,10 @@
 #include"../lib.h"
 #include "toc.h"
 
-inline static xexpr*toc_read_next_expression(toc*);
+inline static xexp*toc_read_next_expression(toc*);
 
 typedef struct xexpls{
-	xexpr super;
+	xexp super;
 	dynp exprs;
 	str ops;
 }xexpls;
@@ -13,10 +13,10 @@ typedef struct xexpls{
 #define xexpls_def (xexpls){{_xexpls_compile_,NULL,str_def,token_def,0},\
 							dynp_def,str_def}
 
-inline static void _xexpls_compile_(const xexpr*oo,toc*tc){
+inline static void _xexpls_compile_(const xexp*oo,toc*tc){
 	const xexpls*o=(xexpls*)oo;
 	for(unsigned i=0;i<o->exprs.count;i++){
-		const xexpr*e=dynp_get(&o->exprs,i);
+		const xexp*e=dynp_get(&o->exprs,i);
 		const char op=str_get(&o->ops,i);
 		if(i!=0){
 			printf("%c",op);
@@ -49,9 +49,9 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 	while(1){
 		if(!o->exprs.count)
 			str_add(&o->ops,'\0');
-		xexpr*e;
+		xexp*e;
 		if(toc_is_srcp(tc,'(')){
-			e=(xexpr*)xexpls_read_next(tc,tk);
+			e=(xexp*)xexpls_read_next(tc,tk);
 		}else{
 			e=toc_read_next_expression(tc);
 		}
@@ -76,7 +76,7 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 		}
 	}
 
-	xexpr*first=dynp_get(&o->exprs,0);
+	xexp*first=dynp_get(&o->exprs,0);
 	o->super.type=first->type;
 //	return o;
 }

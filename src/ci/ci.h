@@ -242,7 +242,7 @@ inline static void ci_free(){}
 //	return xexpls_read_next(tc,tk);
 //}
 
-inline static xexpr*toc_read_next_xexpr(toc*tc){
+inline static xexp*toc_read_next_xexpr(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
 		if(toc_is_srcp_take(tc,'"')){ // string
@@ -272,7 +272,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			e->super.token=tk;
 			token_setz(&tk,&e->name);
 			e->super.type=str_from_string("ccharp");
-			return(xexpr*)e;
+			return(xexp*)e;
 
 		}else if(toc_is_srcp_take(tc,'\'')){
 			toc_srcp_inc(tc);
@@ -290,11 +290,11 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			e->super.token=tk;
 			token_setz(&tk,&e->name);
 			e->super.type=str_from_string("char");
-			return(xexpr*)e;
+			return(xexp*)e;
 
 		}else{
-			xexpr*e=malloc(sizeof(xexpr));
-			*e=xexpr_def;
+			xexp*e=malloc(sizeof(xexp));
+			*e=xexp_def;
 			return e;
 		}
 	}
@@ -310,7 +310,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("bool");
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// int
@@ -321,7 +321,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("int");
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// float
@@ -332,7 +332,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("float");
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// hex
@@ -345,7 +345,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
-				return(xexpr*)e;
+				return(xexp*)e;
 			}
 		}
 		if((tks.data[0]=='0' && tks.data[1]=='b')){
@@ -356,7 +356,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
-				return(xexpr*)e;
+				return(xexp*)e;
 			}
 		}
 	}
@@ -365,28 +365,28 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	if(token_equals(&tk,"loop")){
 		xloop*e=xloop_read_next(tc);
 		e->super.token=tk;
-		return (xexpr*)e;
+		return (xexp*)e;
 	}
 
 	if(token_equals(&tk,"break")){
 		xbreak*e=xbreak_read_next(tc);
 		e->super.token=tk;
-		return (xexpr*)e;
+		return (xexp*)e;
 	}
 
 	if(token_equals(&tk,"continue")){
 		xcont*e=xcont_read_next(tc,tk);
-		return (xexpr*)e;
+		return (xexp*)e;
 	}
 
 	if(token_equals(&tk,"if")){
 		xife*e=xife_read_next(tc,tk);
-		return (xexpr*)e;
+		return (xexp*)e;
 	}
 
 	if(token_equals(&tk,"return")){
 		xreturn*e=xreturn_read_next(tc,tk);
-		return (xexpr*)e;
+		return (xexp*)e;
 	}
 
 	// built in types
@@ -396,20 +396,20 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
 		xvar*e=xvar_read_next(tc,name);
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	//  class instance
 	type*c=toc_get_type_by_name(tc,name.data);
 	if(c){// instantiate
 		xvar*e=xvar_read_next(tc,name);
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// function call
 	if(*tc->srcp=='('){
 		xcall*e=xcall_read_next(tc,tk,/*gives*/name);
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// assignment
@@ -417,7 +417,7 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 		tc->srcp++;
 		if(*tc->srcp!='='){
 			xset*e=xset_read_next(tc,name,tk);
-			return(xexpr*)e;
+			return(xexp*)e;
 		}
 		tc->srcp--;
 	}
@@ -449,10 +449,10 @@ inline static xexpr*toc_read_next_xexpr(toc*tc){
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
 	e->super.type=const_str(toc_get_type_for_accessor(tc,e->name.data,tk));
-	return(xexpr*)e;
+	return(xexp*)e;
 }
 
-inline static xexpr*toc_read_next_expression(toc*tc){
+inline static xexp*toc_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
 		if(toc_is_srcp_take(tc,'"')){ // string
@@ -482,7 +482,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 			e->super.token=tk;
 			token_setz(&tk,&e->name);
 			e->super.type=str_from_string("ccharp");
-			return(xexpr*)e;
+			return(xexp*)e;
 
 		}else if(toc_is_srcp_take(tc,'\'')){
 			toc_srcp_inc(tc);
@@ -500,11 +500,11 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 			e->super.token=tk;
 			token_setz(&tk,&e->name);
 			e->super.type=str_from_string("char");
-			return(xexpr*)e;
+			return(xexp*)e;
 
 		}else{
-			xexpr*e=malloc(sizeof(xexpr));
-			*e=xexpr_def;
+			xexp*e=malloc(sizeof(xexp));
+			*e=xexp_def;
 			return e;
 		}
 	}
@@ -520,7 +520,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("bool");
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// int
@@ -531,7 +531,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("int");
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// float
@@ -542,7 +542,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 		e->super.token=tk;
 		e->name=tks;
 		e->super.type=const_str("float");
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// hex
@@ -555,7 +555,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
-				return(xexpr*)e;
+				return(xexp*)e;
 			}
 		}
 		if((tks.data[0]=='0' && tks.data[1]=='b')){
@@ -566,7 +566,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 				e->super.token=tk;
 				e->name=tks;
 				e->super.type=const_str("int");
-				return(xexpr*)e;
+				return(xexp*)e;
 			}
 		}
 	}
@@ -614,7 +614,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 	// function call
 	if(*tc->srcp=='('){
 		xcall*e=xcall_read_next(tc,tk,name);
-		return(xexpr*)e;
+		return(xexp*)e;
 	}
 
 	// assignment
@@ -648,7 +648,7 @@ inline static xexpr*toc_read_next_expression(toc*tc){
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
 	e->super.type=const_str(toc_get_type_for_accessor(tc,e->name.data,tk));
-	return(xexpr*)e;
+	return(xexp*)e;
 }
 
 inline static void toc_parse_func(toc*tc,type*c,token*type){
@@ -813,7 +813,7 @@ inline static void toc_compile_to_c(toc*tc){
 					printf("<file> <line:col> expected initializer with auto");
 					longjmp(_jmpbufenv,1);
 				}
-				f->initval.super.compile((xexpr*)&f->initval,tc);
+				f->initval.super.compile((xexp*)&f->initval,tc);
 				f->type=f->initval.super.type;
 			}
 			printf("    %s %s;\n",f->type.data,f->name.data);
@@ -825,7 +825,7 @@ inline static void toc_compile_to_c(toc*tc){
 		for(unsigned i=0;i<c->fields.count;i++){
 			field*s=(field*)dynp_get(&c->fields,i);
 			if(s->initval.exprs.count){
-				s->initval.super.compile((xexpr*)&s->initval,tc);
+				s->initval.super.compile((xexp*)&s->initval,tc);
 			}else{
 				printf("%s_def",s->type.data);
 			}
@@ -849,7 +849,7 @@ inline static void toc_compile_to_c(toc*tc){
 					toc_add_ident(tc,a->type.data,a->name.data);
 				}
 				printf(")");
-				f->code.super.compile((xexpr*)&f->code,tc);
+				f->code.super.compile((xexp*)&f->code,tc);
 				printf("\n");
 				toc_pop_scope(tc);
 			}

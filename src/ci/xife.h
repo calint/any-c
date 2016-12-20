@@ -5,17 +5,17 @@
 #include "xbool.h"
 
 typedef struct xif{
-	xexpr super;
+	xexp super;
 	xbool cond;
 	code code;
 }xif;
 
-inline static void _xif_compile_(const xexpr*oo,toc*tc){
+inline static void _xif_compile_(const xexp*oo,toc*tc){
 	xif*o=(xif*)oo;
 	printf("if (");
-	_xbool_compile_((xexpr*)&o->cond,tc);
+	_xbool_compile_((xexp*)&o->cond,tc);
 	printf(") ");
-	_code_compile_((xexpr*)&o->code,tc);
+	_code_compile_((xexp*)&o->code,tc);
 }
 
 #define xif_def (xif){{_xif_compile_,NULL,str_def,token_def,0},xbool_def,code_def}
@@ -31,12 +31,12 @@ inline static xif*xif_read_next(toc*tc,token tk){
 }
 
 typedef struct xife{
-	xexpr super;
+	xexp super;
 	dynp ifs;
 	code elsecode;
 }xife;
 
-inline static void _xife_compile_(const xexpr*oo,toc*tc){
+inline static void _xife_compile_(const xexp*oo,toc*tc){
 	xife*o=(xife*)oo;
 	for(unsigned i=0;i<o->ifs.count;i++){
 		xif*fi=(xif*)dynp_get(&o->ifs,i);
@@ -49,7 +49,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 				printf("else ");
 			}
 		}
-		_xif_compile_((xexpr*)fi,tc);
+		_xif_compile_((xexp*)fi,tc);
 	}
 	xif*lastif=(xif*)dynp_get_last(&o->ifs);
 	if(o->elsecode.exprs.count){
@@ -59,7 +59,7 @@ inline static void _xife_compile_(const xexpr*oo,toc*tc){
 			toc_indent_for_compile(tc);
 			printf("else ");
 		}
-		_code_compile_((xexpr*)&o->elsecode,tc);
+		_code_compile_((xexp*)&o->elsecode,tc);
 		if(xexpr_is_encapsulated(&o->elsecode.super)){
 			printf("\n");
 		}

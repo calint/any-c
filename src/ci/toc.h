@@ -1,6 +1,6 @@
 #pragma once
 #include"../lib.h"
-//#include"type.h"
+#include"xexp.h"
 
 typedef struct toc{
 	dynp types;
@@ -12,11 +12,8 @@ typedef struct toc{
 
 #define toc_def {dynp_def,dynp_def,str_def,NULL,NULL}
 
-//inline static bool toc_can_assign(toc*o,ccharp dst,ccharp path,ccharp src);
 inline static void toc_assert_can_set(toc*,ccharp,ccharp,token);
-//inline static void toc_print_func_call_for_compile(toc*,token,ccharp);
 inline static ccharp toc_get_type_for_accessor(toc*,ccharp,token);
-//inline static ccharp toc_get_type_in_context(toc*,token);
 
 
 typedef struct tocscope{
@@ -312,18 +309,6 @@ inline static void toc_indent_for_compile(toc*o){
 	}
 }
 
-typedef struct xexpr{
-	void (*compile)(const struct xexpr*,struct toc*);
-	void (*free)(struct xexpr*);
-	str type;
-	token token;
-	char bits;
-}xexpr;
-
-#define xexpr_def (xexpr){NULL,NULL,str_def,token_def,0}
-
-
-inline static int xexpr_is_empty(const xexpr*o){return o->compile==NULL;}
 inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
 inline static void toc_srcp_inc(toc*o){o->srcp++;}
 inline static bool toc_is_srcp(const toc*o,const char ch)
@@ -339,21 +324,6 @@ inline static void toc_charp_skip_if(toc*o,const char ch){
 	if(toc_is_srcp(o,ch))
 		toc_srcp_inc(o);
 }
-inline static bool xexpr_is_encapsulated(const xexpr*o){return(o->bits&1)==1;}
-inline static void xexpr_set_is_encapsulated(xexpr*o,const bool b){
-	if(b)
-		o->bits|=1;
-	else
-		o->bits&=~1;
-}
-inline static bool xexpr_is_block(const xexpr*o){return(o->bits&2)==2;}
-inline static void xexpr_set_is_block(xexpr*o,const bool b){
-	if(b)
-		o->bits|=2;
-	else
-		o->bits&=~2;
-}
-
 inline static bool toc_is_type_builtin(const toc*o,ccharp typenm){
 	if(!strcmp("int",typenm))return true;
 	if(!strcmp("str",typenm))return true;

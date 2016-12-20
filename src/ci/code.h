@@ -2,16 +2,16 @@
 #include"../lib.h"
 #include"toc.h"
 
-inline static /*gives*/xexpr*toc_read_next_xexpr(toc*o);
+inline static /*gives*/xexp*toc_read_next_xexpr(toc*o);
 
 typedef struct code{
-	xexpr super;
+	xexp super;
 	dynp exprs;
 }code;
 
 #define code_def (code){{_code_compile_,NULL,str_def,token_def,1},dynp_def}
 
-inline static void _code_compile_(const xexpr*oo,toc*tc){
+inline static void _code_compile_(const xexp*oo,toc*tc){
 	code*o=(code*)oo;
 	toc_push_scope(tc,'b',"");
 	if(o->super.bits&1){
@@ -21,7 +21,7 @@ inline static void _code_compile_(const xexpr*oo,toc*tc){
 		printf("\n");
 
 	for(unsigned i=0;i<o->exprs.count;i++){
-		xexpr*e=dynp_get(&o->exprs,i);
+		xexp*e=dynp_get(&o->exprs,i);
 		toc_indent_for_compile(tc);
 		e->compile(e,tc);
 		if(xexpr_is_block(e))
@@ -48,7 +48,7 @@ inline static void code_read_next(code*o,toc*tc){
 		tc->srcp++;
 		o->super.bits|=1;
 		while(1){
-			xexpr*e=toc_read_next_xexpr(tc);
+			xexp*e=toc_read_next_xexpr(tc);
 			if(xexpr_is_empty(e))
 				break;
 			dynp_add(&o->exprs,e);
@@ -66,7 +66,7 @@ inline static void code_read_next(code*o,toc*tc){
 		return;
 	}
 	o->super.bits&=~1;
-	xexpr*e=toc_read_next_xexpr(tc);
+	xexp*e=toc_read_next_xexpr(tc);
 	dynp_add(&o->exprs,e);
 	if(*tc->srcp==';'){
 		tc->srcp++;

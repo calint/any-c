@@ -4,7 +4,7 @@
 #include "toc.h"
 #include"xexpls.h"
 typedef struct xbool{
-	xexpr super;
+	xexp super;
 
 	// leaf
 	bool lh_negate;
@@ -20,7 +20,7 @@ typedef struct xbool{
 	bool is_negated;
 }xbool;
 
-inline static void _xbool_compile_(const xexpr*oo,toc*tc){
+inline static void _xbool_compile_(const xexp*oo,toc*tc){
 	xbool*o=(xbool*)oo;
 
 	if(o->bool_list.count){
@@ -43,7 +43,7 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 					longjmp(_jmpbufenv,1);
 				}
 			}
-			_xbool_compile_((xexpr*)b,tc);
+			_xbool_compile_((xexp*)b,tc);
 			// ...
 		}
 		if(o->is_encapsulated){
@@ -59,7 +59,7 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 	if(o->lh_negate)
 		printf("!");
 
-	o->lh.super.compile((xexpr*)&o->lh,tc);
+	o->lh.super.compile((xexp*)&o->lh,tc);
 
 	if(!o->rh.exprs.count)
 		return;
@@ -84,7 +84,7 @@ inline static void _xbool_compile_(const xexpr*oo,toc*tc){
 	if(o->rh_negate)
 		printf("!");
 
-	o->rh.super.compile((xexpr*)&o->rh,tc);
+	o->rh.super.compile((xexp*)&o->rh,tc);
 
 	if(o->is_encapsulated){
 		printf(")");

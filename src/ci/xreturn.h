@@ -3,14 +3,14 @@
 #include"xexpls.h"
 
 typedef struct xreturn{
-	xexpr super;
+	xexp super;
 	xexpls expls;
 }xreturn;
 
-inline static void _xreturn_compile_(const xexpr*oo,toc*tc){
+inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 	xreturn*o=(xreturn*)oo;
 	printf("return ");
-	o->expls.super.compile((xexpr*)&o->expls,tc);
+	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
 #define xreturn_def (xreturn){{_xreturn_compile_,NULL,str_def,token_def,0},\

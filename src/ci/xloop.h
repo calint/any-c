@@ -1,14 +1,15 @@
 #pragma once
+#include"toc.h"
 
 typedef struct xloop{
-	xexpr super;
+	xexp super;
 	code code;
 }xloop;
 
-inline static void _xloop_compile_(const xexpr*oo,toc*tc){
+inline static void _xloop_compile_(const xexp*oo,toc*tc){
 	xloop*o=(xloop*)oo;
 	printf("while(1)");
-	o->code.super.compile((xexpr*)&o->code,tc);
+	o->code.super.compile((xexp*)&o->code,tc);
 }
 
 #define xloop_def (xloop){{_xloop_compile_,NULL,str_def,token_def,1},code_def}
@@ -23,10 +24,10 @@ inline static xloop*xloop_read_next(toc*tc){
 }
 
 typedef struct xbreak{
-	xexpr super;
+	xexp super;
 }xbreak;
 
-inline static void _xbreak_compile_(const xexpr*oo,toc*tc){
+inline static void _xbreak_compile_(const xexp*oo,toc*tc){
 	printf("break");
 }
 
@@ -42,10 +43,10 @@ inline static xbreak*xbreak_read_next(toc*tc){
 }
 
 typedef struct xcont{
-	xexpr super;
+	xexp super;
 }xcont;
 
-inline static void _xcont_compile_(const xexpr*oo,toc*tc){
+inline static void _xcont_compile_(const xexp*oo,toc*tc){
 	printf("continue");
 }
 

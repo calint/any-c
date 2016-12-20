@@ -6,16 +6,16 @@
 //inline static xexpls*toc_read_next_xexpls(toc*,token);
 
 typedef struct xcall{
-	xexpr super;
+	xexp super;
 	str name;
 	dynp args;
 }xcall;
 
-inline static void _xcall_compile_(const xexpr*o,toc*tc){
+inline static void _xcall_compile_(const xexp*o,toc*tc){
 	xcall*e=(xcall*)o;
 	toc_compile_for_call(tc,e->super.token,e->name.data,e->args.count);
 	for(unsigned i=0;i<e->args.count;i++){
-		xexpr*a=(xexpr*)dynp_get(&e->args,i);
+		xexp*a=(xexp*)dynp_get(&e->args,i);
 		a->compile(a,tc);
 		if(i!=e->args.count-1){
 			printf(",");
@@ -44,7 +44,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,str name){
 			tc->srcp++;
 			break;
 		}
-		xexpr*a=(xexpr*)xexpls_read_next(tc,tk);
+		xexp*a=(xexp*)xexpls_read_next(tc,tk);
 		if(xexpr_is_empty(a)){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			longjmp(_jmpbufenv,1);
