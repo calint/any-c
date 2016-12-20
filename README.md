@@ -10,7 +10,8 @@ simple framework with c++ like language that compiles
     : terse syntax
     
     
-	example code:```
+	example code:
+```
 	- - - - - -- -  - - - -  -  - - -  - -- - - - - - - - - - -  - -- - - - - 
 				entity{
 					var i=1
