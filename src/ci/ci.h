@@ -309,7 +309,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	}
 
 	// built in types
-	cstr name=token_to_new_cstr(&tk);//? leak
+	cstr name=token_to_new_cstr(&tk);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
@@ -398,7 +398,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			e->name=token_to_new_cstr(&tk);//? leak
+			e->name=token_to_new_cstr(&tk);
 //			token_setz(&tk,&e->name);
 			e->super.type="cstr";
 			return(xexp*)e;
@@ -417,8 +417,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			e->name=token_to_new_cstr(&tk);//? leak
-//			token_setz(&tk,&e->name);
+			e->name=token_to_new_cstr(&tk);
 			e->super.type="char";
 			return(xexp*)e;
 
@@ -430,7 +429,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	}
 
 	// constant
-	cstr tks=token_to_new_cstr(&tk);//? leak
+	cstr tks=token_to_new_cstr(&tk);
 	const unsigned tkslen=strlen(tks);
 
 	// boolean
@@ -515,7 +514,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 //	}
 
 	// built in types
-	cstr name=token_to_new_cstr(&tk); //? leak
+	cstr name=token_to_new_cstr(&tk);
 //	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 //			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 //			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
@@ -569,129 +568,6 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	e->super.type=ci_get_type_for_accessor(tc,e->name,tk);
 	return(xexp*)e;
 }
-//
-//inline static void ci_parse_func(toc*tc,xtype*c,token*type){
-//	xfunc*f=malloc(sizeof(xfunc));
-//	*f=xfunc_def;
-//	bool enclosed_args=false;
-//	if(*tc->srcp=='{' || *tc->srcp=='('){
-//		f->type="void";
-//		f->name=token_to_new_cstr(type);//? leak
-//	}else{
-//		token tkname=toc_next_token(tc);
-//		f->type=token_to_new_cstr(type);//? leak
-//		f->name=token_to_new_cstr(&tkname);//? leak
-//	}
-//
-//	dynp_add(&c->funcs,f);
-//
-//	if(*tc->srcp=='('){
-//		enclosed_args=true;
-//		tc->srcp++;
-//	}
-//
-//	toc_push_scope(tc,'f',f->name);
-//	while(1){
-//		token tkt=toc_next_token(tc);
-//		if(token_is_empty(&tkt)){
-//			break;
-//		}
-//		xfuncarg*fa=malloc(sizeof(xfuncarg));
-//		dynp_add(&f->funcargs,fa);
-//		*fa=xfuncarg_def;
-//		token tkn=toc_next_token(tc);
-//		fa->type=token_to_new_cstr(&tkt);//? leak
-//		fa->name=token_to_new_cstr(&tkn);//? leak
-//
-//		toc_add_declaration(tc,fa->type,fa->name);
-//
-//		if(*tc->srcp==','){
-//			tc->srcp++;
-//		}
-//	}
-//	if(enclosed_args){
-//		if(*tc->srcp==')'){
-//			tc->srcp++;
-//		}else{
-//			printf("<file> <line:col> expected ')' after arguments\n");
-//			longjmp(_jmp_buf,1);
-//		}
-//	}
-//	xcode_read_next(&f->code,tc);
-//	toc_pop_scope(tc);
-//}
-//
-//inline static void ci_parse_field(toc*tc,xtype*c,token*type,token*name){
-//	xfield*f=malloc(sizeof(xfield));
-//	*f=xfield_def;
-//	f->type=token_to_new_cstr(type);//? leak
-////	token_setz(type,&f->type);
-//	if(token_is_empty(name)){
-//		f->name=f->type;
-//	}else{
-//		f->name=token_to_new_cstr(name);//? leak
-//	}
-//	dynp_add(&c->fields,f);
-//	toc_add_declaration(tc,f->type,f->name);
-//	if(*tc->srcp=='='){
-//		tc->srcp++;
-//		xexpls_parse_next(&f->initval, tc,*type);
-////		f->initval=e;
-//		if(strcmp(f->type,"var")){
-//				ci_assert_set(tc,
-//					f->name,
-//					f->initval.super.type,
-//					f->initval.super.token);
-//		}
-//		f->type=f->initval.super.type;
-//	}
-//	if(*tc->srcp==';'){
-//		tc->srcp++;
-//	}
-//	return;
-//}
-
-//inline static xtype*ci_parse_type(toc*tc,token name){
-//	xtype*c=malloc(sizeof(xtype));
-//	*c=xtype_def;
-//	dynp_add(&tc->types,c);
-//	c->token=name;
-//	c->name=token_to_new_cstr(&c->token);//? leak
-//	toc_push_scope(tc,'c',c->name);
-//	if(!toc_srcp_is(tc,'{')){
-//		toc_print_source_location(tc,c->token,4);
-//		printf("expected '{' to open class body\n");
-//		longjmp(_jmp_buf,1);
-//	}
-//	toc_srcp_inc(tc);
-//	while(1){
-//		token type=toc_next_token(tc);
-//		if(token_is_empty(&type)){
-//			if(*tc->srcp!='}'){
-//				printf("<file> <line:col> expected '}' to close class body\n");
-//				longjmp(_jmp_buf,1);
-//			}
-//			tc->srcp++;
-//			break;
-//		}
-//		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-//			ci_parse_func(tc,c,&type);
-//		}else if(toc_srcp_is(tc,'=') || toc_srcp_is(tc,';')){
-//			token name=toc_next_token(tc);
-//			ci_parse_field(tc,c,&type,&name);
-//		}else{
-//			token name=toc_next_token(tc);
-//			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-//				tc->srcp=name.content;
-//				ci_parse_func(tc,c,&type);
-//			}else{
-//				ci_parse_field(tc,c,&type,&name);
-//			}
-//		}
-//	}
-//	toc_pop_scope(tc);
-//	return c;
-//}
 
 inline static void ci_print_right_aligned_comment(cstr comment){
 	cstr line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
@@ -805,7 +681,7 @@ inline static int ci_compile_file(cstr path){
 		return ret;
 	toc tc=toc_def;
 	tc.filepth=path;
-	str srcstr=str_from_file(path);//? leak
+	str srcstr=str_from_file(path);
 	tc.srcp=tc.src=srcstr.data;
 	while(1){
 		token typenm=toc_next_token(&tc);
@@ -814,8 +690,6 @@ inline static int ci_compile_file(cstr path){
 		xtype_read_next(&tc,typenm);
 	}
 	ci_compile_to_c(&tc);
-
-	//? toc_free
 	for(unsigned i=0;i<tc.types.count;i++){
 		xtype*t=(xtype*)dynp_get(&tc.types,i);
 		xtype_free(t);

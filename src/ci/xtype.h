@@ -110,8 +110,8 @@ inline static xfunc*xfunc_read_next(toc*tc,token type){
 		dynp_add(&f->funcargs,fa);
 		*fa=xfuncarg_def;
 		token tkn=toc_next_token(tc);
-		fa->type=token_to_new_cstr(&tkt);//? leak
-		fa->name=token_to_new_cstr(&tkn);//? leak
+		fa->type=token_to_new_cstr(&tkt);
+		fa->name=token_to_new_cstr(&tkn);
 
 		toc_add_declaration(tc,fa->type,fa->name);
 
@@ -167,7 +167,7 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 	*c=xtype_def;
 	dynp_add(&tc->types,c);
 	c->token=name;
-	c->name=token_to_new_cstr(&c->token);//? leak
+	c->name=token_to_new_cstr(&c->token);
 	toc_push_scope(tc,'c',c->name);
 	if(!toc_srcp_is(tc,'{')){
 		toc_print_source_location(tc,c->token,4);

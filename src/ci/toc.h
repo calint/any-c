@@ -79,7 +79,7 @@ inline static cstr toc_get_type_in_context(const toc*tc,token tk){
 inline static void tocscope_free(tocscope*o){
 	for(unsigned i=0;i<o->tocdecls.count;i++){
 		tocdecl*td=dynp_get(&o->tocdecls,i);
-		free(td);//? leaks strings
+		free(td);
 	}
 	dynp_free(&o->tocdecls);
 	free(o);
@@ -142,7 +142,7 @@ inline static const tocdecl*toc_get_declaration(const toc*o,cstr name){
 	cstr p=strpbrk(name,".");
 	cstr variable_name;
 	if(p){
-		str s=str_def;//? leakcase
+		str s=str_def;//? leak
 		str_add_list(&s,name,p-name);
 		str_add(&s,0);
 		variable_name=s.data;

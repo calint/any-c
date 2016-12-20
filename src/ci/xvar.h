@@ -36,7 +36,7 @@ inline static xvar*xvar_read_next(toc*tc,cstr type){
 
 	o->super.type=type;
 	o->super.token=toc_next_token(tc);
-	o->name=token_to_new_cstr(&o->super.token);//? leak
+	o->name=token_to_new_cstr(&o->super.token);
 
 	if(!strcmp("o",o->name)){
 		toc_print_source_location(tc,o->super.token,4);
