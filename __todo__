@@ -3,7 +3,7 @@
 [ ] assert call args
 [ ] assert return type
 [ ] multiple return values f():int a,float b;
-[ ] overhaul of string usage
+[x] overhaul of string usage
 [ ] tidy ci_read_expression/ci_read_statement
 [ ] xexpls type deduction
 [ ] pointers/references
