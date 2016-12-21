@@ -20,6 +20,7 @@ typedef struct ci{
 
 inline static void ci_xcode_compile_free_current_scope(toc*tc){
 	const tocscope*ts=dynp_get_last(&tc->scopes);
+//	bool nl=false;
 	for(int i=ts->tocdecls.count-1;i>=0;i--){
 		const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 		if(ci_is_type_builtin(td->type))
@@ -27,12 +28,16 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 		const xtype*t=ci_get_type_by_name(tc,td->type);
 		if(!(t->bits&1)) // needs free
 			continue;
+		toc_print_indent_for_compile(tc);
 		printf("%s_free(&%s);",t->name,td->name);
+//		nl=true;
 	}
-	printf("\n");
+//	if(nl)
+//		printf("\n");
 }
 
 inline static void ci_xcode_compile_free_current_loop_scope(toc*tc,token tk){
+//	bool nl=false;
 	for(int j=tc->scopes.count-1;j>=0;j--){
 		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
 		for(int i=ts->tocdecls.count-1;i>=0;i--){
@@ -42,12 +47,15 @@ inline static void ci_xcode_compile_free_current_loop_scope(toc*tc,token tk){
 			const xtype*t=ci_get_type_by_name(tc,td->type);
 			if(!(t->bits&1)) // needs free
 				continue;
-//			toc_print_indent_for_compile(tc);
+			toc_print_indent_for_compile(tc);
 			printf("%s_free(&%s);\n",t->name,td->name);
+//			nl=true;
 		}
 		if(ts->type=='l') // clear including loop scope
 			break;
 	}
+//	if(nl)
+//		printf("\n");
 }
 
 inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,

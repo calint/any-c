@@ -44,7 +44,7 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 		else
 			printf("\n");
 	}
-	toc_print_indent_for_compile(tc);
+//	toc_print_indent_for_compile(tc);
 	ci_xcode_compile_free_current_scope(tc);
 	toc_pop_scope(tc);
 //	if(xexpr_is_encapsulated(&o->super)){

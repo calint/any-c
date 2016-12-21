@@ -20,17 +20,8 @@ typedef struct entity{
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
 	printf("entity: %d %f\n",o->id,o->f);
-	
 }
 
-inline static void entity__free(entity*o){
-	printf("free entity %d\n",o->id);
-	
-}
-
-inline static void entity_free(entity*o){
-    entity__free(o);
-}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;
 #define global_def (global){}
@@ -42,22 +33,16 @@ inline static void global_main(global*o){
 			e.id=i++;
 			entity_print((entity*)&e);
 			if (i<4) {
-				entity_free(&e);
 				continue;
-				
 			}
 			else {
-				entity_free(&e);
 				break;
-				
 			}
 			entity e2=entity_def;
 			e2.id=i++;
 			entity_print((entity*)&e2);
-			entity_free(&e2);entity_free(&e);
 		}
 
-	
 }
 
 inline static void global_free(global*o){

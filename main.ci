@@ -4,9 +4,6 @@ entity{
 	print{
 		printf("entity: %d %f\n",id,f)
 	}
-	_free{
-		printf("free entity %d\n",id);
-	}
 }
 
 global{

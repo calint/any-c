@@ -7,7 +7,7 @@ typedef struct xcont{
 
 inline static void _xcont_compile_(const xexp*oo,toc*tc){
 	ci_xcode_compile_free_current_loop_scope(tc,oo->token);
-	toc_print_indent_for_compile(tc);
+//	toc_print_indent_for_compile(tc);
 	printf("continue");
 }
 
