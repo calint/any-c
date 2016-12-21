@@ -16,7 +16,8 @@
 [ ] function in function
 [ ] class in class
 [ ] lambdas
-[o] destructors at end of scope
+[x] destructors at end of scope
+[x]    in loops
 [ ] default values on funcargs
 [ ] function overloading
 [ ] operator overloading

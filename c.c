@@ -41,7 +41,12 @@ inline static void global_main(global*o){
 			entity e=entity_def;
 			e.id=i++;
 			entity_print((entity*)&e);
-			if (i>3) {
+			if (i<4) {
+				entity_free(&e);
+				continue;
+				
+			}
+			else {
 				entity_free(&e);
 				break;
 				
