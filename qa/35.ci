@@ -1,0 +1,18 @@
+entity{
+	id=1	
+	p(){
+		p("p entity %d\n",id)
+	}
+}
+
+global{
+	main{
+		entity e1
+		entity&e2=e1
+		e1.p()
+		e2.p()
+		e2.id=2
+		e1.p()
+		e2.p()		
+	}
+}

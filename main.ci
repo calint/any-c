@@ -1,25 +1,9 @@
-entity{
-	id=1
-	
-	p(entity e){
-		p("p entity %d\n",e.id)
-	}
-
-	f(entity&e){
-		p("f entity %d\n",e.id)
-		e.id++
-		p("  entity %d\n",e.id)
-	}
-}
-
 global{
+	print(int a){
+		printf("%d",a);
+	}
 	main{
-		entity e1
-		entity e2
-		e2.id=2
-		e1.p(e1)
-		e2.p(e2)
-		e1.f(e2)
-		e2.p(e2)
+		var a=5
+		print(1+(5+2)/a)
 	}
 }

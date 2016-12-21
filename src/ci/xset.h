@@ -8,17 +8,20 @@ typedef struct xset{
 	xexp super;
 	cstr name;
 	xexpls expls;//? xexpls
+	bool is_set_ref;
 }xset;
 
 inline static void _xset_compile_(const xexp*oo,toc*tc){
 	xset*o=(xset*)oo;
-	ci_xset_compile(tc,o->super.token,o->name,
-					o->expls.super.type);
-					o->expls.super.compile((xexp*)&o->expls,tc);
+	ci_xset_compile(tc,o->super.token,o->name,o->expls.super.type);
+	if(o->is_set_ref)
+		printf("&");
+	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
-#define xset_def (xset){{_xset_compile_,NULL,cstr_def,token_def,0},cstr_def,\
-	xexpls_def}
+#define xset_def (xset){{_xset_compile_,NULL,cstr_def,token_def,0},\
+	cstr_def,xexpls_def,false\
+}
 
 inline static void _xset_init(toc*tc,xset*o,cstr name,token tk){
 	o->super.token=tk;

@@ -788,7 +788,8 @@ inline static int ci_compile_file(cstr path){
 	return 0;
 }
 
-inline static void ci_xset_compile(const toc*tc,token tk,cstr id,cstr type){
+inline static void ci_xset_compile(const toc*tc,token tk,
+						cstr id,cstr type){
 	cstr p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
@@ -802,11 +803,19 @@ inline static void ci_xset_compile(const toc*tc,token tk,cstr id,cstr type){
 		}
 		ci_assert_set(tc,id,type,tk);
 		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
+		sid.count--;//? adhock
+		if(i->is_ref){
+			str_add_list(&sid,"->",2);
+			str_add_string(&sid,p+1);
+		}else{
+			str_add_string(&sid,p);
+		}
+		str_add(&sid,0);
 		if(scopetype){
 			if(scopetype=='c'){// class member
-				printf("o->%s",id);
+				printf("o->%s",sid.data);
 			}else{// local identifier
-				printf("%s",id);
+				printf("%s",sid.data);
 			}
 			printf("=");
 			return;
@@ -850,7 +859,11 @@ inline static void ci_xcall_compile(
 		funcnm_ptr++;                         // func: print
 		cstr target_type=ci_get_type_for_accessor(tc,varnm_ptr,tk);
 		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
-		printf("%s_%s((%s*)&",target_type,funcnm_ptr,target_type);
+		const bool is_arg_ref=toc_is_declaration_ref(tc,varnm_ptr);
+		printf("%s_%s((%s*)",target_type,funcnm_ptr,target_type);
+		if(!is_arg_ref)
+			printf("&");
+
 		if(scope=='c'){
 			printf("o->%s",path_ptr);
 			if(argcount)
@@ -873,11 +886,17 @@ inline static void ci_xcall_compile(
 	}
 	funcnm_ptr=cb;       // func: draw
 	cstr target_type=toc_get_type_in_context(tc,tk);
-	printf("%s_%s((%s*)&o",
+//	const bool is_arg_ref=ci_is_func_arg_ref(tc,tk,funcnm_ptr,0);
+	printf("%s_%s((%s*)",
 		target_type,
 		funcnm_ptr,
 		target_type
 	);
+//	if(is_arg_ref){
+//		printf("&o");
+//	}else{
+		printf("o");
+//	}
 	if(argcount)
 		printf(",");
 }
