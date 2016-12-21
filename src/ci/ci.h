@@ -829,15 +829,11 @@ inline static void ci_xset_compile(const toc*tc,token tk,cstr id,cstr type){
 inline static void ci_xcall_compile(
 		toc*tc,token tk,cstr accessor,unsigned argcount){
 
-	if(!strcmp("printf",accessor)){
-		printf("%s(",accessor);
-		return;
-	}
-	if(!strcmp("p",accessor)){
+	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
 		printf("printf(");
 		return;
 	}
-//
+
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,accessor);
 	const char*path_ptr=cb;

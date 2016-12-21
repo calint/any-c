@@ -1,0 +1,21 @@
+entity{
+	id=1
+	
+	f(entity e){
+		p("entity: %d\n",e.id)
+		e.id=-1
+	}
+}
+
+global{
+	main{
+		entity e1
+		e1.id=1
+		entity e2
+		e2.id=2
+		e1.f(e2)
+		e2.f(e1)
+		e1.p()
+		e2.p()
+	}
+}
