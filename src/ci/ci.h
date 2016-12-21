@@ -737,7 +737,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("    global_main(&g);\n");
 	printf("    global_free(&g);\n");
 	printf("    return 0;\n");
-	printf("}");
+	printf("}\n");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
