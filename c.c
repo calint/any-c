@@ -19,37 +19,44 @@ typedef struct entity{
 #define entity_def (entity){0,2.2f}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-	printf("entity: %d %f\n",o->id,o->f);
+	printf("print entity: %d %f\n",o->id,o->f);
 }
 
+inline static void entity__init(entity*o){
+	o->id=1;
+	printf("init entity %d\n",o->id);
+}
+
+inline static void entity__free(entity*o){
+	printf("free entity %d\n",o->id);
+}
+
+inline static void entity_init(entity*o){
+    entity__init(o);
+}
+inline static void entity_free(entity*o){
+    entity__free(o);
+}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
-typedef struct global{}global;
-#define global_def (global){}
+typedef struct global{
+    entity e;
+}global;
+#define global_def (global){entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	int i=1;
-	while(1){
-			entity e=entity_def;
-			e.id=i++;
-			entity_print((entity*)&e);
-			if (i<4) {
-				continue;
-			}
-			else {
-				break;
-			}
-			entity e2=entity_def;
-			e2.id=i++;
-			entity_print((entity*)&e2);
-		}
-
+	entity_print((entity*)&o->e);
 }
 
+inline static void global_init(global*o){
+    entity_init(&o->e);
+}
 inline static void global_free(global*o){
+    entity_free(&o->e);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;
+    global_init(&g);
     global_main(&g);
     global_free(&g);
     return 0;

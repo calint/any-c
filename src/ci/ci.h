@@ -18,22 +18,23 @@ typedef struct ci{
 }ci;
 #define ci_def {dynp_def}
 
+inline static bool ci_type_needs_init(toc*tc,cstr name){
+	xtype*t=ci_get_type_by_name(tc,name);
+	return (t->bits&4)==4;
+}
+
 inline static void ci_xcode_compile_free_current_scope(toc*tc){
 	const tocscope*ts=dynp_get_last(&tc->scopes);
-//	bool nl=false;
 	for(int i=ts->tocdecls.count-1;i>=0;i--){
 		const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 		if(ci_is_type_builtin(td->type))
 			continue;
 		const xtype*t=ci_get_type_by_name(tc,td->type);
-		if(!(t->bits&1)) // needs free
-			continue;
-		toc_print_indent_for_compile(tc);
-		printf("%s_free(&%s);",t->name,td->name);
-//		nl=true;
+		if(t->bits&1){ // needs free
+			toc_print_indent_for_compile(tc);
+			printf("%s_free(&%s);",t->name,td->name);
+		}
 	}
-//	if(nl)
-//		printf("\n");
 }
 
 inline static void ci_xcode_compile_free_current_loop_scope(toc*tc,token tk){
@@ -708,6 +709,22 @@ inline static void ci_compile_to_c(toc*tc){
 				toc_pop_scope(tc);
 			}
 		}
+		// cascading init
+		if((c->bits&4) || !strcmp(c->name,"global")){// needs call to init
+			printf("inline static void %s_init(%s*o){\n",c->name,c->name);
+			if(c->bits&8) // has _init
+				printf("    %s__init(o);\n",c->name);
+//			bool first=true;
+			for(unsigned i=0;i<c->fields.count;i++){
+				xfield*f=(xfield*)dynp_get(&c->fields,i);
+				if(ci_is_type_builtin(f->type))
+					continue;
+				xtype*cc=ci_get_type_by_name(tc,f->type);
+				if(cc->bits&4)
+					printf("    %s_init(&o->%s);\n",f->type,f->name);
+			}
+			printf("}\n");
+		}
 		// cascading free
 		if((c->bits&1) || !strcmp(c->name,"global")){// needs call to free
 			printf("inline static void %s_free(%s*o){\n",c->name,c->name);
@@ -734,6 +751,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("int main(int c,char**a){\n");
 	printf("    global g=global_def;\n");
+	printf("    global_init(&g);\n");
 	printf("    global_main(&g);\n");
 	printf("    global_free(&g);\n");
 	printf("    return 0;\n");

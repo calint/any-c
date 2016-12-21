@@ -1,0 +1,3 @@
+init entity 1
+print entity: 1 2.200000
+free entity 1

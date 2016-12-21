@@ -1,22 +1,35 @@
-entity{
-	var id=0
-	var f=2.2
-	print{
-		printf("entity: %d %f\n",id,f)
+id{
+	var i=0
+	_free{
+		printf("free id\n");
 	}
 }
 
+entity{
+	id id
+	var f=2.2
+	print{
+		printf("entity: %d %f\n",id.i,f)
+	}
+	
+	_free{
+		printf("free entity: %d\n",id.i)
+	}
+
+}
+
 global{
+	entity e1
+	entity e2
 	main{
-		var i=1
-		loop{
-			entity e
-			e.id=i++
-			e.print()
-			if i<4 continue else break
-			entity e2
-			e2.id=i++
-			e2.print()
-		}
+		e1.id.i=1
+		e1.print()
+		e2.id.i=2
+		e2.print()
+		e1.id.i=3
+		e1.print()
+	}
+	_free{
+		printf("free global\n");
 	}
 }

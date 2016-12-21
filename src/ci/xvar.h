@@ -24,7 +24,13 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 		_xset_compile_((xexp*)&o->initval,tc);
 	}else{
 		printf("%s=%s_def",o->name,o->super.type);
+		if(ci_type_needs_init(tc,o->super.type)){
+			printf(";\n");
+			toc_print_indent_for_compile(tc);
+			printf("%s_init(%s)",o->super.type,o->name);
+		}
 	}
+
 }
 
 #define xvar_def (xvar){{_xvar_compile_,NULL,cstr_def,token_def,0},\

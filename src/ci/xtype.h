@@ -47,7 +47,8 @@ typedef struct xtype{
 	dynp fields;
 	dynp funcs;
 	token token;
-	char bits; // 1: needs call to free   2: has function _free
+	char bits; // 1: needs call to free   2: has _free
+	           // 3: needs call to init   4: has _init
 }xtype;
 
 #define xtype_def (xtype){cstr_def,dynp_def,dynp_def,token_def,0}
@@ -196,20 +197,20 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 		xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
 		if(!strcmp(f->name,"_free")){
 			c->bits|=3; // needs free and has _free
-			break;
+			continue;
 		}
+		if(!strcmp(f->name,"_init"))
+			c->bits|=4+8; // needs init and has _init
 	}
-	if(!(c->bits&1)){// needs free
-		for(unsigned i=0;i<c->fields.count;i++){
-			xfield*f=(xfield*)dynp_get(&c->fields,i);
-			if(ci_is_type_builtin(f->type))
-				continue;
-			xtype*mc=ci_get_type_by_name(tc,f->type);
-			if(mc->bits&1){
-				c->bits|=1; // needs free
-				break;
-			}
-		}
+	for(unsigned i=0;i<c->fields.count;i++){
+		xfield*f=(xfield*)dynp_get(&c->fields,i);
+		if(ci_is_type_builtin(f->type))
+			continue;
+		xtype*mc=ci_get_type_by_name(tc,f->type);
+		if(mc->bits&1) // needs free?
+			c->bits|=1;
+		if(mc->bits&4) // needs init?
+			c->bits|=4;
 	}
 	toc_pop_scope(tc);
 	return c;
