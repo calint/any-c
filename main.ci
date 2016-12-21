@@ -1,17 +1,21 @@
-entity{
-	var id=1
-	print(entity e){
-		printf("entity: %d\n",e.id)
+buffer{}
+material{}
+
+render_range{
+	buffer;
+	int from
+	int to
+	material m
+	
+	draw{
+		printf("render_range\n")
 	}
 }
 
+
 global{
 	main{
-		entity e1
-		e1.id=1
-		entity e2
-		e2.id=2
-		e1.print(e2)
-		e2.print(e1)
+		render_range rr
+		rr.draw()
 	}
 }

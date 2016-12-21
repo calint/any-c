@@ -79,6 +79,7 @@ inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 }
 
 inline static bool ci_is_type_builtin(cstr typenm){
+	if(!strcmp("var",typenm))return true;
 	if(!strcmp("int",typenm))return true;
 	if(!strcmp("str",typenm))return true;
 	if(!strcmp("float",typenm))return true;
@@ -666,7 +667,9 @@ inline static void ci_compile_to_c(toc*tc){
 			toc_add_declaration(tc,f->type,f->name);
 			if(!strcmp(f->type,"var")){
 				if(!f->initval.exps.count){
-					printf("<file> <line:col> expected initializer with auto");
+//					toc_print_source_location(tc,);
+					printf("expected initializer for var '%s'",f->name);
+					printf("\n    %s %d",__FILE__,__LINE__);
 					longjmp(_jmp_buf,1);
 				}
 				f->initval.super.compile((xexp*)&f->initval,tc);

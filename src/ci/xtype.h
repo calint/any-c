@@ -131,14 +131,14 @@ inline static xfunc*xfunc_read_next(toc*tc,token type){
 	return f;
 }
 
-inline static xfield*xfield_read_next(toc*tc,token type,token name){
+inline static xfield*xfield_read_next(toc*tc,cstr type,token name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
-	f->type=token_to_new_cstr(&type);
+	f->type=type;
 	f->name=token_is_empty(&name)?f->type:token_to_new_cstr(&name);
 	toc_add_declaration(tc,f->type,f->name);
 	if(toc_srcp_is_take(tc,'=')){
-		xexpls_parse_next(&f->initval,tc,type);
+		xexpls_parse_next(&f->initval,tc,name);
 		if(strcmp(f->type,"var")){
 				ci_assert_set(tc,
 					f->name,
@@ -165,30 +165,34 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 	}
 	toc_srcp_inc(tc);
 	while(1){
-		token type=toc_next_token(tc);
-		if(token_is_empty(&type)){
+		token t1=toc_next_token(tc);
+		if(token_is_empty(&t1)){
 			if(*tc->srcp!='}'){
-				printf("<file> <line:col> expected '}' to close class body\n");
+				toc_print_source_location(tc,t1,4);
+				printf("expected '}' to close '%s' declared at %d",c->name,0);
+				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
 			tc->srcp++;
 			break;
 		}
 		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-			xfunc*f=xfunc_read_next(tc,type);
+			xfunc*f=xfunc_read_next(tc,t1);
 			dynp_add(&c->funcs,f);
-		}else if(toc_srcp_is(tc,'=') || toc_srcp_is(tc,';')){
-			token name=toc_next_token(tc);
-			xfield*f=xfield_read_next(tc,type,name);
+		}else if(toc_srcp_is(tc,'=')){
+			xfield*f=xfield_read_next(tc,"var",t1);
+			dynp_add(&c->fields,f);
+		}else if(toc_srcp_is(tc,';')){
+			xfield*f=xfield_read_next(tc,token_to_new_cstr(&t1),t1);
 			dynp_add(&c->fields,f);
 		}else{
 			token name=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 				tc->srcp=name.content;
-				xfunc*f=xfunc_read_next(tc,type);
+				xfunc*f=xfunc_read_next(tc,t1);
 				dynp_add(&c->funcs,f);
 			}else{
-				xfield*f=xfield_read_next(tc,type,name);
+				xfield*f=xfield_read_next(tc,token_to_new_cstr(&t1),name);
 				dynp_add(&c->fields,f);
 			}
 		}
