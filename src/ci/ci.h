@@ -712,17 +712,16 @@ inline static void ci_compile_to_c(toc*tc){
 		// cascading init
 		if((c->bits&4) || !strcmp(c->name,"global")){// needs call to init
 			printf("inline static void %s_init(%s*o){\n",c->name,c->name);
-			if(c->bits&8) // has _init
-				printf("    %s__init(o);\n",c->name);
-//			bool first=true;
 			for(unsigned i=0;i<c->fields.count;i++){
 				xfield*f=(xfield*)dynp_get(&c->fields,i);
 				if(ci_is_type_builtin(f->type))
 					continue;
 				xtype*cc=ci_get_type_by_name(tc,f->type);
-				if(cc->bits&4)
+				if(cc->bits&4)// has init
 					printf("    %s_init(&o->%s);\n",f->type,f->name);
 			}
+			if(c->bits&8) // has _init
+				printf("    %s__init(o);\n",c->name);
 			printf("}\n");
 		}
 		// cascading free
@@ -730,19 +729,13 @@ inline static void ci_compile_to_c(toc*tc){
 			printf("inline static void %s_free(%s*o){\n",c->name,c->name);
 			if(c->bits&2) // has _free
 				printf("    %s__free(o);\n",c->name);
-//			bool first=true;
 			for(int i=c->fields.count-1;i>=0;i--){
 				xfield*f=(xfield*)dynp_get(&c->fields,i);
 				if(ci_is_type_builtin(f->type))
 					continue;
 				xtype*cc=ci_get_type_by_name(tc,f->type);
-				if(!(cc->bits&1)) // needs _free?
-					continue;
-//				if(first){
-//					printf("\n");
-//					first=false;
-//				}
-				printf("    %s_free(&o->%s);\n",f->type,f->name);
+				if(cc->bits&1) // needs _free?
+					printf("    %s_free(&o->%s);\n",f->type,f->name);
 			}
 			printf("}\n");
 		}

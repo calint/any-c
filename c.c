@@ -11,31 +11,42 @@ typedef char bool;
 #define char_def 0
 #define int_def 0
 #define float_def 0.0f
+//--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - -  id
+typedef struct id{
+    int i;
+}id;
+#define id_def (id){0}
+//--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
+inline static void id__init(id*o){
+	printf("init id\n");
+	o->i=1;
+}
+
+inline static void id__free(id*o){
+	printf("free id\n");
+}
+
+inline static void id_init(id*o){
+    id__init(o);
+}
+inline static void id_free(id*o){
+    id__free(o);
+}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
-    int id;
-    float f;
+    id id;
 }entity;
-#define entity_def (entity){0,2.2f}
+#define entity_def (entity){id_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-	printf("print entity: %d %f\n",o->id,o->f);
-}
-
-inline static void entity__init(entity*o){
-	o->id=1;
-	printf("init entity %d\n",o->id);
-}
-
-inline static void entity__free(entity*o){
-	printf("free entity %d\n",o->id);
+	printf("entity: %i\n",o->id.i);
 }
 
 inline static void entity_init(entity*o){
-    entity__init(o);
+    id_init(&o->id);
 }
 inline static void entity_free(entity*o){
-    entity__free(o);
+    id_free(&o->id);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{
@@ -43,14 +54,24 @@ typedef struct global{
 }global;
 #define global_def (global){entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
+inline static void global__init(global*o){
+	printf("init global\n");
+}
+
 inline static void global_main(global*o){
 	entity_print((entity*)&o->e);
 }
 
+inline static void global__free(global*o){
+	printf("free global\n");
+}
+
 inline static void global_init(global*o){
     entity_init(&o->e);
+    global__init(o);
 }
 inline static void global_free(global*o){
+    global__free(o);
     entity_free(&o->e);
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
