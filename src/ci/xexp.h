@@ -7,7 +7,7 @@ typedef struct xexp{
 	void (*free)(struct xexp*);
 	cstr type;
 	token token;
-	char bits;
+	char bits; //  1 is encapsulated     2 is block { }
 }xexp;
 
 #define xexp_def (xexp){NULL,NULL,cstr_def,token_def,0}

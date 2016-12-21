@@ -77,6 +77,19 @@ inline static cstr toc_get_type_in_context(const toc*tc,token tk){
 	longjmp(_jmp_buf,1);
 }
 
+inline static tocscope*toc_get_loop_scope_in_context(const toc*tc,token tk){
+	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		if(s->type=='l'){
+			return s;
+		}
+	}
+	toc_print_source_location(tc,tk,4);
+	printf("error: cannot find current loop");
+	printf("\n    %s %d",__FILE__,__LINE__);
+	longjmp(_jmp_buf,1);
+}
+
 inline static void tocscope_free(tocscope*o){
 	for(unsigned i=0;i<o->tocdecls.count;i++){
 		tocdecl*td=dynp_get(&o->tocdecls,i);

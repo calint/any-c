@@ -33,7 +33,6 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 inline static xvar*xvar_read_next(toc*tc,cstr type){
 	xvar*o=malloc(sizeof(xvar));
 	*o=xvar_def;
-
 	o->super.type=type;
 	o->super.token=toc_next_token(tc);
 	o->name=token_to_new_cstr(&o->super.token);

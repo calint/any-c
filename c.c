@@ -11,24 +11,23 @@ typedef char bool;
 #define char_def 0
 #define int_def 0
 #define float_def 0.0f
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - -  id
-typedef struct id{
-    int i;
-}id;
-#define id_def (id){0}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
-    id id;
+    int id;
     float f;
 }entity;
-#define entity_def (entity){id_def,2.2f}
+#define entity_def (entity){0,2.2f}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-	printf("entity: %d %f\n",o->id.i,o->f);
+	printf("entity: %d %f\n",o->id,o->f);
+	
 }
+
 inline static void entity__free(entity*o){
-	printf("free entity %d\n",o->id.i);
+	printf("free entity %d\n",o->id);
+	
 }
+
 inline static void entity_free(entity*o){
     entity__free(o);
 }
@@ -37,17 +36,25 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	entity e1=entity_def;
-	entity e2=entity_def;
-	e1.id.i=1;
-	entity_print((entity*)&e1);
-	e2.id.i=2;
-	entity_print((entity*)&e2);
-	e1.id.i=3;
-	entity_print((entity*)&e1);
-	entity_free(&e2);
-	entity_free(&e1);
+	int i=1;
+	while(1){
+			entity e=entity_def;
+			e.id=i++;
+			entity_print((entity*)&e);
+			if (i>3) {
+				entity_free(&e);
+				break;
+				
+			}
+			entity e2=entity_def;
+			e2.id=i++;
+			entity_print((entity*)&e2);
+			entity_free(&e2);entity_free(&e);
+		}
+
+	
 }
+
 inline static void global_free(global*o){
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -

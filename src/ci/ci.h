@@ -27,9 +27,46 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 		const xtype*t=ci_get_type_by_name(tc,td->type);
 		if(!(t->bits&1)) // needs free
 			continue;
-		toc_print_indent_for_compile(tc);
-		printf("%s_free(&%s);\n",t->name,td->name);
+		printf("%s_free(&%s);",t->name,td->name);
 	}
+	printf("\n");
+}
+
+inline static void ci_xcode_compile_free_current_loop_scope(toc*tc,token tk){
+	for(int j=tc->scopes.count-1;j>=0;j--){
+		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
+		for(int i=ts->tocdecls.count-1;i>=0;i--){
+			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
+			if(ci_is_type_builtin(td->type))
+				continue;
+			const xtype*t=ci_get_type_by_name(tc,td->type);
+			if(!(t->bits&1)) // needs free
+				continue;
+//			toc_print_indent_for_compile(tc);
+			printf("%s_free(&%s);\n",t->name,td->name);
+		}
+		if(ts->type=='l') // clear including loop scope
+			break;
+	}
+}
+
+inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
+		token tk){
+	for(int j=tc->scopes.count-1;j>=0;j--){
+		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
+		for(int i=ts->tocdecls.count-1;i>=0;i--){
+			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
+			if(ci_is_type_builtin(td->type))
+				continue;
+			const xtype*t=ci_get_type_by_name(tc,td->type);
+			if(!(t->bits&1)) // needs free?
+				continue;
+			return true;
+		}
+		if(ts->type=='l') // clear including loop scope
+			return false;
+	}
+	return false;
 }
 
 inline static bool ci_is_type_builtin(cstr typenm){
@@ -296,13 +333,13 @@ inline static xexp*ci_read_next_statement(toc*tc){
 
 	// keywords
 	if(token_equals(&tk,"loop")){
-		xloop*e=xloop_read_next(tc);
+		xloop*e=xloop_read_next(tc,tk);
 		e->super.token=tk;
 		return (xexp*)e;
 	}
 
 	if(token_equals(&tk,"break")){
-		xbreak*e=xbreak_read_next(tc);
+		xbreak*e=xbreak_read_next(tc,tk);
 		e->super.token=tk;
 		return (xexp*)e;
 	}

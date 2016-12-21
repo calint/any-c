@@ -27,12 +27,12 @@ inline static void _xcode_free_(xexp*oo){
 inline static void _xcode_compile_(const xexp*oo,toc*tc){
 	xcode*o=(xcode*)oo;
 	toc_push_scope(tc,'b',"");
-	if(o->super.bits&1){
-		printf("{");
-	}
-	if(o->exps.count)
-		printf("\n");
-
+//	if(o->super.bits&1){
+//		printf("{");
+//	}
+//	if(o->exps.count)
+//		printf("\n");
+	printf("{\n");
 	for(unsigned i=0;i<o->exps.count;i++){
 		xexp*e=dynp_get(&o->exps,i);
 		toc_print_indent_for_compile(tc);
@@ -44,15 +44,17 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 		else
 			printf("\n");
 	}
+	toc_print_indent_for_compile(tc);
 	ci_xcode_compile_free_current_scope(tc);
 	toc_pop_scope(tc);
-	if(xexpr_is_encapsulated(&o->super)){
-		toc_print_indent_for_compile(tc);
-		printf("}");
-	}
-	if(!o->exps.count)// typedef struct empty {}
-		printf("\n");
-
+//	if(xexpr_is_encapsulated(&o->super)){
+//		toc_print_indent_for_compile(tc);
+//		printf("}");
+//	}
+//	if(!o->exps.count)// typedef struct empty {}
+//		printf("\n");
+	toc_print_indent_for_compile(tc);
+	printf("}\n");
 }
 
 inline static void xcode_read_next(xcode*o,toc*tc){
