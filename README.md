@@ -57,7 +57,6 @@ typedef struct entity{
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
 	printf("entity: %d %f\n",o->i,o->f);
-	
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -72,18 +71,21 @@ inline static void global_main(global*o){
 	entity_print((entity*)&o->e2);
 	o->e1.i=2;
 	entity_print((entity*)&o->e1);
-	
 }
 
+inline static void global_init(global*o){
+}
 inline static void global_free(global*o){
 }
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;
+    global_init(&g);
     global_main(&g);
     global_free(&g);
     return 0;
-}//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
+}
+//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 ```
 
 
@@ -98,8 +100,8 @@ entity: 2 2.200000
 source size
 ```
 cat src/ci/* | wc
-   2234    3582   51156
+   2260    3648   52090
 cat src/ci/* | gzip | wc
-     29     203    9988
+     37     212   10158
 ```
 
