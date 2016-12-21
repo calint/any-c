@@ -160,6 +160,7 @@ inline static const tocdecl*toc_get_declaration(const toc*o,cstr name){
 		str_add_list(&s,name,p-name);
 		str_add(&s,0);
 		variable_name=s.data;
+		dynp_add(&_token_to_new_cstr_,s.data);//? adhock
 	}else{
 		variable_name=name;
 	}

@@ -20,6 +20,7 @@ inline static void _xident_compile_(const xexp*oo,toc*tc){
 		str s=str_def;
 		str_add_list(&s,o->name,p-o->name);
 		str_add(&s,0);
+		dynp_add(&_token_to_new_cstr_,s.data);// adhock
 
 		const char idtype=toc_get_declaration_scope_type(tc,s.data);
 		if(idtype){

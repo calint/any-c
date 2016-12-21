@@ -8,10 +8,10 @@ WARNINGS='-Wall -Wextra -Wfatal-errors -Wno-unused-parameter -Wno-discarded-qual
 
 LIBS=
 
-#OPTIMIZATION='-O0 -g'
+OPTIMIZATION='-O0 -g'
 #OPTIMIZATION=-Os
 #OPTIMIZATION=-O3
-OPTIMIZATION=-Ofast
+#OPTIMIZATION=-Ofast
 
 #REMARKS=-Rpass=inline
 REMARKS=

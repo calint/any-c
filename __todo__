@@ -46,3 +46,4 @@
 [ ]   free
 [ ]   foo
 [ ]   fow
+[ ] qa valgrind for leaks at test-and-commit

@@ -1,0 +1,7 @@
+init id
+init entity
+init global
+entity: 1
+free global
+free entity
+free id
