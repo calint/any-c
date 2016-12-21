@@ -6,6 +6,7 @@ typedef struct xvar{
 	xexp super;
 	cstr name;
 	xset initval;
+	bool is_ref;
 }xvar;
 
 inline static void _xvar_compile_(const xexp*oo,toc*tc){
@@ -18,8 +19,12 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 		return;
 	}
 
-	printf("%s ",o->super.type);
-	toc_add_declaration(tc,o->super.type,o->name);
+	printf("%s",o->super.type);
+	if(o->is_ref)
+		printf("*");
+	else
+		printf(" ");
+	toc_add_declaration(tc,o->super.type,o->is_ref,o->name);
 	if(o->initval.super.compile){
 		_xset_compile_((xexp*)&o->initval,tc);
 	}else{
@@ -34,12 +39,14 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 }
 
 #define xvar_def (xvar){{_xvar_compile_,NULL,cstr_def,token_def,0},\
-						cstr_def,xset_def}
+						cstr_def,xset_def,false}
 
 inline static xvar*xvar_read_next(toc*tc,cstr type){
 	xvar*o=malloc(sizeof(xvar));
 	*o=xvar_def;
 	o->super.type=type;
+	if(toc_srcp_is_take(tc,'&'))
+		o->is_ref=true;
 	o->super.token=toc_next_token(tc);
 	o->name=token_to_new_cstr(&o->super.token);
 
@@ -49,7 +56,7 @@ inline static xvar*xvar_read_next(toc*tc,cstr type){
 		longjmp(_jmp_buf,1);
 	}
 
-	toc_add_declaration(tc,o->super.type,o->name);
+	toc_add_declaration(tc,o->super.type,o->is_ref,o->name);
 	bool is_var=!strcmp(o->super.type,"var");
 	if(toc_srcp_is_take(tc,'=')){
 		xset_parse_next(&o->initval,tc,o->name,o->super.token);

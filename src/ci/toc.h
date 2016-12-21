@@ -24,11 +24,13 @@ typedef struct tocscope{
 #define ci_toc_scope_def (tocscope){0,NULL,dynp_def}
 
 typedef struct tocdecl{
+	token token;
 	cstr type;
 	cstr name;
+	bool is_ref;
 }tocdecl;
 
-#define toctn_def (tocdecl){cstr_def,cstr_def}
+#define toctn_def (tocdecl){token_def,cstr_def,cstr_def,false}
 
 
 typedef struct tocloc{
@@ -128,11 +130,12 @@ inline static void toc_print(const toc*o){
 	}
 }
 
-inline static void toc_add_declaration(toc*o,cstr type,cstr name){
+inline static void toc_add_declaration(toc*o,cstr type,bool is_ref,cstr name){
 	tocdecl*id=(tocdecl*)malloc(sizeof(tocdecl));
 	*id=toctn_def;
 	id->type=type;
 	id->name=name;
+	id->is_ref=is_ref;
 	tocscope*s=dynp_get_last(&o->scopes);
 	dynp_add(&s->tocdecls,id);
 //	ci_toc_print(o);
@@ -148,6 +151,26 @@ inline static char toc_get_declaration_scope_type(const toc*oo,cstr name){
 				return s->type;
 		}
 	}
+//	toc_print_source_location(oo,tk,4);
+//	printf("\ncompiler error: declaration '%s' not found in scope",name);
+//	printf("\n    %s %d",__FILE__,__LINE__);
+//	longjmp(_jmp_buf,1);
+	return 0;
+}
+
+inline static bool toc_is_declaration_ref(const toc*oo,cstr name){
+	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
+		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
+		for(unsigned i=0;i<s->tocdecls.count;i++){
+			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
+			if(!strcmp(id->name,name))
+				return id->is_ref;
+		}
+	}
+//	toc_print_source_location(oo,tk,4);
+//	printf("\ncompiler error: declaration '%s' not found in scope",name);
+//	printf("\n    %s %d",__FILE__,__LINE__);
+//	longjmp(_jmp_buf,1);
 	return 0;
 }
 

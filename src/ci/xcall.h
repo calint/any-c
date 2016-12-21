@@ -1,7 +1,6 @@
 #pragma once
 #include"xexpls.h"
 #include"decouple.h"
-//inline static void ci_xcall_compile(toc*,token,cstr,unsigned);
 
 typedef struct xcall{
 	xexp super;
@@ -25,6 +24,9 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	ci_xcall_compile(tc,o->super.token,o->name,o->args.count);
 	for(unsigned i=0;i<o->args.count;i++){
 		xexp*e=(xexp*)dynp_get(&o->args,i);
+		const bool fargisref=ci_is_func_arg_ref(tc,e->token,o->name,i);
+		if(fargisref)
+			printf("&");
 		e->compile(e,tc);
 		if(i!=o->args.count-1){
 			printf(",");

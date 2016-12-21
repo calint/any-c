@@ -9,9 +9,10 @@ typedef struct xfield{
 	cstr name;
 	xexpls initval;
 	token token;
+	bool is_ref;
 }xfield;
 
-#define xfield_def (xfield){cstr_def,cstr_def,xexpls_def,token_def}
+#define xfield_def (xfield){cstr_def,cstr_def,xexpls_def,token_def,false}
 
 inline static void xfield_free(xfield*o){
 	_xexpls_free_((xexp*)&o->initval);
@@ -21,9 +22,10 @@ typedef struct xfuncarg{
 	cstr type;
 	cstr name;
 	token token;
+	bool is_ref;
 }xfuncarg;
 
-#define xfuncarg_def (xfuncarg){cstr_def,cstr_def,token_def}
+#define xfuncarg_def (xfuncarg){cstr_def,cstr_def,token_def,false}
 
 typedef struct xfunc{
 	cstr type;
@@ -106,23 +108,28 @@ inline static xfunc*xfunc_read_next(toc*tc,token type){
 //		tc->srcp++;
 	}
 	toc_push_scope(tc,'f',f->name);
+	token last_arg_tkn=token_def;
 	while(1){
 		token tkt=toc_next_token(tc);
+		last_arg_tkn=tkt;
 		if(token_is_empty(&tkt))
 			break;
 		xfuncarg*fa=malloc(sizeof(xfuncarg));
 		dynp_add(&f->funcargs,fa);
 		*fa=xfuncarg_def;
+		if(toc_srcp_is_take(tc,'&'))
+			fa->is_ref=true;
 		token tkn=toc_next_token(tc);
 		fa->type=token_to_new_cstr(&tkt);
 		fa->name=token_to_new_cstr(&tkn);
-		toc_add_declaration(tc,fa->type,fa->name);
+		toc_add_declaration(tc,fa->type,fa->is_ref,fa->name);
 		toc_srcp_is_take(tc,',');
 	}
 	if(enclosed_args){
 		if(!toc_srcp_is_take(tc,')')){
-			//? errormsg
-			printf("<file> <line:col> expected ')' after arguments\n");
+			toc_print_source_location(tc,last_arg_tkn,4);
+			printf("expected ')' after arguments");
+			printf("\n    %s %d",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 	}
@@ -135,8 +142,11 @@ inline static xfield*xfield_read_next(toc*tc,cstr type,token name){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
 	f->type=type;
+	if(toc_srcp_is_take(tc,'&'))
+		f->is_ref=true;
+
 	f->name=token_is_empty(&name)?f->type:token_to_new_cstr(&name);
-	toc_add_declaration(tc,f->type,f->name);
+	toc_add_declaration(tc,f->type,f->is_ref,f->name);
 	if(toc_srcp_is_take(tc,'=')){
 		xexpls_parse_next(&f->initval,tc,name);
 		if(strcmp(f->type,"var")){

@@ -664,7 +664,7 @@ inline static void ci_compile_to_c(toc*tc){
 		if(c->fields.count)printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
 			xfield*f=(xfield*)dynp_get(&c->fields,i);
-			toc_add_declaration(tc,f->type,f->name);
+			toc_add_declaration(tc,f->type,f->is_ref,f->name);
 			if(!strcmp(f->type,"var")){
 				if(!f->initval.exps.count){
 //					toc_print_source_location(tc,);
@@ -703,8 +703,13 @@ inline static void ci_compile_to_c(toc*tc){
 				for(unsigned j=0;j<f->funcargs.count;j++){
 					xfuncarg*a=(xfuncarg*)dynp_get(&f->funcargs,j);
 					printf(",");
-					printf("%s %s",a->type,a->name);
-					toc_add_declaration(tc,a->type,a->name);
+					printf("%s",a->type);
+					if(a->is_ref)
+						printf("*");
+					else
+						printf(" ");
+					printf("%s",a->name);
+					toc_add_declaration(tc,a->type,a->is_ref,a->name);
 				}
 				printf(")");
 				f->code.super.compile((xexp*)&f->code,tc);
@@ -877,5 +882,37 @@ inline static void ci_xcall_compile(
 		printf(",");
 }
 
+inline static bool ci_is_func_arg_ref(
+		toc*tc,token tk,cstr accessor,unsigned arg_index){
+
+	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
+		return false;
+	}
+
+	char cb[ci_identifier_maxlen];
+	strcpy(cb,accessor);
+//	const char*path_ptr=cb;
+	const char*varnm_ptr=cb;
+	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
+	if(funcnm_ptr){                           //
+		cb[funcnm_ptr-cb]=0;
+		funcnm_ptr++;                         // func: print
+		cstr vartypestr=ci_get_type_for_accessor(tc,varnm_ptr,tk);
+		const xtype*tp=ci_get_type_by_name(tc,vartypestr);
+		const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
+		const xfuncarg*fna=(xfuncarg*)dynp_get(&fn->funcargs,arg_index);
+		return fna->is_ref;
+	}
+	return false;
+//	funcnm_ptr=cb;       // func: draw
+//	cstr target_type=toc_get_type_in_context(tc,tk);
+//	printf("%s_%s((%s*)&o",
+//		target_type,
+//		funcnm_ptr,
+//		target_type
+//	);
+//	if(argcount)
+//		printf(",");
+}
 
 
