@@ -88,7 +88,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
-			isref=fn->return_is_ref;
+			isref=fn->is_ref;
 			tp=ci_get_type_for_name_try(tc,fn->type);
 			if(tp)
 				tpnm=tp->name;
@@ -216,7 +216,7 @@ inline static void ci_xcall_assert(const toc*tc,xcall*o){
 	if(ci_is_builtin_func(o->name))
 		return;
 	xfunc*fn=ci_get_func_for_accessor(tc,o->name,o->super.token);
-	o->super.is_ref=fn->return_is_ref;
+	o->super.is_ref=fn->is_ref;
 	o->super.type=fn->type;
 	if(o->args.count!=fn->params.count){
 		printf("function '%s' requires %d arguments, got %d'",
@@ -240,7 +240,7 @@ inline static void ci_xcall_assert(const toc*tc,xcall*o){
 
 inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	xfunc*fn=toc_get_func_in_context(tc,o->super.token);
-	o->super.is_ref=fn->return_is_ref;
+	o->super.is_ref=fn->is_ref;
 	if(!strcmp(fn->type,o->expls.super.type))
 			return;
 	printf("return type '%s' does not match function return type '%s'",
@@ -756,7 +756,7 @@ inline static void ci_compile_to_c(toc*tc){
 				xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
 				toc_push_scope(tc,'f',f->name);
 				printf("inline static %s",f->type);
-				if(f->return_is_ref)
+				if(f->is_ref)
 					printf("*");
 				else
 					printf(" ");
@@ -765,12 +765,12 @@ inline static void ci_compile_to_c(toc*tc){
 					xfuncparam*a=(xfuncparam*)dynp_get(&f->params,j);
 					printf(",");
 					printf("%s",a->type);
-					if(a->func_arg_is_ref)
+					if(a->is_ref)
 						printf("*");
 					else
 						printf(" ");
 					printf("%s",a->name);
-					toc_add_declaration(tc,a->type,a->func_arg_is_ref,a->name);
+					toc_add_declaration(tc,a->type,a->is_ref,a->name);
 				}
 				printf(")");
 				f->code.super.compile((xexp*)&f->code,tc);
@@ -984,7 +984,7 @@ inline static bool ci_is_func_param_ref(
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
 		const xfuncparam*fna=dynp_get(&fn->params,param_index);
-		return fna->func_arg_is_ref;
+		return fna->is_ref;
 	}
 	return false;
 }

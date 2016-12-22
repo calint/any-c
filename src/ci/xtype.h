@@ -1,8 +1,6 @@
 #pragma once
 #include"xcode.h"
 
-//struct xtype;
-
 typedef struct xfield{
 	cstr type;
 	cstr name;
@@ -21,7 +19,7 @@ typedef struct xfuncparam{
 	cstr type;
 	cstr name;
 	token token;
-	bool func_arg_is_ref;
+	bool is_ref;
 }xfuncparam;
 
 #define xfuncparam_def (xfuncparam){cstr_def,cstr_def,token_def,false}
@@ -32,7 +30,7 @@ typedef struct xfunc{
 	dynp params;
 	xcode code;
 	token token;
-	bool return_is_ref;
+	bool is_ref;
 }xfunc;
 
 #define xfunc_def (xfunc){\
@@ -95,7 +93,7 @@ inline static xfunc*xtype_get_func_for_name(const xtype*o,cstr field_name){
 inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
-	f->return_is_ref=is_ref;
+	f->is_ref=is_ref;
 	bool enclosed_args=false;
 	if(toc_srcp_is(tc,'{') || toc_srcp_is(tc,'(')){
 		f->type="void";
@@ -118,11 +116,11 @@ inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
 		dynp_add(&f->params,fp);
 		*fp=xfuncparam_def;
 		if(toc_srcp_is_take(tc,'&'))
-			fp->func_arg_is_ref=true;
+			fp->is_ref=true;
 		token tkn=toc_next_token(tc);
 		fp->type=token_to_new_cstr(&tkt);
 		fp->name=token_to_new_cstr(&tkn);
-		toc_add_declaration(tc,fp->type,fp->func_arg_is_ref,fp->name);
+		toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
 		toc_srcp_is_take(tc,',');
 	}
 	if(enclosed_args){
