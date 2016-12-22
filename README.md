@@ -48,6 +48,7 @@ typedef char bool;
 #define char_def 0
 #define int_def 0
 #define float_def 0.0f
+#define null 0
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
     int i;
@@ -100,8 +101,8 @@ entity: 2 2.200000
 source size
 ```
 cat src/ci/* | wc
-   2260    3648   52090
+   2733    4482   64467
 cat src/ci/* | gzip | wc
-     37     212   10158
+     42     254   12281
 ```
 

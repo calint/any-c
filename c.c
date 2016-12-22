@@ -14,29 +14,27 @@ typedef char bool;
 #define null 0
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
-    int id;
+    int i;
+    float f;
 }entity;
-#define entity_def (entity){0}
+#define entity_def (entity){1,2.2f}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-	printf("entity %d\n",o->id);
+	printf("entity: %d %f\n",o->i,o->f);
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
-typedef struct global{}global;
-#define global_def (global){}
+typedef struct global{
+    entity e1;
+    entity e2;
+}global;
+#define global_def (global){entity_def,entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	int i=0;
-	while(1){
-		if (i++==3) {
-			break;
-		}
-		entity e=entity_def;
-		e.id=i;
-		entity_print((entity*)&e);
-	}
-
+	entity_print((entity*)&o->e1);
+	entity_print((entity*)&o->e2);
+	o->e1.i=2;
+	entity_print((entity*)&o->e1);
 }
 
 inline static void global_init(global*o){
