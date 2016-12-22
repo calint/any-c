@@ -29,7 +29,7 @@ typedef struct xfuncparam{
 typedef struct xfunc{
 	cstr type;
 	cstr name;
-	dynp funcargs;
+	dynp funcparams;
 	xcode code;
 	token token;
 	bool return_is_ref;
@@ -39,7 +39,7 @@ typedef struct xfunc{
 	cstr_def,cstr_def,dynp_def,xcode_def,token_def,false}
 
 inline static void xfunc_free(xfunc*o){
-	dynp_free(&o->funcargs);
+	dynp_free(&o->funcparams);
 	_xcode_free_((xexp*)&o->code);
 }
 
@@ -115,7 +115,7 @@ inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
 		if(token_is_empty(&tkt))
 			break;
 		xfuncparam*fp=malloc(sizeof(xfuncparam));
-		dynp_add(&f->funcargs,fp);
+		dynp_add(&f->funcparams,fp);
 		*fp=xfuncparam_def;
 		if(toc_srcp_is_take(tc,'&'))
 			fp->func_arg_is_ref=true;

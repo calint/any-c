@@ -218,9 +218,9 @@ inline static void ci_xcall_assert(const toc*tc,xcall*o){
 	xfunc*fn=ci_get_func_for_accessor(tc,o->name,o->super.token);
 	o->super.is_ref=fn->return_is_ref;
 	o->super.type=fn->type;
-	if(o->args.count!=fn->funcargs.count){
+	if(o->args.count!=fn->funcparams.count){
 		printf("function '%s' requires %d arguments, got %d'",
-				fn->name,fn->funcargs.count,
+				fn->name,fn->funcparams.count,
 				o->args.count
 		);
 		printf("\n    %s %d",__FILE__,__LINE__);
@@ -761,8 +761,8 @@ inline static void ci_compile_to_c(toc*tc){
 				else
 					printf(" ");
 				printf("%s_%s(%s*o",c->name,f->name,c->name);
-				for(unsigned j=0;j<f->funcargs.count;j++){
-					xfuncparam*a=(xfuncparam*)dynp_get(&f->funcargs,j);
+				for(unsigned j=0;j<f->funcparams.count;j++){
+					xfuncparam*a=(xfuncparam*)dynp_get(&f->funcparams,j);
 					printf(",");
 					printf("%s",a->type);
 					if(a->func_arg_is_ref)
@@ -983,7 +983,7 @@ inline static bool ci_is_func_param_ref(
 		cstr vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
-		const xfuncparam*fna=dynp_get(&fn->funcargs,param_index);
+		const xfuncparam*fna=dynp_get(&fn->funcparams,param_index);
 		return fna->func_arg_is_ref;
 	}
 	return false;
