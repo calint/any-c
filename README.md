@@ -11,6 +11,16 @@ simple c++ like language that compiles to c
 ```
 
 
+source size
+```
+cat src/ci/* | wc
+   2500    4074   58911
+cat src/ci/* | gzip | wc
+     44     247   11741
+```
+
+
+
 sample source
 ```
 entity{
@@ -97,13 +107,3 @@ p entity 1
 p entity 2
 p entity 2
 ```
-
-
-source size
-```
-cat src/ci/* | wc
-   2500    4074   58911
-cat src/ci/* | gzip | wc
-     44     247   11741
-```
-
