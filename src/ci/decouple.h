@@ -9,7 +9,7 @@ inline static void ci_xcall_compile(toc*,token,cstr,unsigned);
 inline static void ci_xset_compile(const toc*,token,cstr,cstr);
 inline static void ci_xcode_compile_free_current_scope();
 inline static void ci_xcode_compile_free_current_loop_scope(toc*,token);
-inline static bool ci_type_needs_init(toc*,cstr);
+inline static bool ci_xvar_needs_init(toc*,cstr);
 
 inline static bool ci_is_func_arg_ref(toc*,token,cstr,unsigned);
 

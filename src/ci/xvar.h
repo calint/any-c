@@ -29,7 +29,7 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 		_xset_compile_((xexp*)&o->initval,tc);
 	}else{
 		printf("%s=%s_def",o->name,o->super.type);
-		if(ci_type_needs_init(tc,o->super.type)){
+		if(ci_xvar_needs_init(tc,o->super.type)){
 			printf(";\n");
 			toc_print_indent_for_compile(tc);
 			printf("%s_init(%s)",o->super.type,o->name);
