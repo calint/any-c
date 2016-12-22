@@ -72,7 +72,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 		else
 			str_add_string(&s,accessor);
 		str_add(&s,0);
-		xfield*fld=xtype_get_field_by_name(tp,s.data);
+		xfield*fld=xtype_get_field_for_name(tp,s.data);
 		if(fld){
 			isref=fld->is_ref;
 			tp=ci_get_type_for_name_try(tc,fld->type);
@@ -185,7 +185,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
-			const xfield*fld=xtype_get_field_by_name(cur_type,lookup);
+			const xfield*fld=xtype_get_field_for_name(cur_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
@@ -339,7 +339,7 @@ inline static cstr ci_get_field_type_for_accessor(const toc*tc,
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
-			const xfield*fld=xtype_get_field_by_name(current_type,lookup);
+			const xfield*fld=xtype_get_field_for_name(current_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
@@ -393,7 +393,7 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
-			const xfield*fld=xtype_get_field_by_name(current_type,lookup);
+			const xfield*fld=xtype_get_field_for_name(current_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",

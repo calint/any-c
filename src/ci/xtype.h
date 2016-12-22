@@ -74,7 +74,7 @@ inline static void xtype_free(xtype*o){
 	dynp_free(&o->funcs);
 }
 
-inline static xfield*xtype_get_field_by_name(const xtype*o,cstr field_name){
+inline static xfield*xtype_get_field_for_name(const xtype*o,cstr field_name){
 	for(unsigned i=0;i<o->fields.count;i++){
 		xfield*f=dynp_get(&o->fields,i);
 		if(!strcmp(f->name,field_name))
