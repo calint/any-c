@@ -19,7 +19,7 @@ typedef struct entity{
 #define entity_def (entity){1}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-    printf("p entity %d\n",o->id);
+    printf("entity %d\n",o->id);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;

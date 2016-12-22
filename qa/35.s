@@ -1,7 +1,7 @@
 	.file	"35.c"
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"p entity %d\n"
+	.string	"entity %d\n"
 	.section	.text.unlikely,"ax",@progbits
 .LCOLDB1:
 	.section	.text.startup,"ax",@progbits

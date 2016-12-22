@@ -27,7 +27,7 @@ sample source
 entity{
 	id=1	
 	print{
-		p("p entity %d\n",id)
+		p("entity %d\n",id)
 	}
 }
 
@@ -68,7 +68,7 @@ typedef struct entity{
 #define entity_def (entity){1}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-    printf("p entity %d\n",o->id);
+    printf("entity %d\n",o->id);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;
@@ -99,8 +99,8 @@ int main(int c,char**a){
 
 outputs
 ```
-p entity 1
-p entity 1
-p entity 2
-p entity 2
+entity 1
+entity 1
+entity 2
+entity 2
 ```
