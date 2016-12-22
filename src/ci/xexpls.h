@@ -76,6 +76,7 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 		else if(toc_srcp_is_take(tc,'%')){strb_add(&o->ops,'%');}
 		else if(toc_srcp_is_take(tc,'|')){strb_add(&o->ops,'|');}
 		else if(toc_srcp_is_take(tc,'&')){strb_add(&o->ops,'&');}
+		else if(toc_srcp_is_take(tc,'^')){strb_add(&o->ops,'^');}
 		else{
 			break;
 		}
