@@ -10,6 +10,20 @@
 [x] pointers/references
 [o] overhaul/tidy of pointers/references impl
 [ ] no arithmetics on references
+[ ]    pragma norefarth / refarth
+[ ] lib
+[ ]    ptrs
+[ ]       template
+[ ]          one type
+[ ]          several
+[ ]    strb
+[ ]    strc
+[ ]    vec2
+[ ]    vec3
+[ ]    vec4
+[ ]    mat2
+[ ]    mat3
+[ ]    mat4
 [ ] compile containers
 [ ] compile templates
 [ ] assert member type exists
@@ -25,9 +39,13 @@
 [ ] default values on funcargs
 [ ] function overloading
 [ ] operator overloading
-[ ] virtual functions-S
+[ ] virtual functions
 [ ] packages
-[ ] class and member visibility public,package
+[ ] class and member visibility
+[ ]    public
+[ ]    package
+[ ]    protected
+[ ]    private
 [o] const correctness
 [ ]    unconsted/mutable members during a const op
 [ ] threads
@@ -37,13 +55,13 @@
 [ ] taskpools
 [ ] reflection, text based, offset addresses, fields, functions
 [o] compilation of default print / read for types
-[ ]     1. table column span      | apple | red |  name,attribute
-[ ]     2. text in list      ex: apple, orange etc
-[ ]     3. text in summary    ex: red apple
-[ ]     4. full text in dump
-[ ]     5. full text standalone dump
-[ ]     6. binary
-[ ]     7. rebind references after read
+[ ]    1. table column span      | apple | red |  name,attribute
+[ ]    2. text in list      ex: apple, orange etc
+[ ]    3. text in summary    ex: red apple
+[ ]    4. full text in dump
+[ ]    5. full text standalone dump
+[ ]    6. binary
+[ ]    7. rebind references after read
 [o] containers
 [ ]   alloc
 [ ]   free
@@ -59,8 +77,17 @@
 [ ]    rename variable
 [ ] inline
 [ ]    ansi c
-
-
+[ ] define builtin functions
+[ ] define builtin types
+[ ] define posix subset
+[ ]    printf
+[ ]    fprintf
+[ ]    malloc
+[ ]    free
+[ ] define opengl subset
+[ ]    init functions
+[ ]    looped functions
+[ ]    free functions
 
 
 
