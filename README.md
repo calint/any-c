@@ -13,43 +13,22 @@ simple c++ like language that compiles to c
 
 sample source
 ```
-material{
-	id=3
-	print{
-		printf("material %d\n",id);
-	}
-}
-
-materials{
-	material m1
-	material m2
-}
-
 entity{
 	id=0
-	material&mref;
 	print{
-		printf("entity %d\n",id);
-	}
-}
-
-entities{
-	entity e1
-	entity e2
-	entity&get(cstr nm){
-		return e1
+		p("entity %d\n",id)
 	}
 }
 
 global{
-	entities entities;
-	materials materials;
 	main{
-		entity&e=entities.get("a")
-		e.mref=materials.m1
-		e.mref.print()
-		materials.m1.id=4
-		e.mref.print()
+		var i=0
+		loop{
+			if i++==3 break
+			entity e
+			e.id=i
+			e.print()
+		}
 	}
 }
 ```
@@ -71,57 +50,31 @@ typedef char bool;
 #define int_def 0
 #define float_def 0.0f
 #define null 0
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - - - material
-typedef struct material{
-    int id;
-}material;
-#define material_def (material){3}
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static void material_print(material*o){
-    printf("material %d\n",o->id);
-}
-
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - -  materials
-typedef struct materials{
-    material m1;
-    material m2;
-}materials;
-#define materials_def (materials){material_def,material_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
     int id;
-    material*mref;
 }entity;
-#define entity_def (entity){0,null}
+#define entity_def (entity){0}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
     printf("entity %d\n",o->id);
 }
 
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - - - entities
-typedef struct entities{
-    entity e1;
-    entity e2;
-}entities;
-#define entities_def (entities){entity_def,entity_def}
-//--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static entity*entities_get(entities*o,cstr nm){
-    return &o->e1;
-}
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
-typedef struct global{
-    entities entities;
-    materials materials;
-}global;
-#define global_def (global){entities_def,materials_def}
+typedef struct global{}global;
+#define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-    entity*e=entities_get((entities*)&o->entities,"a");
-    e->mref=&o->materials.m1;
-    material_print((material*)e->mref);
-    o->materials.m1.id=4;
-    material_print((material*)e->mref);
+    int i=0;
+    while(1){
+        if (i++==3) {
+            break;
+        }
+        entity e=entity_def;
+        e.id=i;
+        entity_print((entity*)&e);
+    }
+
 }
 
 inline static void global_init(global*o){
@@ -142,8 +95,9 @@ int main(int c,char**a){
 
 outputs
 ```
-material 3
-material 4
+entity 1
+entity 2
+entity 3
 ```
 
 
