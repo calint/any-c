@@ -678,11 +678,12 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	xexp*ce=ci_read_next_constant_try(tc,tk);
 	if(ce)
 		return ce;
+
 	// built in types
 	cstr name=token_to_new_cstr(&tk);
 
 	// function call
-	if(*tc->srcp=='('){
+	if(toc_srcp_is(tc,'(')){
 		xcall*e=xcall_read_next(tc,tk,name);
 		return(xexp*)e;
 	}
@@ -938,7 +939,7 @@ inline static void ci_xset_compile(const toc*tc,token tk,
 	longjmp(_jmp_buf,1);
 }
 
-inline static/*gives*/cstr ci_make_c_accessor(toc*tc,token tk,cstr accessor){
+inline static/*gives*/cstr ci_get_c_accessor(toc*tc,token tk,cstr accessor){
 	str cacc=str_def;
 	cstr ap=accessor;
 	cstr p=strchr(ap,'.');
@@ -993,7 +994,7 @@ inline static void ci_xcall_compile(
 		if(!ai.is_ref)
 			printf("&");
 
-		cstr cacc=ci_make_c_accessor(tc,tk,path_ptr);
+		cstr cacc=ci_get_c_accessor(tc,tk,path_ptr);
 
 		if(scope=='c'){
 			printf("o->%s",cacc);
