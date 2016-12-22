@@ -16,28 +16,26 @@ typedef char bool;
 typedef struct entity{
     int id;
 }entity;
-#define entity_def (entity){0}
+#define entity_def (entity){1}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static void entity_print(entity*o){
-    printf("entity: %d\n",o->id);
+inline static void entity_p(entity*o){
+    printf("p entity %d\n",o->id);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
-typedef struct global{
-    entity e1;
-    entity e2;
-}global;
-#define global_def (global){entity_def,entity_def}
+typedef struct global{}global;
+#define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-    o->e1.id=1;
-    entity_print((entity*)&o->e1);
-    o->e2.id=o->e1.id;
-    entity_print((entity*)&o->e2);
+    entity e1=entity_def;
+    entity*e2=&e1;
+    entity_p((entity*)&e1);
+    entity_p((entity*)e2);
+    e2->id=2;
+    entity_p((entity*)&e1);
+    entity_p((entity*)e2);
 }
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

@@ -7,6 +7,7 @@ simple c++ like language that compiles to c
     : static type checking
     : deduced variable type
     : mutable references
+    : init/free framework
     : terse syntax
 ```
 
@@ -14,9 +15,9 @@ simple c++ like language that compiles to c
 source size
 ```
 cat src/ci/* | wc
-   2500    4074   58911
+   2508    4091   59069
 cat src/ci/* | gzip | wc
-     44     247   11741
+     43     270   11810
 ```
 
 
@@ -69,7 +70,6 @@ typedef struct entity{
 inline static void entity_p(entity*o){
     printf("p entity %d\n",o->id);
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;
 #define global_def (global){}
@@ -83,11 +83,8 @@ inline static void global_main(global*o){
     entity_p((entity*)&e1);
     entity_p((entity*)e2);
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

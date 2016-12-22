@@ -7,6 +7,8 @@ b=./any-c
 c=c.c
 o=con.out
 
+echo using $s for sample
+
 cat $a               >  $f  &&
 echo                 >> $f  &&
 echo                 >> $f  &&
