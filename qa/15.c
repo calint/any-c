@@ -30,7 +30,6 @@ typedef struct render_range{
 inline static void render_range_draw(render_range*o){
     printf("render_range\n");
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;
 #define global_def (global){}
@@ -39,11 +38,8 @@ inline static void global_main(global*o){
     render_range rr=render_range_def;
     render_range_draw((render_range*)&rr);
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

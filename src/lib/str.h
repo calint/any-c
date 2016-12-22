@@ -160,11 +160,12 @@ inline static str str_from_file(const char*path){
 	fclose(f);
 	filedata[length]=0;
 
-	return (str){
+	const str s={
 		.data=filedata,
 		.count=((unsigned)length+1)/sizeof(char),
 		.cap=(unsigned)length+1
 	};
+	return s;
 }
 
 //-----------------------------------------------------------------------------
@@ -253,7 +254,3 @@ inline static/*gives*/str str_from_string(const char*s){
 	return o;
 }
 //-----------------------------------------------------------------------------
-//inline static void str_add_terminator(str*o){
-//	_str_insure_free_capcity(o,1);
-//	*(o->data+o->count++)=char_def;
-//}

@@ -1,17 +1,17 @@
-player{
-	int c=2
+entity{
+	id=0
 	print{
-		printf(" player: %d\n",c);
+		printf("entity: %d\n",id);
 	}
 }
 
 global{
+	entity e1
+	entity e2
 	main{
-		player p1
-		player p2
-		p1.c=1
-		p1.print()
-		p2.c=p1.c
-		p2.print()
+		e1.id=1
+		e1.print()
+		e2.id=e1.id
+		e2.print()
 	}
 }

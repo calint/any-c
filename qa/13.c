@@ -20,11 +20,8 @@ inline static void global_main(global*o){
     int a=2*((3+5)/2+3%2-3);
     printf("4=%d",a);
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

@@ -21,7 +21,6 @@ typedef struct entity{
 inline static void entity_print(entity*o){
     printf("entity %d\n",o->id);
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - - entities
 typedef struct entities{
     entity e;
@@ -31,7 +30,6 @@ typedef struct entities{
 inline static entity*entities_get(entities*o,cstr nm){
     return &o->e;
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{
     entities es;
@@ -46,7 +44,6 @@ inline static void global_main(global*o){
     a=entities_get((entities*)&o->es,"a");
     entity_print((entity*)a);
 }
-
 inline static void global_init(global*o){
 }
 inline static void global_free(global*o){

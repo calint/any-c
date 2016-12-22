@@ -19,7 +19,6 @@ typedef struct player{}player;
 inline static int player_ret(player*o,int a){
     return a+2;
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;
 #define global_def (global){}
@@ -28,11 +27,8 @@ inline static void global_main(global*o){
     player p=player_def;
     printf("4=%d\n",player_ret((player*)&p,2));
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

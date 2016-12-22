@@ -27,11 +27,8 @@ inline static void global_main(global*o){
     }
 
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

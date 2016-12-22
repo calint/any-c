@@ -36,11 +36,8 @@ inline static void global_main(global*o){
     o2.i=o1.i;
     printf("%d=1\n",o2.i);
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

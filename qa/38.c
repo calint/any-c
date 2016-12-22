@@ -21,7 +21,6 @@ typedef struct material{
 inline static void material_print(material*o){
     printf("material %d\n",o->id);
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - -  materials
 typedef struct materials{
     material m1;
@@ -38,7 +37,6 @@ typedef struct entity{
 inline static void entity_print(entity*o){
     printf("entity %d\n",o->id);
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - - entities
 typedef struct entities{
     entity e1;
@@ -49,7 +47,6 @@ typedef struct entities{
 inline static entity*entities_get(entities*o,cstr nm){
     return &o->e1;
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{
     entities entities;
@@ -64,7 +61,6 @@ inline static void global_main(global*o){
     o->materials.m1.id=4;
     material_print((material*)e->mref);
 }
-
 inline static void global_init(global*o){
 }
 inline static void global_free(global*o){

@@ -64,7 +64,7 @@ inline static void toc_print_source_location(const toc*o,token tk,int tabsize){
 	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
 }
 
-inline static cstr toc_get_type_in_context(const toc*tc,token tk){
+inline static cstr toc_get_typenm_in_context(const toc*tc,token tk){
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
 		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
 		if(s->type=='c'){

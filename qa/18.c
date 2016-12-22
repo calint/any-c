@@ -22,7 +22,6 @@ typedef struct entity{
 inline static void entity_print(entity*o){
     printf("entity: %d %f\n",o->i,o->f);
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{
     entity e1;
@@ -36,7 +35,6 @@ inline static void global_main(global*o){
     o->e1.i=2;
     entity_print((entity*)&o->e1);
 }
-
 inline static void global_init(global*o){
 }
 inline static void global_free(global*o){

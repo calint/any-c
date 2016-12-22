@@ -34,7 +34,7 @@ inline static void _xset_parse(toc*tc,xset*o,cstr name,token tk){
 	const tocdecl*d=toc_get_declaration_for_accessor(tc,name);
 	if(!d){
 		toc_print_source_location(tc,o->super.token,4);
-		printf("'%s' not found",o->name);
+		printf("'%s' not found",o->name);//? better msg
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 		return;

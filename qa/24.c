@@ -21,7 +21,6 @@ typedef struct id{
 inline static void id__free(id*o){
     printf("free id %d\n",o->i);
 }
-
 inline static void id_free(id*o){
     id__free(o);
 }
@@ -35,7 +34,6 @@ typedef struct entity{
 inline static void entity_print(entity*o){
     printf("entity: %d %f\n",o->id.i,o->f);
 }
-
 inline static void entity_free(entity*o){
     id_free(&o->id);
 }
@@ -53,11 +51,8 @@ inline static void global_main(global*o){
     e1.id.i=3;
     entity_print((entity*)&e1);
     entity_free(&e2);    entity_free(&e1);}
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

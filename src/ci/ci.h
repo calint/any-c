@@ -46,13 +46,39 @@ inline static xtype*ci_get_type_for_name_try(const toc*o,cstr name){
 	return NULL;
 }
 
+inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
+	cstr funcname=null;
+	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		if(s->type!='f')
+			continue;
+		funcname=s->name;
+		break;
+	}
+	cstr typenm=null;
+	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
+		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		if(s->type!='c')
+			continue;
+		typenm=s->name;
+		break;
+	}
+	xtype*tp=ci_get_type_for_name_try(tc,typenm);
+	xfunc*fn=xtype_get_func_for_name(tp,funcname);
+	return fn;
+}
+
 inline static xtyperef ci_get_typeref_for_accessor(
 		const toc*tc,token tk,cstr accessor){
 
 	const tocdecl*td=toc_get_declaration_for_accessor(tc,accessor);
 	if(!td){
 		toc_print_source_location(tc,tk,4);
-		printf("declaration for '%s' not found",accessor);
+		xfunc*fn=toc_get_func_in_context(tc,tk);
+		printf("'%s' not found in '%s' and is not declared in '%s'",accessor,
+				toc_get_typenm_in_context(tc,tk),
+				fn->name
+				);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
@@ -117,35 +143,13 @@ inline static bool ci_is_builtin_func(cstr funcnamne){
 	return false;
 }
 
-inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
-	cstr funcname=null;
-	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
-		if(s->type!='f')
-			continue;
-		funcname=s->name;
-		break;
-	}
-	cstr typenm=null;
-	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
-		if(s->type!='c')
-			continue;
-		typenm=s->name;
-		break;
-	}
-	xtype*tp=ci_get_type_for_name_try(tc,typenm);
-	xfunc*fn=xtype_get_func_for_name(tp,funcname);
-	return fn;
-}
-
 inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 						cstr accessor,token tk){
 
 	cstr cur_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration_for_accessor(tc,cur_accessor);
 	if(!decl){// no declaration found, func call to member or builtin or error
-		cstr tpnm=toc_get_type_in_context(tc,tk);
+		cstr tpnm=toc_get_typenm_in_context(tc,tk);
 		xtype*tp=ci_get_type_for_name_try(tc,tpnm);
 		xfunc*fn=xtype_get_func_for_name(tp,cur_accessor);
 		if(fn)
@@ -708,7 +712,8 @@ inline static void ci_compile_to_c(toc*tc){
 		ci_print_right_aligned_comment(c->name);
 		printf("typedef struct %s{",c->name);
 		// fields
-		if(c->fields.count)printf("\n");
+		if(c->fields.count)
+			printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
 			xfield*f=(xfield*)dynp_get(&c->fields,i);
 			toc_add_declaration(tc,f->type,f->is_ref,f->name);
@@ -763,27 +768,29 @@ inline static void ci_compile_to_c(toc*tc){
 					printf(" ");
 				printf("%s_%s(%s*o",c->name,f->name,c->name);
 				for(unsigned j=0;j<f->params.count;j++){
-					xfuncparam*a=(xfuncparam*)dynp_get(&f->params,j);
+					xfuncparam*fp=dynp_get(&f->params,j);
 					printf(",");
-					printf("%s",a->type);
-					if(a->is_ref)
+					printf("%s",fp->type);
+					if(fp->is_ref)
 						printf("*");
 					else
 						printf(" ");
-					printf("%s",a->name);
-					toc_add_declaration(tc,a->type,a->is_ref,a->name);
+					printf("%s",fp->name);
+					toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
 				}
 				printf(")");
 				f->code.super.compile((xexp*)&f->code,tc);
-				printf("\n");
+//				printf("\n");
 				toc_pop_scope(tc);
 			}
 		}
 		// cascading init
 		if((c->bits&4) || !strcmp(c->name,"global")){// needs call to init
-			printf("inline static void %s_init(%s*o){\n",c->name,c->name);
+			printf("inline static void %s_init(%s*o){",c->name,c->name);
+			if(c->fields.count)
+				printf("\n");
 			for(unsigned i=0;i<c->fields.count;i++){
-				xfield*f=(xfield*)dynp_get(&c->fields,i);
+				xfield*f=dynp_get(&c->fields,i);
 				if(ci_is_builtin_type(f->type))
 					continue;
 				xtype*cc=ci_get_type_for_name_try(tc,f->type);
@@ -796,7 +803,9 @@ inline static void ci_compile_to_c(toc*tc){
 		}
 		// cascading free
 		if((c->bits&1) || !strcmp(c->name,"global")){// needs call to free
-			printf("inline static void %s_free(%s*o){\n",c->name,c->name);
+			printf("inline static void %s_free(%s*o){",c->name,c->name);
+			if(c->fields.count)
+				printf("\n");
 			if(c->bits&2) // has _free
 				printf("    %s__free(o);\n",c->name);
 			for(int i=c->fields.count-1;i>=0;i--){
@@ -962,7 +971,7 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		return;
 	}
 	funcnm=cb;
-	cstr typenm=toc_get_type_in_context(tc,tk);
+	cstr typenm=toc_get_typenm_in_context(tc,tk);
 	printf("%s_%s((%s*)o",typenm,funcnm,typenm);
 	if(c->args.count)
 		printf(",");

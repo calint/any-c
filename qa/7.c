@@ -36,11 +36,8 @@ inline static void global_main(global*o){
     p.object.type.i=3;
     printf("3=%d\n",p.object.type.i);
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

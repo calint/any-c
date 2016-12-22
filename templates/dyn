@@ -160,11 +160,12 @@ inline static ${name} ${name}_from_file(const char*path){
 	fclose(f);
 	filedata[length]=0;
 
-	return (${name}){
+	const ${name} s={
 		.data=filedata,
-		.count=((unsigned)length+1)/sizeof(${type}),
+		.count=((unsigned)length+1)/sizeof(char),
 		.cap=(unsigned)length+1
 	};
+	return s;
 }
 
 //-----------------------------------------------------------------------------

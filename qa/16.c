@@ -33,7 +33,6 @@ typedef struct render_range{
 inline static void render_range_draw(render_range*o){
     printf("draw_render_range\n");
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - glo
 typedef struct glo{
     buffer vertbuf;
@@ -45,7 +44,6 @@ inline static void glo_draw(glo*o){
     printf("draw_glo\n");
     render_range_draw((render_range*)&o->rendrngs);
 }
-
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{
     glo gl;
@@ -55,7 +53,6 @@ typedef struct global{
 inline static void global_draw(global*o){
     printf("draw_global\n");
 }
-
 inline static void global_main(global*o){
     global_draw((global*)o);
     glo_draw((glo*)&o->gl);
@@ -63,7 +60,6 @@ inline static void global_main(global*o){
     glo_draw((glo*)&g);
     render_range_draw((render_range*)&g.rendrngs);
 }
-
 inline static void global_init(global*o){
 }
 inline static void global_free(global*o){

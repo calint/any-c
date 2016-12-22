@@ -22,11 +22,8 @@ inline static void global_main(global*o){
     b=2;
     printf("(2,2)=(%d,%d)\n",a,b);
 }
-
-inline static void global_init(global*o){
-}
-inline static void global_free(global*o){
-}
+inline static void global_init(global*o){}
+inline static void global_free(global*o){}
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 int main(int c,char**a){
     global g=global_def;

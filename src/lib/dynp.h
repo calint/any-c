@@ -160,11 +160,12 @@ inline static dynp dynp_from_file(const char*path){
 	fclose(f);
 	filedata[length]=0;
 
-	return (dynp){
+	const dynp s={
 		.data=filedata,
-		.count=((unsigned)length+1)/sizeof(void*),
+		.count=((unsigned)length+1)/sizeof(char),
 		.cap=(unsigned)length+1
 	};
+	return s;
 }
 
 //-----------------------------------------------------------------------------
