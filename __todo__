@@ -6,7 +6,8 @@
 [x] overhaul of string usage
 [ ] tidy ci_read_expression/ci_read_statement
 [ ] xexpls type deduction
-[ ] pointers/references
+[x] pointers/references
+[ ] overhaul of pointers/references impl
 [ ] compile containers
 [ ] compile templates
 [ ] assert member type exists
