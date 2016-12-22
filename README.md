@@ -14,21 +14,21 @@ simple c++ like language that compiles to c
 sample source
 ```
 entity{
-	id=0
-	print{
-		p("entity %d\n",id)
+	id=1	
+	p(){
+		p("p entity %d\n",id)
 	}
 }
 
 global{
 	main{
-		var i=0
-		loop{
-			if i++==3 break
-			entity e
-			e.id=i
-			e.print()
-		}
+		entity e1
+		entity&e2=e1
+		e1.p()
+		e2.p()
+		e2.id=2
+		e1.p()
+		e2.p()		
 	}
 }
 ```
@@ -54,10 +54,10 @@ typedef char bool;
 typedef struct entity{
     int id;
 }entity;
-#define entity_def (entity){0}
+#define entity_def (entity){1}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static void entity_print(entity*o){
-    printf("entity %d\n",o->id);
+inline static void entity_p(entity*o){
+    printf("p entity %d\n",o->id);
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -65,16 +65,13 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-    int i=0;
-    while(1){
-        if (i++==3) {
-            break;
-        }
-        entity e=entity_def;
-        e.id=i;
-        entity_print((entity*)&e);
-    }
-
+    entity e1=entity_def;
+    entity*e2=&e1;
+    entity_p((entity*)&e1);
+    entity_p((entity*)e2);
+    e2->id=2;
+    entity_p((entity*)&e1);
+    entity_p((entity*)e2);
 }
 
 inline static void global_init(global*o){
@@ -95,9 +92,10 @@ int main(int c,char**a){
 
 outputs
 ```
-entity 1
-entity 2
-entity 3
+p entity 1
+p entity 1
+p entity 2
+p entity 2
 ```
 
 

@@ -2,7 +2,7 @@
 
 f=README.md
 a=__about__.md
-s=qa/39.ci
+s=qa/35.ci
 b=./any-c
 c=c.c
 o=con.out
