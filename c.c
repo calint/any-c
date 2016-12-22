@@ -29,13 +29,13 @@ typedef struct global{}global;
 inline static void global_main(global*o){
 	int i=0;
 	while(1){
-			if (i++==3) {
-				break;
-			}
-			entity e=entity_def;
-			e.id=i;
-			entity_print((entity*)&e);
+		if (i++==3) {
+			break;
 		}
+		entity e=entity_def;
+		e.id=i;
+		entity_print((entity*)&e);
+	}
 
 }
 

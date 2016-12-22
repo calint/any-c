@@ -7,13 +7,14 @@ typedef struct toc{
 	cstr src;
 	cstr srcp;
 	cstr filepth;
+	unsigned indent;
 }toc;
 
 #include"decouple.h"
 //inline static void ci_assert_set(const toc*,cstr,cstr,token);
 //inline static cstr ci_get_type_for_accessor(const toc*,cstr,token);
 
-#define toc_def {dynp_def,dynp_def,cstr_def,NULL,NULL}
+#define toc_def {dynp_def,dynp_def,cstr_def,NULL,NULL,0}
 
 typedef struct tocscope{
 	char type;
@@ -107,6 +108,9 @@ inline static void toc_push_scope(toc*o,char type,cstr name){
 	s->type=type;
 	s->name=name;
 	dynp_add(&o->scopes,s);
+	if(s->type!='l')
+		o->indent++;
+
 
 //	printf("//");
 //	for(unsigned i=0;i<o->scopes.count;i++){
@@ -222,12 +226,14 @@ inline static void toc_set_declaration_type(toc*o,cstr name,cstr type){
 
 inline static void toc_pop_scope(toc*o){
 	tocscope*s=dynp_get_last(&o->scopes);
+	if(s->type!='l')
+		o->indent--;
 	tocscope_free(s);
 	o->scopes.count--;//? pop
 }
 
 inline static void toc_print_indent_for_compile(const toc*o){
-	for(unsigned i=2;i<o->scopes.count;i++){
+	for(unsigned i=2;i<o->indent;i++){
 		printf("\t");
 	}
 }
