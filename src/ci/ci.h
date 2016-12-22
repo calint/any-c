@@ -21,6 +21,7 @@ typedef struct ci{
 
 inline static bool ci_is_type_builtin(cstr typenm){
 	if(!strcmp("var",typenm))return true;
+	if(!strcmp("void",typenm))return true;
 	if(!strcmp("int",typenm))return true;
 	if(!strcmp("str",typenm))return true;
 	if(!strcmp("float",typenm))return true;
@@ -63,17 +64,28 @@ inline static struct xaccessorinfo ci_get_accessorinfo(
 				tpnm=fld->type;
 		}else{
 			xfunc*fn=xtype_get_func_by_name(tp,s.data);
+			if(!fn){
+				toc_print_source_location(tc,tk,4);
+				printf("'%s' not found in '%s'",accessor,tpnm);
+				printf("\n    %s %d",__FILE__,__LINE__);
+				longjmp(_jmp_buf,1);
+			}
 			isref=fn->return_is_ref;
 			tp=ci_get_type_by_name(tc,fn->type);
-			tpnm=tp->name;
+			if(tp)
+				tpnm=tp->name;
+			else
+				tpnm=fn->type;
 		}
 		str_free(&s);
 		if(!tp)
 			break;
 	}
 	if(!tp && !ci_is_type_builtin(tpnm)){
+		toc_print_source_location(tc,tk,4);
 		printf("cannot find type '%s'",tpnm);
-		exit(1);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
 	}
 	struct xaccessorinfo ti={tpnm,isref};
 	return ti;
@@ -832,6 +844,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("#define char_def 0\n");
 	printf("#define int_def 0\n");
 	printf("#define float_def 0.0f\n");
+	printf("#define null 0\n");
 	for(unsigned i=0;i<tc->types.count;i++){
 		xtype*c=dynp_get(&tc->types,i);
 		toc_push_scope(tc,'c',c->name);
@@ -853,7 +866,12 @@ inline static void ci_compile_to_c(toc*tc){
 				f->initval.super.compile((xexp*)&f->initval,tc);
 				f->type=f->initval.super.type;
 			}
-			printf("    %s %s;\n",f->type,f->name);
+			printf("    %s",f->type);
+			if(f->is_ref)
+				printf("*");
+			else
+				printf(" ");
+			printf("%s;\n",f->name);
 		}
 		printf("}%s;\n",c->name);
 
@@ -864,7 +882,10 @@ inline static void ci_compile_to_c(toc*tc){
 			if(f->initval.exps.count){
 				f->initval.super.compile((xexp*)&f->initval,tc);
 			}else{
-				printf("%s_def",f->type);
+				if(f->is_ref)
+					printf("null");
+				else
+					printf("%s_def",f->type);
 			}
 			if(i!=c->fields.count-1)
 				printf(",");
@@ -1020,6 +1041,33 @@ inline static void ci_xset_compile(const toc*tc,token tk,
 	longjmp(_jmp_buf,1);
 }
 
+inline static/*gives*/cstr ci_make_c_accessor(toc*tc,token tk,cstr accessor){
+	str cacc=str_def;
+	cstr ap=accessor;
+	cstr p=strchr(ap,'.');
+	while(1){
+		if(p)
+			str_add_list(&cacc,ap,p-ap);
+		else
+			str_add_string(&cacc,ap);
+		if(!p)
+			break;
+		str temp=str_def;
+		str_add_list(&temp,ap,p-ap);
+		str_add(&temp,0);
+		const struct xaccessorinfo ai=ci_get_accessorinfo(tc,tk,temp.data);
+		str_free(&temp);
+		if(ai.is_ref)
+			str_add_string(&cacc,"->");
+		else
+			str_add_string(&cacc,".");
+		ap=p+1;
+		p=strchr(ap,'.');
+	}
+	str_add(&cacc,0);
+	return cacc.data;
+}
+
 inline static void ci_xcall_compile(
 		toc*tc,token tk,cstr accessor,unsigned argcount){
 
@@ -1037,29 +1085,38 @@ inline static void ci_xcall_compile(
 		cb[funcnm_ptr-cb]=0;
 //		*funcnm_ptr=0;                        // path: g.gl
 		funcnm_ptr++;                         // func: print
-		cstr target_type=ci_get_field_type_for_accessor(tc,varnm_ptr,tk);
+//		cstr target_type=ci_get_field_type_for_accessor(tc,varnm_ptr,tk);
+		struct xaccessorinfo fai=ci_get_accessorinfo(tc,tk,varnm_ptr);
 		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
-		const bool is_arg_ref=toc_is_declaration_ref(tc,varnm_ptr);
-		printf("%s_%s((%s*)",target_type,funcnm_ptr,target_type);
-		if(!is_arg_ref)
+//		const bool is_arg_ref=toc_is_declaration_ref(tc,varnm_ptr);
+		printf("%s_%s((%s*)",fai.type,funcnm_ptr,fai.type);
+
+		struct xaccessorinfo ai=ci_get_accessorinfo(tc,tk,path_ptr);
+
+		if(!ai.is_ref)
 			printf("&");
 
+		cstr cacc=ci_make_c_accessor(tc,tk,path_ptr);
+
 		if(scope=='c'){
-			printf("o->%s",path_ptr);
+			printf("o->%s",cacc);
 			if(argcount)
 				printf(",");
 			return;
 		}
-		char*first_dot=strchr(cb,'.'); // g.gl
-		if(first_dot){
-			*first_dot=0;                        // var: g
-			path_ptr=first_dot+1;
-			printf("%s.%s",varnm_ptr,path_ptr);
-			if(argcount)
-				printf(",");
-			return;
-		}
-		printf("%s",varnm_ptr);
+//		char*first_dot=strchr(cb,'.'); // g.gl
+//		if(first_dot){
+//			*first_dot=0;                        // var: g
+//			path_ptr=first_dot+1;
+//			printf("%s.%s",varnm_ptr,path_ptr);
+//			if(argcount)
+//				printf(",");
+//			return;
+//		}
+//		printf("%s",varnm_ptr);
+//		if(argcount)
+//			printf(",");
+		printf("%s",cacc);
 		if(argcount)
 			printf(",");
 		return;
