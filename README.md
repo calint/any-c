@@ -26,7 +26,7 @@ sample source
 ```
 entity{
 	id=1	
-	p(){
+	p{
 		p("p entity %d\n",id)
 	}
 }
