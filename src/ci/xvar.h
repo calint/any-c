@@ -61,7 +61,7 @@ inline static xvar*xvar_read_next(toc*tc,cstr type){
 	toc_add_declaration(tc,o->super.type,o->is_ref,o->name);
 	bool is_var=!strcmp(o->super.type,"var");
 	if(toc_srcp_is_take(tc,'=')){
-		o->initval.is_set_ref=o->is_ref;
+//		o->initval.is_set_ref=o->is_ref;
 		xset_parse_next(&o->initval,tc,o->name,o->super.token);
 		if(is_var){
 			o->super.type=o->initval.super.type;

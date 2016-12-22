@@ -175,7 +175,8 @@ inline static bool toc_is_declaration_ref(const toc*oo,cstr name){
 }
 
 
-inline static const tocdecl*toc_get_declaration(const toc*o,cstr name){
+inline static const tocdecl*toc_get_declaration_for_accessor(
+		const toc*o,cstr name){
 	cstr p=strpbrk(name,".");
 	cstr variable_name;
 	if(p){
@@ -196,6 +197,12 @@ inline static const tocdecl*toc_get_declaration(const toc*o,cstr name){
 				return td;
 		}
 	}
+
+//	toc_print_source_location(o,tk,4);
+//	printf("declaration for '%s' not found",name);
+//	printf("\n    %s %d",__FILE__,__LINE__);
+//	longjmp(_jmp_buf,1);
+
 	return 0;
 }
 

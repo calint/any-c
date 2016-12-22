@@ -25,8 +25,10 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	for(unsigned i=0;i<o->args.count;i++){
 		xexp*e=(xexp*)dynp_get(&o->args,i);
 		const bool func_arg_is_ref=ci_is_func_arg_ref(tc,e->token,o->name,i);
-		if(func_arg_is_ref){
+		if(func_arg_is_ref && !e->is_ref){
 			printf("&");
+		}else if(!func_arg_is_ref && e->is_ref){
+			printf("*");
 		}
 		e->compile(e,tc);
 		if(i!=o->args.count-1){
@@ -73,5 +75,6 @@ inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
+	ci_xcall_assert(tc,o);
 	return o;
 }

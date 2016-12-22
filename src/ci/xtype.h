@@ -93,9 +93,10 @@ inline static xfunc*xtype_get_func_by_name(const xtype*o,cstr field_name){
 	return NULL;
 }
 
-inline static xfunc*xfunc_read_next(toc*tc,token type){
+inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
+	f->return_is_ref=is_ref;
 	bool enclosed_args=false;
 	if(toc_srcp_is(tc,'{') || toc_srcp_is(tc,'(')){
 		f->type="void";
@@ -135,6 +136,7 @@ inline static xfunc*xfunc_read_next(toc*tc,token type){
 			longjmp(_jmp_buf,1);
 		}
 	}
+	dynp_add(&c->funcs,f);
 	xcode_read_next(&f->code,tc);
 	toc_pop_scope(tc);
 	return f;
@@ -152,7 +154,7 @@ inline static xfield*xfield_read_next(toc*tc,cstr type,token name){
 	if(toc_srcp_is_take(tc,'=')){
 		xexpls_parse_next(&f->initval,tc,name);
 		if(strcmp(f->type,"var")){
-				ci_assert_set(tc,
+				ci_xset_assert(tc,
 					f->name,
 					f->initval.super.type,
 					f->initval.super.token);
@@ -179,32 +181,36 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 	while(1){
 		token t1=toc_next_token(tc);
 		if(token_is_empty(&t1)){
-			if(*tc->srcp!='}'){
+			if(!toc_srcp_is(tc,'}')){
 				toc_print_source_location(tc,t1,4);
 				printf("expected '}' to close '%s' declared at %d",c->name,0);
 				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
-			tc->srcp++;
+			toc_srcp_inc(tc);
 			break;
 		}
+
+		const bool is_ref=toc_srcp_is_take(tc,'&');
+
 		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-			xfunc*f=xfunc_read_next(tc,t1);
-			dynp_add(&c->funcs,f);
+			xfunc_read_next(tc,c,is_ref,t1);
 		}else if(toc_srcp_is(tc,'=')){
 			xfield*f=xfield_read_next(tc,"var",t1);
+			f->is_ref=is_ref;
 			dynp_add(&c->fields,f);
 		}else if(toc_srcp_is(tc,';')){
 			xfield*f=xfield_read_next(tc,token_to_new_cstr(&t1),t1);
+			f->is_ref=is_ref;
 			dynp_add(&c->fields,f);
 		}else{
 			token name=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 				tc->srcp=name.content;
-				xfunc*f=xfunc_read_next(tc,t1);
-				dynp_add(&c->funcs,f);
+				xfunc_read_next(tc,c,is_ref,t1);
 			}else{
 				xfield*f=xfield_read_next(tc,token_to_new_cstr(&t1),name);
+				f->is_ref=is_ref;
 				dynp_add(&c->fields,f);
 			}
 		}
