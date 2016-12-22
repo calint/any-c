@@ -21,7 +21,7 @@ typedef struct ci{
 }ci;
 #define ci_def {dynp_def}
 
-inline static bool ci_is_type_builtin(cstr typenm){
+inline static bool ci_is_builtin_type(cstr typenm){
 	if(!strcmp("var",typenm))return true;
 	if(!strcmp("void",typenm))return true;
 	if(!strcmp("int",typenm))return true;
@@ -52,7 +52,7 @@ inline static struct xtyperef ci_get_typeref_for_accessor(
 	const tocdecl*td=toc_get_declaration_for_accessor(tc,accessor);
 	if(!td){
 		toc_print_source_location(tc,tk,4);
-		printf("'%s' not found",accessor);
+		printf("declaration for '%s' not found",accessor);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
@@ -99,7 +99,7 @@ inline static struct xtyperef ci_get_typeref_for_accessor(
 		if(!tp)
 			break;
 	}
-	if(!tp && !ci_is_type_builtin(tpnm)){
+	if(!tp && !ci_is_builtin_type(tpnm)){
 		toc_print_source_location(tc,tk,4);
 		printf("cannot find type '%s'",tpnm);
 		printf("\n    %s %d",__FILE__,__LINE__);
@@ -110,7 +110,7 @@ inline static struct xtyperef ci_get_typeref_for_accessor(
 }
 
 
-inline static bool ci_is_func_builtin(cstr funcnamne){
+inline static bool ci_is_builtin_func(cstr funcnamne){
 	if(!strcmp("p",funcnamne) ||
 		!strcmp("printf",funcnamne))
 		return true;
@@ -213,7 +213,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 
 
 inline static void ci_xcall_assert(const toc*tc,xcall*o){
-	if(ci_is_func_builtin(o->name))
+	if(ci_is_builtin_func(o->name))
 		return;
 	xfunc*fn=ci_get_func_for_accessor(tc,o->name,o->super.token);
 	o->super.is_ref=fn->return_is_ref;
@@ -259,7 +259,7 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 	const tocscope*ts=dynp_get_last(&tc->scopes);
 	for(int i=ts->tocdecls.count-1;i>=0;i--){
 		const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
-		if(ci_is_type_builtin(td->type))
+		if(ci_is_builtin_type(td->type))
 			continue;
 		const xtype*t=ci_get_type_by_name(tc,td->type);
 		if(t->bits&1){ // needs free
@@ -275,7 +275,7 @@ inline static void ci_xcode_compile_free_current_loop_scope(toc*tc,token tk){
 		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
 		for(int i=ts->tocdecls.count-1;i>=0;i--){
 			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
-			if(ci_is_type_builtin(td->type))
+			if(ci_is_builtin_type(td->type))
 				continue;
 			const xtype*t=ci_get_type_by_name(tc,td->type);
 			if(!(t->bits&1)) // needs free
@@ -297,7 +297,7 @@ inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
 		for(int i=ts->tocdecls.count-1;i>=0;i--){
 			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
-			if(ci_is_type_builtin(td->type))
+			if(ci_is_builtin_type(td->type))
 				continue;
 			const xtype*t=ci_get_type_by_name(tc,td->type);
 			if(!(t->bits&1)) // needs free?
@@ -409,7 +409,7 @@ inline static void ci_xset_assert(const toc*tc,
 	}
 
 	if(!current_type)// builtin
-		if(ci_is_type_builtin(current_class_name))
+		if(ci_is_builtin_type(current_class_name))
 			if(!strcmp(current_class_name,settype))
 				return;
 
@@ -801,7 +801,7 @@ inline static void ci_compile_to_c(toc*tc){
 			printf("inline static void %s_init(%s*o){\n",c->name,c->name);
 			for(unsigned i=0;i<c->fields.count;i++){
 				xfield*f=(xfield*)dynp_get(&c->fields,i);
-				if(ci_is_type_builtin(f->type))
+				if(ci_is_builtin_type(f->type))
 					continue;
 				xtype*cc=ci_get_type_by_name(tc,f->type);
 				if(cc->bits&4)// has init
@@ -818,7 +818,7 @@ inline static void ci_compile_to_c(toc*tc){
 				printf("    %s__free(o);\n",c->name);
 			for(int i=c->fields.count-1;i>=0;i--){
 				xfield*f=(xfield*)dynp_get(&c->fields,i);
-				if(ci_is_type_builtin(f->type))
+				if(ci_is_builtin_type(f->type))
 					continue;
 				xtype*cc=ci_get_type_by_name(tc,f->type);
 				if(cc->bits&1) // needs _free?

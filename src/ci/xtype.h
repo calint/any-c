@@ -226,7 +226,7 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 	}
 	for(unsigned i=0;i<c->fields.count;i++){
 		xfield*f=(xfield*)dynp_get(&c->fields,i);
-		if(ci_is_type_builtin(f->type))
+		if(ci_is_builtin_type(f->type))
 			continue;
 		xtype*mc=ci_get_type_by_name(tc,f->type);
 		if(mc->bits&1) // needs free?

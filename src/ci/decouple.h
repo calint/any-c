@@ -1,5 +1,5 @@
 #pragma once
-inline static bool ci_is_type_builtin(cstr);
+inline static bool ci_is_builtin_type(cstr);
 //struct xtype;
 inline static struct xtype*ci_get_type_by_name(const toc*o,cstr);
 inline static void ci_xset_assert(const toc*,cstr,cstr,token);
