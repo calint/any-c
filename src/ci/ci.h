@@ -553,37 +553,40 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 
 inline static xexp*ci_read_next_statement(toc*tc){
 	token tk=toc_next_token(tc);
+
+	// try read constant
 	xexp*ce=ci_read_next_constant_try(tc,tk);
 	if(ce)
 		return ce;
+
+	// end of stream
 	if(token_is_empty(&tk))
 		return NULL;
+
 	// keywords
 	if(token_equals(&tk,"loop")){
 		xloop*e=xloop_read_next(tc,tk);
-		e->super.token=tk;
-		return (xexp*)e;
+		return(xexp*)e;
 	}
-
 	if(token_equals(&tk,"break")){
 		xbreak*e=xbreak_read_next(tc,tk);
 		e->super.token=tk;
-		return (xexp*)e;
+		return(xexp*)e;
 	}
 
 	if(token_equals(&tk,"continue")){
 		xcont*e=xcont_read_next(tc,tk);
-		return (xexp*)e;
+		return(xexp*)e;
 	}
 
 	if(token_equals(&tk,"if")){
 		xife*e=xife_read_next(tc,tk);
-		return (xexp*)e;
+		return(xexp*)e;
 	}
 
 	if(token_equals(&tk,"return")){
 		xreturn*e=xreturn_read_next(tc,tk);
-		return (xexp*)e;
+		return(xexp*)e;
 	}
 
 	// built in types
@@ -619,21 +622,19 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	}
 
 	char incdecbits=0;
-	if(*tc->srcp=='+'){
-		tc->srcp++;
-		if(*tc->srcp=='+'){
-			tc->srcp++;
+	if(toc_srcp_is_take(tc,'+')){
+		if(toc_srcp_is_take(tc,'+')){
 			incdecbits|=1;
 		}else{
+//			toc_srcp_back(2);//?
 			tc->srcp--;
 			tc->srcp--;
 		}
-	}else if(*tc->srcp=='-'){
-		tc->srcp++;
-		if(*tc->srcp=='-'){
-			tc->srcp++;
+	}else if(toc_srcp_is_take(tc,'-')){
+		if(toc_srcp_is_take(tc,'-')){
 			incdecbits|=2;
 		}else{
+//			toc_srcp_back(2);//?
 			tc->srcp--;
 			tc->srcp--;
 		}
