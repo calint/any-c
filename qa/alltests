@@ -4,6 +4,7 @@ date &&
 cd .. &&
 ./make.sh &&
 cd qa &&
+./do-test 0 &&
 ./do-test 1 &&
 ./do-test 2 &&
 ./do-test 3 &&

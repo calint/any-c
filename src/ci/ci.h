@@ -34,6 +34,16 @@ inline static bool ci_is_type_builtin(cstr typenm){
 	return false;
 }
 
+inline static xtype*ci_get_type_by_name(const toc*o,cstr name){
+	for(unsigned i=0;i<o->types.count;i++){
+		xtype*c=dynp_get(&o->types,i);
+		if(!strcmp(c->name,name)){
+			return c;
+		}
+	}
+	return NULL;
+}
+
 inline static struct xaccessorinfo ci_get_accessorinfo(
 		toc*tc,token tk,cstr accessor){
 
@@ -290,16 +300,6 @@ inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 			return false;
 	}
 	return false;
-}
-
-inline static xtype*ci_get_type_by_name(const toc*o,cstr name){
-	for(unsigned i=0;i<o->types.count;i++){
-		xtype*c=dynp_get(&o->types,i);
-		if(!strcmp(c->name,name)){
-			return c;
-		}
-	}
-	return NULL;
 }
 
 inline static cstr ci_get_field_type_for_accessor(const toc*tc,

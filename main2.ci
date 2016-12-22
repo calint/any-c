@@ -1,38 +1,46 @@
-buffer{}
-material{}
-
-rrange{
-	buffer;
-	int from
-	int to
-	material m
-	
-	draw{
-		printf("draw_render_range\n")
+material{
+	id=0
+	print{
+		printf("material %d\n",id);
 	}
 }
 
-glo{
-	buffer vertbuf;
-	rrange rendrngs;
-	
-	draw{
-		printf("draw_glo\n")
-		rendrngs.draw()
+materials{
+	material m1
+	material m2
+	_init{
+		m1.id=1
+		m2.id=2
+	}
+	material&get(cstr nm){
+		if nm=="mat1" return m1
+		if nm=="mat2" return m2
 	}
 }
 
+glob{
+	glob&parent;
+	material&;
+	id=0;
+	print{
+		printf("glob %d\n",id);
+	}
+}
+
+globs{
+	glob e1
+	glob e2
+	glob&get(cstr nm){
+		return e1
+	}
+}
 
 global{
-	glo gl
-	draw{printf("draw_global\n")}
-
+	globs;
+	materials;
+	
 	main{
-		draw()
-		gl.draw()
-		
-		glo g
-		g.draw()
-		g.rendrngs.draw()
+		globs.get("a").material=materials.get("mat2")
+		globs.get("a").print()
 	}
 }
