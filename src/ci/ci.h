@@ -443,25 +443,21 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 	if(token_is_empty(&tk)){
 		if(toc_srcp_is_take(tc,'"')){ // string
 			while(1){
-				const char c=*tc->srcp;
-				if(c==0){
+//				const char c=*tc->srcp;
+				if(toc_srcp_is_take(tc,0) || toc_srcp_is_take(tc,'\n')){
 					toc_print_source_location(tc,tk,4);
 					printf("did not find the end of string on the same line");
 					printf("\n    %s %d",__FILE__,__LINE__);
 					longjmp(_jmp_buf,1);
 				}
-				if(c=='\n'){
-					toc_print_source_location(tc,tk,4);
-					printf("did not find the end of string on the same line");
-					printf("\n    %s %d",__FILE__,__LINE__);
-					longjmp(_jmp_buf,1);
-				}
-				tc->srcp++;
-				if(c=='\\'){
-					tc->srcp++;
+//				tc->srcp++;
+				if(toc_srcp_is_take(tc,'\\')){
+					toc_srcp_inc(tc);// skip next character
 					continue;
 				}
-				if(c=='"')break;
+				if(toc_srcp_is_take(tc,'"'))
+					break;
+				toc_srcp_inc(tc);
 			}
 			tk.end=tk.content_end=tc->srcp;
 
@@ -469,7 +465,6 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 			*e=xconst_def;
 			e->super.token=tk;
 			e->name=token_to_new_cstr(&tk);
-//			token_setz(&tk,&e->name);
 			e->super.type="cstr";
 			return(xexp*)e;
 

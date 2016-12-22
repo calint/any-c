@@ -1,0 +1,70 @@
+material{
+	id=1
+	print{
+		printf("material %d\n",id);
+	}
+}
+
+materials{
+	material m1
+	material m2
+	_init{
+		m1.id=1
+		m2.id=2
+	}
+	material&get(cstr nm){
+		if nm=="mat1" return m1
+		if nm=="mat2" return m2
+	}
+}
+
+glob{
+	glob&parent
+	material&;
+	id=1
+	print{
+		p("glob %d {material ",id)
+		if(material)
+			p("%d",material.id);
+		else
+			p("n/a");
+		p("}\n");
+	}
+}
+
+globs{
+	glob e1
+	glob e2
+	glob&get(cstr nm){
+		return e1
+	}
+}
+
+global{
+	globs;
+	materials;
+	
+	main{
+		p("copy of\n")
+		glob g1=globs.get("a")
+		g1.print()
+		g1.material=materials.get("mat2")
+		g1.print()
+		glob g2=globs.get("a")
+		g2.print()
+		
+		p("reference to\n")
+		glob&g3=globs.get("a")
+		g3.print()
+		g3.material=materials.get("mat2")
+		g3.print()
+
+		p("reference to\n")
+		glob&g4=globs.get("a")
+		g4.print()
+
+		p("copy of\n")
+		glob g5=globs.get("a")
+		g4.print()
+	}
+}

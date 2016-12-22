@@ -15,9 +15,9 @@ simple c++ like language that compiles to c
 source size
 ```
 cat src/ci/* | wc
-   2513    4099   59284
+   2508    4088   59196
 cat src/ci/* | gzip | wc
-     56     236   11846
+     56     240   11851
 ```
 
 
