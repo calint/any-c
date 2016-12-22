@@ -640,6 +640,14 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	if(ce)
 		return ce;
 
+	if(token_is_empty(&tk)){
+		toc_print_source_location(tc,tk,4);
+		printf("expected expression");
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
+		return NULL;
+	}
+
 	cstr name=token_to_new_cstr(&tk);
 
 	// function call

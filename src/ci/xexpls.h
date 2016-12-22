@@ -64,6 +64,8 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 		}else{
 			e=ci_read_next_expression(tc);
 		}
+		if(!e)
+			break;
 		if(xexpr_is_empty(e))
 			break;
 		ptrs_add(&o->exps,e);
