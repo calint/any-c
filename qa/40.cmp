@@ -1,0 +1,11 @@
+copy of
+glob 1 {material n/a}
+glob 1 {material 2}
+glob 1 {material n/a}
+reference to
+glob 1 {material n/a}
+glob 1 {material 2}
+reference to
+glob 1 {material 2}
+copy of
+glob 1 {material 2}
