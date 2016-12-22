@@ -967,8 +967,8 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		printf(",");
 }
 
-inline static bool ci_is_func_arg_ref(
-		const toc*tc,token tk,cstr accessor,unsigned arg_index){
+inline static bool ci_is_func_param_ref(
+		const toc*tc,token tk,cstr accessor,unsigned param_index){
 
 	if(!strcmp("p",accessor) || !strcmp("printf",accessor))
 		return false;
@@ -983,7 +983,7 @@ inline static bool ci_is_func_arg_ref(
 		cstr vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
-		const xfuncparam*fna=dynp_get(&fn->funcargs,arg_index);
+		const xfuncparam*fna=dynp_get(&fn->funcargs,param_index);
 		return fna->func_arg_is_ref;
 	}
 	return false;

@@ -15,7 +15,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 		const struct toc*,token,cstr);
 
 inline static bool ci_is_builtin_type(cstr);
-inline static bool ci_is_func_arg_ref(const struct toc*,token,cstr,unsigned);
+inline static bool ci_is_func_param_ref(const struct toc*,token,cstr,unsigned);
 
 inline static struct xtype*ci_get_type_for_name_try(const struct toc*,cstr);
 

@@ -24,7 +24,7 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	ci_xcall_compile(tc,o);
 	for(unsigned i=0;i<o->args.count;i++){
 		const xexp*e=(xexp*)dynp_get(&o->args,i);
-		const bool func_arg_is_ref=ci_is_func_arg_ref(tc,e->token,o->name,i);
+		const bool func_arg_is_ref=ci_is_func_param_ref(tc,e->token,o->name,i);
 		if(func_arg_is_ref && !e->is_ref)
 			printf("&");
 		else if(!func_arg_is_ref && e->is_ref)
