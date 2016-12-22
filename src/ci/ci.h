@@ -427,20 +427,23 @@ inline static void ci_init(){}
 
 inline static void ci_free(){}
 
-inline static xexp*ci_read_next_statement(toc*tc){
-	token tk=toc_next_token(tc);
+
+// returns NULL if not constant
+inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 	if(token_is_empty(&tk)){
 		if(toc_srcp_is_take(tc,'"')){ // string
 			while(1){
 				const char c=*tc->srcp;
 				if(c==0){
-					printf("<file> <line:col> did not find the "
-							" end of string\n");
+					toc_print_source_location(tc,tk,4);
+					printf("did not find the end of string on the same line");
+					printf("\n    %s %d",__FILE__,__LINE__);
 					longjmp(_jmp_buf,1);
 				}
 				if(c=='\n'){
-					printf("<file> <line:col> did not find the "
-							" end of string on the same line\n");
+					toc_print_source_location(tc,tk,4);
+					printf("did not find the end of string on the same line");
+					printf("\n    %s %d",__FILE__,__LINE__);
 					longjmp(_jmp_buf,1);
 				}
 				tc->srcp++;
@@ -456,6 +459,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			*e=xconst_def;
 			e->super.token=tk;
 			e->name=token_to_new_cstr(&tk);
+//			token_setz(&tk,&e->name);
 			e->super.type="cstr";
 			return(xexp*)e;
 
@@ -478,15 +482,13 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			return(xexp*)e;
 
 		}else{
-			return null;
-//			xexp*e=malloc(sizeof(xexp));
-//			*e=xexp_def;
-//			return e;
+			return NULL;
 		}
 	}
 
 	// constant
 	cstr tks=token_to_new_cstr(&tk);
+	const unsigned tkslen=strlen(tks);
 
 	// boolean
 	if(!strcmp("true",tks) || !strcmp("false",tks)){
@@ -521,9 +523,8 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	}
 
 	// hex
-	const unsigned tkslen=strlen(tks);
 	if(tkslen>1){
-		if((tks[0]=='0' && tks[1]=='x')){
+		if(tks[0]=='0' && tks[1]=='x'){
 			strtol(tks+2,&endptr,16);
 			if(!*endptr){
 				xconst*e=malloc(sizeof(xconst));
@@ -534,7 +535,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 				return(xexp*)e;
 			}
 		}
-		if((tks[0]=='0' && tks[1]=='b')){
+		if(tks[0]=='0' && tks[1]=='b'){
 			strtol(tks+2,&endptr,2);
 			if(!*endptr){
 				xconst*e=malloc(sizeof(xconst));
@@ -546,7 +547,17 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			}
 		}
 	}
+	return NULL;
+}
 
+
+inline static xexp*ci_read_next_statement(toc*tc){
+	token tk=toc_next_token(tc);
+	xexp*ce=ci_read_next_constant_try(tc,tk);
+	if(ce)
+		return ce;
+	if(token_is_empty(&tk))
+		return NULL;
 	// keywords
 	if(token_equals(&tk,"loop")){
 		xloop*e=xloop_read_next(tc,tk);
@@ -579,7 +590,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	cstr name=token_to_new_cstr(&tk);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
-			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
+			token_equals(&tk,"var")||token_equals(&tk,"cstr")){//const char*
 		xvar*e=xvar_read_next(tc,name);
 		return(xexp*)e;
 	}
@@ -661,130 +672,6 @@ inline static bool ci_is_func_return_ref(
 	return fn->return_is_ref;
 }
 
-// returns NULL if not constant
-inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
-	if(token_is_empty(&tk)){
-		if(toc_srcp_is_take(tc,'"')){ // string
-			while(1){
-				const char c=*tc->srcp;
-				if(c==0){
-					toc_print_source_location(tc,tk,4);
-					printf("did not find the end of string on the same line");
-					printf("\n    %s %d",__FILE__,__LINE__);
-					longjmp(_jmp_buf,1);
-				}
-				if(c=='\n'){
-					toc_print_source_location(tc,tk,4);
-					printf("did not find the end of string on the same line");
-					printf("\n    %s %d",__FILE__,__LINE__);
-					longjmp(_jmp_buf,1);
-				}
-				tc->srcp++;
-				if(c=='\\'){
-					tc->srcp++;
-					continue;
-				}
-				if(c=='"')break;
-			}
-			tk.end=tk.content_end=tc->srcp;
-
-			xconst*e=malloc(sizeof(xconst));
-			*e=xconst_def;
-			e->super.token=tk;
-			e->name=token_to_new_cstr(&tk);
-//			token_setz(&tk,&e->name);
-			e->super.type="cstr";
-			return(xexp*)e;
-
-		}else if(toc_srcp_is_take(tc,'\'')){
-			toc_srcp_inc(tc);
-			if(*tc->srcp!='\''){
-				toc_print_source_location(tc,tk,4);
-				printf("expected a character, example 'a'");
-				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmp_buf,1);
-			}
-			toc_srcp_inc(tc);
-			tk.end=tk.content_end=tc->srcp;
-
-			xconst*e=malloc(sizeof(xconst));
-			*e=xconst_def;
-			e->super.token=tk;
-			e->name=token_to_new_cstr(&tk);
-			e->super.type="char";
-			return(xexp*)e;
-
-		}else{
-			xexp*e=malloc(sizeof(xexp));
-			*e=xexp_def;
-			return e;
-		}
-	}
-
-	// constant
-	cstr tks=token_to_new_cstr(&tk);
-	const unsigned tkslen=strlen(tks);
-
-	// boolean
-	if(!strcmp("true",tks) || !strcmp("false",tks)){
-		xconst*e=malloc(sizeof(xconst));
-		*e=xconst_def;
-		e->super.token=tk;
-		e->name=tks;
-		e->super.type="bool";
-		return(xexp*)e;
-	}
-
-	// int
-	char*endptr;strtol(tks,&endptr,10);
-	if(!*endptr){
-		xconst*e=malloc(sizeof(xconst));
-		*e=xconst_def;
-		e->super.token=tk;
-		e->name=tks;
-		e->super.type="int";
-		return(xexp*)e;
-	}
-
-	// float
-	strtof(tks,&endptr);
-	if(!*endptr){
-		xconst*e=malloc(sizeof(xconst));
-		*e=xconst_def;
-		e->super.token=tk;
-		e->name=tks;
-		e->super.type="float";
-		return(xexp*)e;
-	}
-
-	// hex
-	if(tkslen>1){
-		if(tks[0]=='0' && tks[1]=='x'){
-			strtol(tks+2,&endptr,16);
-			if(!*endptr){
-				xconst*e=malloc(sizeof(xconst));
-				*e=xconst_def;
-				e->super.token=tk;
-				e->name=tks;
-				e->super.type="int";
-				return(xexp*)e;
-			}
-		}
-		if(tks[0]=='0' && tks[1]=='b'){
-			strtol(tks+2,&endptr,2);
-			if(!*endptr){
-				xconst*e=malloc(sizeof(xconst));
-				*e=xconst_def;
-				e->super.token=tk;
-				e->name=tks;
-				e->super.type="int";
-				return(xexp*)e;
-			}
-		}
-	}
-	return NULL;
-}
-
 inline static xexp*ci_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
 	xexp*ce=ci_read_next_constant_try(tc,tk);
@@ -844,7 +731,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("typedef const char*cstr;\n");
 	printf("typedef char bool;\n");
 	printf("#define true 1\n");
-	printf("#define false 1\n");
+	printf("#define false 0\n");
 	printf("#define cstr_def \"\"\n");
 	printf("#define bool_def false\n");
 	printf("#define char_def 0\n");
