@@ -1,2 +1,2 @@
 #/bin/sh
-../any-c $1.ci > c.c && gcc -O3 c.c && ./a.out > cmp && diff -q cmp $1.cmp && rm -f a.out cmp c.c && echo $1 : ok
+../any-c $1.ci > $1.c && gcc -O3 $1.c && gcc -O3 -S $1.c && ./a.out > cmp && diff -q cmp $1.cmp && rm -f a.out && echo $1 : ok
