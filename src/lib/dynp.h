@@ -14,20 +14,20 @@
 
 typedef struct dynp{
 	void* *data;
-	unsigned count;
-	unsigned cap;
+	long count;
+	long cap;
 }dynp;
 #define dynp_def {0,0,0}
 
 //--------------------------------------------------------------------- private
 
 inline static void _dynp_insure_free_capcity(dynp*o,unsigned n){
-	const unsigned rem=o->cap-o->count;
+	const long rem=o->cap-o->count;
 	if(rem>=n)
 		return;
 	if(o->data){
-		unsigned new_cap=o->cap*2;
-		void* *new_data=realloc(o->data,sizeof(void*)*new_cap);
+		long new_cap=o->cap*2;
+		void* *new_data=realloc(o->data,sizeof(void*)*(unsigned)new_cap);
 		if(!new_data){
 			fprintf(stderr,"\nout-of-memory");
 			fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
@@ -40,7 +40,7 @@ inline static void _dynp_insure_free_capcity(dynp*o,unsigned n){
 		return;
 	}
 	o->cap=dynp_initial_capacity;
-	o->data=malloc(sizeof(void*)*o->cap);
+	o->data=malloc(sizeof(void*)*(unsigned)o->cap);
 	if(!o->data){
 		fprintf(stderr,"\nout-of-memory");
 		fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
@@ -57,11 +57,11 @@ inline static void dynp_add(dynp*o,void* oo){
 
 //-----------------------------------------------------------------------------
 
-inline static void* dynp_get(const dynp*o,unsigned index){
+inline static void* dynp_get(const dynp*o,long index){
 #ifdef dynp_bounds_check
 	if(index>=o->count){
 		fprintf(stderr,"\n   index-out-of-bounds at %s:%u\n",__FILE__,__LINE__);
-		fprintf(stderr,"        index: %d  in dynp: %p  size: %u  capacity: %u\n\n",
+		fprintf(stderr,"        index: %ld  in dynp: %p  size: %ld  capacity: %ld\n\n",
 				index,(void*)o,o->count,o->cap);
 		stacktrace_print(stderr);
 		fprintf(stderr,"\n\n");
@@ -82,7 +82,7 @@ inline static void* dynp_get_last(const dynp*o){
 //-----------------------------------------------------------------------------
 
 inline static size_t dynp_size_in_bytes(dynp const*o){
-	return o->count*sizeof(void*);
+	return (unsigned)o->count*sizeof(void*);
 }
 
 //-----------------------------------------------------------------------------
@@ -120,7 +120,7 @@ inline static void dynp_add_string(dynp*o,/*copies*/void* const*str){
 inline static void dynp_write_to_fd(const dynp*o,int fd){
 	if(!o->data)
 		return;
-	write(fd,o->data,o->count);
+	write(fd,o->data,(size_t)o->count);
 }
 
 //-----------------------------------------------------------------------------
@@ -232,7 +232,7 @@ inline static void dynp_foreach_all_rev(dynp*o,void(*f)(void*)){
 }
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
-inline static unsigned dynp_find_index(const dynp*o,void* oo){
+inline static long dynp_find_index(const dynp*o,void* oo){
 	for(unsigned i=0;i<o->count;i++){
 		if(dynp_get(o,i)==oo)
 			return i;
@@ -241,7 +241,7 @@ inline static unsigned dynp_find_index(const dynp*o,void* oo){
 }
 //-----------------------------------------------------------------------------
 inline static unsigned dynp_has(const dynp*o,void* oo){
-	const unsigned i=dynp_find_index(o,oo);
+	const long i=dynp_find_index(o,oo);
 	if(i==o->count)
 		return 0;
 	return 1;

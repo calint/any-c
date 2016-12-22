@@ -94,7 +94,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 		dotixptr=strchr(accessor,'.');
 		str s=str_def;
 		if(dotixptr)
-			str_add_list(&s,accessor,dotixptr-accessor);
+			str_add_list(&s,accessor,(unsigned)(dotixptr-accessor));
 		else
 			str_add_string(&s,accessor);
 		str_add(&s,0);
@@ -185,7 +185,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 			cstr lookup=cur_accessor;
 			if(p){
 				str s=str_def;
-				str_add_list(&s,cur_accessor,p-cur_accessor);
+				str_add_list(&s,cur_accessor,(unsigned)(p-cur_accessor));
 				str_add(&s,0);
 				lookup=s.data;//? leak
 			}
@@ -223,7 +223,7 @@ inline static void ci_xcall_assert(const toc*tc,xcall*o){
 	o->super.is_ref=fn->is_ref;
 	o->super.type=fn->type;
 	if(o->args.count!=fn->params.count){
-		printf("function '%s' requires %d arguments, got %d'",
+		printf("function '%s' requires %ld arguments, got %ld'",
 				fn->name,fn->params.count,
 				o->args.count
 		);
@@ -262,7 +262,7 @@ inline static bool ci_xvar_needs_init(const toc*tc,cstr name){
 
 inline static void ci_xcode_compile_free_current_scope(toc*tc){
 	const tocscope*ts=dynp_get_last(&tc->scopes);
-	for(int i=ts->tocdecls.count-1;i>=0;i--){
+	for(long i=ts->tocdecls.count-1;i>=0;i--){
 		const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 		if(ci_is_builtin_type(td->type))
 			continue;
@@ -277,9 +277,9 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 		token tk){
 //	bool nl=false;
-	for(int j=tc->scopes.count-1;j>=0;j--){
+	for(long j=tc->scopes.count-1;j>=0;j--){
 		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
-		for(int i=ts->tocdecls.count-1;i>=0;i--){
+		for(long i=ts->tocdecls.count-1;i>=0;i--){
 			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 			if(ci_is_builtin_type(td->type))
 				continue;
@@ -299,9 +299,9 @@ inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 
 inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 		token tk){
-	for(int j=tc->scopes.count-1;j>=0;j--){
+	for(long j=tc->scopes.count-1;j>=0;j--){
 		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
-		for(int i=ts->tocdecls.count-1;i>=0;i--){
+		for(long i=ts->tocdecls.count-1;i>=0;i--){
 			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 			if(ci_is_builtin_type(td->type))
 				continue;
@@ -498,7 +498,7 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 
 	// constant
 	cstr tks=token_to_new_cstr(&tk);
-	const unsigned tkslen=strlen(tks);
+	const size_t tkslen=strlen(tks);
 
 	// boolean
 	if(!strcmp("true",tks) || !strcmp("false",tks)){
@@ -682,12 +682,12 @@ inline static xexp*ci_read_next_expression(toc*tc){
 
 inline static void ci_print_right_aligned_comment(cstr comment){
 	cstr line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
-	const int maxlen=strlen(line);
-	const int ln=strlen(comment);
-	int start_at=maxlen-ln-4;
+	const size_t maxlen=strlen(line);
+	const size_t ln=strlen(comment);
+	long start_at=(long)(maxlen-ln)-4;
 	if(start_at<0)start_at=0;
 	printf("//");
-	printf("%.*s %s\n",start_at,line,comment);
+	printf("%.*s %s\n",(int)start_at,line,comment);
 }
 
 inline static void ci_compile_to_c(toc*tc){
@@ -808,7 +808,7 @@ inline static void ci_compile_to_c(toc*tc){
 				printf("\n");
 			if(c->bits&2) // has _free
 				printf("    %s__free(o);\n",c->name);
-			for(int i=c->fields.count-1;i>=0;i--){
+			for(long i=c->fields.count-1;i>=0;i--){
 				xfield*f=(xfield*)dynp_get(&c->fields,i);
 				if(ci_is_builtin_type(f->type))
 					continue;

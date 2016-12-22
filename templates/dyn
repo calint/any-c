@@ -14,20 +14,20 @@
 
 typedef struct ${name}{
 	${type} *data;
-	unsigned count;
-	unsigned cap;
+	long count;
+	long cap;
 }${name};
 #define ${name}_def {0,0,0}
 
 //--------------------------------------------------------------------- private
 
 inline static void _${name}_insure_free_capcity(${name}*o,unsigned n){
-	const unsigned rem=o->cap-o->count;
+	const long rem=o->cap-o->count;
 	if(rem>=n)
 		return;
 	if(o->data){
-		unsigned new_cap=o->cap*2;
-		${type} *new_data=realloc(o->data,sizeof(${type})*new_cap);
+		long new_cap=o->cap*2;
+		${type} *new_data=realloc(o->data,sizeof(${type})*(unsigned)new_cap);
 		if(!new_data){
 			fprintf(stderr,"\nout-of-memory");
 			fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
@@ -40,7 +40,7 @@ inline static void _${name}_insure_free_capcity(${name}*o,unsigned n){
 		return;
 	}
 	o->cap=${name}_initial_capacity;
-	o->data=malloc(sizeof(${type})*o->cap);
+	o->data=malloc(sizeof(${type})*(unsigned)o->cap);
 	if(!o->data){
 		fprintf(stderr,"\nout-of-memory");
 		fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
@@ -57,11 +57,11 @@ inline static void ${name}_add(${name}*o,${type} oo){
 
 //-----------------------------------------------------------------------------
 
-inline static ${type} ${name}_get(const ${name}*o,unsigned index){
+inline static ${type} ${name}_get(const ${name}*o,long index){
 #ifdef ${name}_bounds_check
 	if(index>=o->count){
 		fprintf(stderr,"\n   index-out-of-bounds at %s:%u\n",__FILE__,__LINE__);
-		fprintf(stderr,"        index: %d  in dynp: %p  size: %u  capacity: %u\n\n",
+		fprintf(stderr,"        index: %ld  in ${name}: %p  size: %ld  capacity: %ld\n\n",
 				index,(void*)o,o->count,o->cap);
 		stacktrace_print(stderr);
 		fprintf(stderr,"\n\n");
@@ -82,7 +82,7 @@ inline static ${type} ${name}_get_last(const ${name}*o){
 //-----------------------------------------------------------------------------
 
 inline static size_t ${name}_size_in_bytes(${name} const*o){
-	return o->count*sizeof(${type});
+	return (unsigned)o->count*sizeof(${type});
 }
 
 //-----------------------------------------------------------------------------
@@ -120,7 +120,7 @@ inline static void ${name}_add_string(${name}*o,/*copies*/${type} const*str){
 inline static void ${name}_write_to_fd(const ${name}*o,int fd){
 	if(!o->data)
 		return;
-	write(fd,o->data,o->count);
+	write(fd,o->data,(size_t)o->count);
 }
 
 //-----------------------------------------------------------------------------
@@ -189,10 +189,10 @@ inline static void ${name}_setz(${name}*o,/*copies*/${type} const*s){
 }
 
 //-----------------------------------------------------------------------------
-#define ${name}_foa(ls,body)dynp_foreach_all(ls,({void __fn__ (${type} o) body __fn__;}))
-#define ${name}_foac(ls,body)dynp_foreach_all_count(ls,({void __fn__ (${type} o,unsigned i) body __fn__;}))
-#define ${name}_fou(ls,body)dynp_foreach(ls,({int __fn__ (${type} o) body __fn__;}))
-#define ${name}_foar(ls,body)dynp_foreach_all_rev(ls,({void __fn__ (${type} o) body __fn__;}))
+#define ${name}_foa(ls,body)${name}_foreach_all(ls,({void __fn__ (${type} o) body __fn__;}))
+#define ${name}_foac(ls,body)${name}_foreach_all_count(ls,({void __fn__ (${type} o,unsigned i) body __fn__;}))
+#define ${name}_fou(ls,body)${name}_foreach(ls,({int __fn__ (${type} o) body __fn__;}))
+#define ${name}_foar(ls,body)${name}_foreach_all_rev(ls,({void __fn__ (${type} o) body __fn__;}))
 //-----------------------------------------------------------------------------
 inline static void ${name}_foreach(${name}*o,int(*f)(${type})){
 	if(!o->count)
@@ -232,7 +232,7 @@ inline static void ${name}_foreach_all_rev(${name}*o,void(*f)(${type})){
 }
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
-inline static unsigned ${name}_find_index(const ${name}*o,${type} oo){
+inline static long ${name}_find_index(const ${name}*o,${type} oo){
 	for(unsigned i=0;i<o->count;i++){
 		if(${name}_get(o,i)==oo)
 			return i;
@@ -241,7 +241,7 @@ inline static unsigned ${name}_find_index(const ${name}*o,${type} oo){
 }
 //-----------------------------------------------------------------------------
 inline static unsigned ${name}_has(const ${name}*o,${type} oo){
-	const unsigned i=${name}_find_index(o,oo);
+	const long i=${name}_find_index(o,oo);
 	if(i==o->count)
 		return 0;
 	return 1;

@@ -33,13 +33,13 @@ typedef struct tocdecl{
 
 typedef struct tocloc{
 	cstr filenm;
-	unsigned line;
-	unsigned col;
+	int line;
+	int col;
 }tocloc;
 
 
 inline static tocloc toc_get_line_number_in_src(const toc*o,cstr p,
-		unsigned tabsize){//? rewrite
+		int tabsize){//? rewrite
 
 	cstr pt=o->src;
 	int line=1,col=1;

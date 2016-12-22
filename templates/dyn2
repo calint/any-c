@@ -1,33 +1,33 @@
 #pragma once
 //-----------------------------------------------------------------------------
-// str dynamic array generated from template ... do not modify
+// ${name} dynamic array generated from template ... do not modify
 //-----------------------------------------------------------------------------
 #include<stdio.h>
 #include<unistd.h>
 #include"../lib/stacktrace.h"
 //----------------------------------------------------------------------config
 
-#define str_initial_capacity 8
-#define str_bounds_check 1
+#define ${name}_initial_capacity 8
+#define ${name}_bounds_check 1
 
 //------------------------------------------------------------------------ def
 
-typedef struct str{
-	char *data;
-	long count;
-	long cap;
-}str;
-#define str_def {0,0,0}
+typedef struct ${name}{
+	${type} *data;
+	unsigned count;
+	unsigned cap;
+}${name};
+#define ${name}_def {0,0,0}
 
 //--------------------------------------------------------------------- private
 
-inline static void _str_insure_free_capcity(str*o,unsigned n){
-	const long rem=o->cap-o->count;
+inline static void _${name}_insure_free_capcity(${name}*o,unsigned n){
+	const unsigned rem=o->cap-o->count;
 	if(rem>=n)
 		return;
 	if(o->data){
-		long new_cap=o->cap*2;
-		char *new_data=realloc(o->data,sizeof(char)*(unsigned)new_cap);
+		unsigned new_cap=o->cap*2;
+		${type} *new_data=realloc(o->data,sizeof(${type})*new_cap);
 		if(!new_data){
 			fprintf(stderr,"\nout-of-memory");
 			fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
@@ -39,8 +39,8 @@ inline static void _str_insure_free_capcity(str*o,unsigned n){
 		o->cap=new_cap;
 		return;
 	}
-	o->cap=str_initial_capacity;
-	o->data=malloc(sizeof(char)*(unsigned)o->cap);
+	o->cap=${name}_initial_capacity;
+	o->data=malloc(sizeof(${type})*o->cap);
 	if(!o->data){
 		fprintf(stderr,"\nout-of-memory");
 		fprintf(stderr,"\tfile: '%s'  line: %d\n\n",__FILE__,__LINE__);
@@ -50,44 +50,44 @@ inline static void _str_insure_free_capcity(str*o,unsigned n){
 
 //---------------------------------------------------------------------- public
 
-inline static void str_add(str*o,char oo){
-	_str_insure_free_capcity(o,1);
+inline static void ${name}_add(${name}*o,${type} oo){
+	_${name}_insure_free_capcity(o,1);
 	*(o->data+o->count++)=oo;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static char str_get(const str*o,long index){
-#ifdef str_bounds_check
+inline static ${type} ${name}_get(const ${name}*o,unsigned index){
+#ifdef ${name}_bounds_check
 	if(index>=o->count){
 		fprintf(stderr,"\n   index-out-of-bounds at %s:%u\n",__FILE__,__LINE__);
-		fprintf(stderr,"        index: %ld  in str: %p  size: %ld  capacity: %ld\n\n",
+		fprintf(stderr,"        index: %d  in dynp: %p  size: %u  capacity: %u\n\n",
 				index,(void*)o,o->count,o->cap);
 		stacktrace_print(stderr);
 		fprintf(stderr,"\n\n");
 		exit(-1);
 	}
 #endif
-	char p=*(o->data+index);
+	${type} p=*(o->data+index);
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static char str_get_last(const str*o){
-	char p=*(o->data+o->count-1);
+inline static ${type} ${name}_get_last(const ${name}*o){
+	${type} p=*(o->data+o->count-1);
 	return p;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static size_t str_size_in_bytes(str const*o){
-	return (unsigned)o->count*sizeof(char);
+inline static size_t ${name}_size_in_bytes(${name} const*o){
+	return o->count*sizeof(${type});
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void str_free(str*o){
+inline static void ${name}_free(${name}*o){
 	if(!o->data)
 		return;
 	free(o->data);
@@ -95,37 +95,37 @@ inline static void str_free(str*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void str_add_list(str*o,/*copies*/char const*str,unsigned n){
+inline static void ${name}_add_list(${name}*o,/*copies*/${type} const*str,unsigned n){
 	//? optimize memcpy
-	char const*p=str;
+	${type} const*p=str;
 	while(n--){
-		_str_insure_free_capcity(o,1);
+		_${name}_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void str_add_string(str*o,/*copies*/char const*str){
+inline static void ${name}_add_string(${name}*o,/*copies*/${type} const*str){
 	//? optimize
-	char const*p=str;
+	${type} const*p=str;
 	while(*p){
-		_str_insure_free_capcity(o,1);
+		_${name}_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
 	}
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void str_write_to_fd(const str*o,int fd){
+inline static void ${name}_write_to_fd(const ${name}*o,int fd){
 	if(!o->data)
 		return;
-	write(fd,o->data,(size_t)o->count);
+	write(fd,o->data,o->count);
 }
 
 //-----------------------------------------------------------------------------
 
-inline static str str_from_file(const char*path){
+inline static ${name} ${name}_from_file(const char*path){
 	FILE*f=fopen(path,"rb");
 	if(!f){
 		perror("\ncannot open");
@@ -145,7 +145,7 @@ inline static str str_from_file(const char*path){
 		exit(-1);
 	}
 	rewind(f);
-	char*filedata=(char*)malloc((unsigned)length+1);
+	${type}*filedata=(${type}*)malloc((unsigned)length+1);
 	if(!filedata){
 		fprintf(stderr,"\nout-of-memory\n");
 		fprintf(stderr,"\t\n%s %d\n",__FILE__,__LINE__);
@@ -160,7 +160,7 @@ inline static str str_from_file(const char*path){
 	fclose(f);
 	filedata[length]=0;
 
-	const str s={
+	const ${name} s={
 		.data=filedata,
 		.count=((unsigned)length+1)/sizeof(char),
 		.cap=(unsigned)length+1
@@ -170,87 +170,87 @@ inline static str str_from_file(const char*path){
 
 //-----------------------------------------------------------------------------
 
-inline static void str_clear(str*o){
+inline static void ${name}_clear(${name}*o){
 	o->count=0;
 }
 
 //-----------------------------------------------------------------------------
 
-inline static void str_setz(str*o,/*copies*/char const*s){
+inline static void ${name}_setz(${name}*o,/*copies*/${type} const*s){
 	//? optimize
-	char const*p=s;
+	${type} const*p=s;
 	o->count=0;
 	while(*p){
-		_str_insure_free_capcity(o,1);
+		_${name}_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
 	}
-	_str_insure_free_capcity(o,1);
+	_${name}_insure_free_capcity(o,1);
 	*(o->data+o->count++)=0;
 }
 
 //-----------------------------------------------------------------------------
-#define str_foa(ls,body)str_foreach_all(ls,({void __fn__ (char o) body __fn__;}))
-#define str_foac(ls,body)str_foreach_all_count(ls,({void __fn__ (char o,unsigned i) body __fn__;}))
-#define str_fou(ls,body)str_foreach(ls,({int __fn__ (char o) body __fn__;}))
-#define str_foar(ls,body)str_foreach_all_rev(ls,({void __fn__ (char o) body __fn__;}))
+#define ${name}_foa(ls,body)dynp_foreach_all(ls,({void __fn__ (${type} o) body __fn__;}))
+#define ${name}_foac(ls,body)dynp_foreach_all_count(ls,({void __fn__ (${type} o,unsigned i) body __fn__;}))
+#define ${name}_fou(ls,body)dynp_foreach(ls,({int __fn__ (${type} o) body __fn__;}))
+#define ${name}_foar(ls,body)dynp_foreach_all_rev(ls,({void __fn__ (${type} o) body __fn__;}))
 //-----------------------------------------------------------------------------
-inline static void str_foreach(str*o,int(*f)(char)){
+inline static void ${name}_foreach(${name}*o,int(*f)(${type})){
 	if(!o->count)
 		return;
 	for(unsigned i=0;i<o->count;i++){
-		char oo=o->data[i];
+		${type} oo=o->data[i];
 		if(f(oo))
 			break;
 	}
 }
 //-----------------------------------------------------------------------------
-inline static void str_foreach_all(str*o,void(*f)(char)){
+inline static void ${name}_foreach_all(${name}*o,void(*f)(${type})){
 	if(!o->count)
 		return;
 	for(unsigned i=0;i<o->count;i++){
-		char oo=o->data[i];
+		${type} oo=o->data[i];
 		f(oo);
 	}
 }
 //-----------------------------------------------------------------------------
-inline static void str_foreach_all_count(str*o,void(*f)(char,unsigned)){
+inline static void ${name}_foreach_all_count(${name}*o,void(*f)(${type},unsigned)){
 	if(!o->count)
 		return;
 	for(unsigned i=0;i<o->count;i++){
-		char oo=o->data[i];
+		${type} oo=o->data[i];
 		f(oo,i);
 	}
 }
 //-----------------------------------------------------------------------------
-inline static void str_foreach_all_rev(str*o,void(*f)(char)){
+inline static void ${name}_foreach_all_rev(${name}*o,void(*f)(${type})){
 	if(!o->count)
 		return;
 	for(int i=(signed)o->count-1;i!=0;i--){
-		char oo=o->data[i];
+		${type} oo=o->data[i];
 		f(oo);
 	}
 }
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
-inline static long str_find_index(const str*o,char oo){
+inline static unsigned ${name}_find_index(const ${name}*o,${type} oo){
 	for(unsigned i=0;i<o->count;i++){
-		if(str_get(o,i)==oo)
+		if(${name}_get(o,i)==oo)
 			return i;
 	}
 	return o->count;
 }
 //-----------------------------------------------------------------------------
-inline static unsigned str_has(const str*o,char oo){
-	const long i=str_find_index(o,oo);
+inline static unsigned ${name}_has(const ${name}*o,${type} oo){
+	const unsigned i=${name}_find_index(o,oo);
 	if(i==o->count)
 		return 0;
 	return 1;
 }
 //-----------------------------------------------------------------------------
-inline static/*gives*/str str_from_string(char const*s){
-	str o=str_def;
-	str_add_string(&o,s);
-	str_add(&o,0);
+inline static/*gives*/${name} ${name}_from_string(${type} const*s){
+	${name} o=${name}_def;
+	${name}_add_string(&o,s);
+	${name}_add(&o,0);
 	return o;
 }
 //-----------------------------------------------------------------------------
