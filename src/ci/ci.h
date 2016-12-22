@@ -645,7 +645,6 @@ inline static xexp*ci_read_next_expression(toc*tc){
 		printf("expected expression");
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
-		return NULL;
 	}
 
 	cstr name=token_to_new_cstr(&tk);

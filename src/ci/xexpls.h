@@ -66,8 +66,8 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 		}
 		if(!e)
 			break;
-		if(xexpr_is_empty(e))
-			break;
+//		if(xexpr_is_empty(e))
+//			break;
 		ptrs_add(&o->exps,e);
 		if(toc_srcp_is_take(tc,'+')){strb_add(&o->ops,'+');}
 		else if(toc_srcp_is_take(tc,'-')){strb_add(&o->ops,'-');}
