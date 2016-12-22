@@ -1,7 +1,7 @@
 #pragma once
 inline static bool ci_is_builtin_type(cstr);
 //struct xtype;
-inline static struct xtype*ci_get_type_by_name(const toc*o,cstr);
+inline static struct xtype*ci_get_type_by_name_try(const toc*o,cstr);
 inline static void ci_xset_assert(const toc*,cstr,cstr,token);
 inline static /*gives*/xexp*ci_read_next_statement(toc*o);
 inline static /*gives*/xexp*ci_read_next_expression(toc*);
