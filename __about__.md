@@ -7,5 +7,6 @@ simple c++ like language that compiles to c
     : static type checking
     : deduced variable type
     : mutable references
+    : init/free framework
     : terse syntax
 ```

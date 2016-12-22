@@ -762,7 +762,7 @@ inline static void ci_compile_to_c(toc*tc){
 					printf(" ");
 				printf("%s_%s(%s*o",c->name,f->name,c->name);
 				for(unsigned j=0;j<f->funcargs.count;j++){
-					xfuncarg*a=(xfuncarg*)dynp_get(&f->funcargs,j);
+					xfuncparam*a=(xfuncparam*)dynp_get(&f->funcargs,j);
 					printf(",");
 					printf("%s",a->type);
 					if(a->func_arg_is_ref)
@@ -983,7 +983,7 @@ inline static bool ci_is_func_arg_ref(
 		cstr vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
-		const xfuncarg*fna=dynp_get(&fn->funcargs,arg_index);
+		const xfuncparam*fna=dynp_get(&fn->funcargs,arg_index);
 		return fna->func_arg_is_ref;
 	}
 	return false;

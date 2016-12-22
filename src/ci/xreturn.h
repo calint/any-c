@@ -29,6 +29,5 @@ inline static xreturn*xreturn_read_next(toc*tc,token tk){
 	o->super.token=tk;
 	xexpls_parse_next(&o->expls,tc,tk);
 	ci_xreturn_assert(tc,o);
-	//? assert return value type
 	return o;
 }

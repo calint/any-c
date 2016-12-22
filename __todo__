@@ -1,14 +1,15 @@
 [ ] binary arthimatic ops
 [ ] unary ops
 [ ] assert call args
-[ ] assert return type
+[x] assert return type
 [ ] multiple return values f():int a,float b;
 [x] overhaul of string usage
-[ ] tidy ci_read_expression/ci_read_statement
-[ ] xexpls type deduction
+[x] tidy ci_read_expression/ci_read_statement
+[ ]    expression has typeref, text,
+[o] xexpls type deduction
 [x] pointers/references
 [o] overhaul/tidy of pointers/references impl
-[ ] no arithmetics on reference types
+[ ] no arithmetics on references
 [ ] compile containers
 [ ] compile templates
 [ ] assert member type exists
@@ -24,7 +25,7 @@
 [ ] default values on funcargs
 [ ] function overloading
 [ ] operator overloading
-[ ] virtual functions
+[ ] virtual functions-S
 [ ] packages
 [ ] class and member visibility public,package
 [o] const correctness

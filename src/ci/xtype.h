@@ -17,14 +17,14 @@ inline static void xfield_free(xfield*o){
 	_xexpls_free_((xexp*)&o->initval);
 }
 
-typedef struct xfuncarg{
+typedef struct xfuncparam{
 	cstr type;
 	cstr name;
 	token token;
 	bool func_arg_is_ref;
-}xfuncarg;
+}xfuncparam;
 
-#define xfuncarg_def (xfuncarg){cstr_def,cstr_def,token_def,false}
+#define xfuncparam_def (xfuncparam){cstr_def,cstr_def,token_def,false}
 
 typedef struct xfunc{
 	cstr type;
@@ -105,10 +105,8 @@ inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
 		f->type=token_to_new_cstr(&type);
 		f->name=token_to_new_cstr(&tkname);
 	}
-	if(toc_srcp_is_take(tc,'(')){
+	if(toc_srcp_is_take(tc,'('))
 		enclosed_args=true;
-//		tc->srcp++;
-	}
 	toc_push_scope(tc,'f',f->name);
 	token last_arg_tkn=token_def;
 	while(1){
@@ -116,15 +114,15 @@ inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
 		last_arg_tkn=tkt;
 		if(token_is_empty(&tkt))
 			break;
-		xfuncarg*fa=malloc(sizeof(xfuncarg));
-		dynp_add(&f->funcargs,fa);
-		*fa=xfuncarg_def;
+		xfuncparam*fp=malloc(sizeof(xfuncparam));
+		dynp_add(&f->funcargs,fp);
+		*fp=xfuncparam_def;
 		if(toc_srcp_is_take(tc,'&'))
-			fa->func_arg_is_ref=true;
+			fp->func_arg_is_ref=true;
 		token tkn=toc_next_token(tc);
-		fa->type=token_to_new_cstr(&tkt);
-		fa->name=token_to_new_cstr(&tkn);
-		toc_add_declaration(tc,fa->type,fa->func_arg_is_ref,fa->name);
+		fp->type=token_to_new_cstr(&tkt);
+		fp->name=token_to_new_cstr(&tkn);
+		toc_add_declaration(tc,fp->type,fp->func_arg_is_ref,fp->name);
 		toc_srcp_is_take(tc,',');
 	}
 	if(enclosed_args){
