@@ -30,10 +30,11 @@ typedef struct materials{
 #define materials_def (materials){material_def,material_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
+    struct entity*parent;
     int id;
     material*mref;
 }entity;
-#define entity_def (entity){0,null}
+#define entity_def (entity){null,0,null}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
 	printf("entity %d\n",o->id);

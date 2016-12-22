@@ -11,6 +11,7 @@ materials{
 }
 
 entity{
+	entity&parent
 	id=0
 	material&mref;
 	print{

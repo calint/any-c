@@ -7,7 +7,8 @@
 [ ] tidy ci_read_expression/ci_read_statement
 [ ] xexpls type deduction
 [x] pointers/references
-[ ] overhaul of pointers/references impl
+[o] overhaul/tidy of pointers/references impl
+[ ] no arithmetics on reference types
 [ ] compile containers
 [ ] compile templates
 [ ] assert member type exists

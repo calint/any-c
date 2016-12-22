@@ -866,7 +866,10 @@ inline static void ci_compile_to_c(toc*tc){
 				f->initval.super.compile((xexp*)&f->initval,tc);
 				f->type=f->initval.super.type;
 			}
-			printf("    %s",f->type);
+			printf("    ");
+			if(!strcmp(f->type,c->name))
+				printf("struct ");
+			printf("%s",f->type);
 			if(f->is_ref)
 				printf("*");
 			else
