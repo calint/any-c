@@ -234,7 +234,7 @@ inline static void toc_pop_scope(toc*o){
 
 inline static void toc_print_indent_for_compile(const toc*o){
 	for(unsigned i=2;i<o->indent;i++){
-		printf("\t");
+		printf("    ");
 	}
 }
 

@@ -19,7 +19,7 @@ typedef struct entity{
 #define entity_def (entity){0}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-	printf("entity %d\n",o->id);
+    printf("entity %d\n",o->id);
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - - entities
@@ -29,7 +29,7 @@ typedef struct entities{
 #define entities_def (entities){entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static entity*entities_get(entities*o,cstr nm){
-	return &o->e;
+    return &o->e;
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -39,12 +39,12 @@ typedef struct global{
 #define global_def (global){entities_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	o->es.e.id=1;
-	entity*a=entities_get((entities*)&o->es,"a");
-	entity_print((entity*)a);
-	o->es.e.id=2;
-	a=entities_get((entities*)&o->es,"a");
-	entity_print((entity*)a);
+    o->es.e.id=1;
+    entity*a=entities_get((entities*)&o->es,"a");
+    entity_print((entity*)a);
+    o->es.e.id=2;
+    a=entities_get((entities*)&o->es,"a");
+    entity_print((entity*)a);
 }
 
 inline static void global_init(global*o){

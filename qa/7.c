@@ -32,9 +32,9 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	player p=player_def;
-	p.object.type.i=3;
-	printf("3=%d\n",p.object.type.i);
+    player p=player_def;
+    p.object.type.i=3;
+    printf("3=%d\n",p.object.type.i);
 }
 
 inline static void global_init(global*o){

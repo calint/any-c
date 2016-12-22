@@ -28,7 +28,7 @@ typedef struct render_range{
 #define render_range_def (render_range){buffer_def,int_def,int_def,material_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void render_range_draw(render_range*o){
-	printf("render_range\n");
+    printf("render_range\n");
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -36,8 +36,8 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	render_range rr=render_range_def;
-	render_range_draw((render_range*)&rr);
+    render_range rr=render_range_def;
+    render_range_draw((render_range*)&rr);
 }
 
 inline static void global_init(global*o){

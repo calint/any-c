@@ -23,7 +23,7 @@ typedef struct player{
 #define player_def (player){17,2.2f,true,"hello \" world ",'.'}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void player_print(player*o){
-	printf(" %f %d %d %s %c \n",o->f,o->i,o->b,o->s,o->ch);
+    printf(" %f %d %d %s %c \n",o->f,o->i,o->b,o->s,o->ch);
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -31,8 +31,8 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	player p=player_def;
-	player_print((player*)&p);
+    player p=player_def;
+    player_print((player*)&p);
 }
 
 inline static void global_init(global*o){

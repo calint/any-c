@@ -17,10 +17,10 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	int a=2;
-	int b=a;
-	b=2;
-	printf("(2,2)=(%d,%d)\n",a,b);
+    int a=2;
+    int b=a;
+    b=2;
+    printf("(2,2)=(%d,%d)\n",a,b);
 }
 
 inline static void global_init(global*o){

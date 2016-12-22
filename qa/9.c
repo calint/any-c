@@ -17,14 +17,14 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	int b=0;
-	while(1){
-		if (b==10) {
-			break;
-		}
-		b++;
-		printf("%d. hello world\t",b);
-	}
+    int b=0;
+    while(1){
+        if (b==10) {
+            break;
+        }
+        b++;
+        printf("%d. hello world\t",b);
+    }
 
 }
 

@@ -22,19 +22,19 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	int j=1;
-	object o1=object_def;
-	o1.i=2;
-	printf("%d=2\n",o1.i);
-	o1.i++;
-	printf("%d=3\n",o1.i);
-	o1.i--;
-	printf("%d=2\n",o1.i);
-	o1.i=j;
-	printf("%d=1\n",o1.i);
-	object o2=object_def;
-	o2.i=o1.i;
-	printf("%d=1\n",o2.i);
+    int j=1;
+    object o1=object_def;
+    o1.i=2;
+    printf("%d=2\n",o1.i);
+    o1.i++;
+    printf("%d=3\n",o1.i);
+    o1.i--;
+    printf("%d=2\n",o1.i);
+    o1.i=j;
+    printf("%d=1\n",o1.i);
+    object o2=object_def;
+    o2.i=o1.i;
+    printf("%d=1\n",o2.i);
 }
 
 inline static void global_init(global*o){

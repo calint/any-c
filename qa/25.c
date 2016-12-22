@@ -19,7 +19,7 @@ typedef struct id{
 #define id_def (id){0}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void id__free(id*o){
-	printf("free id %d\n",o->i);
+    printf("free id %d\n",o->i);
 }
 
 inline static void id_free(id*o){
@@ -33,11 +33,11 @@ typedef struct entity{
 #define entity_def (entity){id_def,2.2f}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-	printf("entity: %d %f\n",o->id.i,o->f);
+    printf("entity: %d %f\n",o->id.i,o->f);
 }
 
 inline static void entity__free(entity*o){
-	printf("free entity %d\n",o->id.i);
+    printf("free entity %d\n",o->id.i);
 }
 
 inline static void entity_free(entity*o){
@@ -49,15 +49,15 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	entity e1=entity_def;
-	entity e2=entity_def;
-	e1.id.i=1;
-	entity_print((entity*)&e1);
-	e2.id.i=2;
-	entity_print((entity*)&e2);
-	e1.id.i=3;
-	entity_print((entity*)&e1);
-	entity_free(&e2);	entity_free(&e1);}
+    entity e1=entity_def;
+    entity e2=entity_def;
+    e1.id.i=1;
+    entity_print((entity*)&e1);
+    e2.id.i=2;
+    entity_print((entity*)&e2);
+    e1.id.i=3;
+    entity_print((entity*)&e1);
+    entity_free(&e2);    entity_free(&e1);}
 
 inline static void global_init(global*o){
 }

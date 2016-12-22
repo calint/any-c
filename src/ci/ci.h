@@ -852,7 +852,6 @@ inline static int ci_compile_file(cstr path){
 inline static void ci_xset_compile(const toc*tc,const xset*o){
 	token tk=o->super.token;
 	cstr id=o->name;
-//	cstr type=o->expls.super.type;
 	cstr p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
@@ -884,17 +883,17 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 			return;
 		}
 	}
+
 	const char scopetype=toc_get_declaration_scope_type(tc,id);
 	if(scopetype=='c'){// class member
 		printf("o->%s=",id);
 		return;
 	}
+
 	if(scopetype){// local identifier
 		printf("%s=",id);
 		return;
 	}
-
-//	tocloc tl=toc_get_line_number_from_pp(tc, p)
 
 	toc_print_source_location(tc,tk,4);
 	printf("could not find var '%s'\n",id);
@@ -977,10 +976,10 @@ inline static bool ci_is_func_arg_ref(
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,accessor);
 	const char*varnm=cb;
-	const char*funcnm=strrchr(cb,'.');   // g.gl.draw
-	if(funcnm){                           //
+	const char*funcnm=strrchr(cb,'.');
+	if(funcnm){
 		cb[funcnm-cb]=0;
-		funcnm++;                         // func: print
+		funcnm++;
 		cstr vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);

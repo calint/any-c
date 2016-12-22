@@ -17,7 +17,7 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	printf("hello world\n");
+    printf("hello world\n");
 }
 
 inline static void global_init(global*o){

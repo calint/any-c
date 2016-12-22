@@ -31,7 +31,7 @@ typedef struct render_range{
 #define render_range_def (render_range){buffer_def,int_def,int_def,material_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void render_range_draw(render_range*o){
-	printf("draw_render_range\n");
+    printf("draw_render_range\n");
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - glo
@@ -42,8 +42,8 @@ typedef struct glo{
 #define glo_def (glo){buffer_def,render_range_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void glo_draw(glo*o){
-	printf("draw_glo\n");
-	render_range_draw((render_range*)&o->rendrngs);
+    printf("draw_glo\n");
+    render_range_draw((render_range*)&o->rendrngs);
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -53,15 +53,15 @@ typedef struct global{
 #define global_def (global){glo_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_draw(global*o){
-	printf("draw_global\n");
+    printf("draw_global\n");
 }
 
 inline static void global_main(global*o){
-	global_draw((global*)o);
-	glo_draw((glo*)&o->gl);
-	glo g=glo_def;
-	glo_draw((glo*)&g);
-	render_range_draw((render_range*)&g.rendrngs);
+    global_draw((global*)o);
+    glo_draw((glo*)&o->gl);
+    glo g=glo_def;
+    glo_draw((glo*)&g);
+    render_range_draw((render_range*)&g.rendrngs);
 }
 
 inline static void global_init(global*o){

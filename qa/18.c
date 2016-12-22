@@ -20,7 +20,7 @@ typedef struct entity{
 #define entity_def (entity){1,2.2f}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void entity_print(entity*o){
-	printf("entity: %d %f\n",o->i,o->f);
+    printf("entity: %d %f\n",o->i,o->f);
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -31,10 +31,10 @@ typedef struct global{
 #define global_def (global){entity_def,entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	entity_print((entity*)&o->e1);
-	entity_print((entity*)&o->e2);
-	o->e1.i=2;
-	entity_print((entity*)&o->e1);
+    entity_print((entity*)&o->e1);
+    entity_print((entity*)&o->e2);
+    o->e1.i=2;
+    entity_print((entity*)&o->e1);
 }
 
 inline static void global_init(global*o){
