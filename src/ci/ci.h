@@ -470,7 +470,7 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 
 		}else if(toc_srcp_is_take(tc,'\'')){
 			toc_srcp_inc(tc);
-			if(*tc->srcp!='\''){
+			if(!toc_srcp_is(tc,'\'')){
 				toc_print_source_location(tc,tk,4);
 				printf("expected a character, example 'a'");
 				printf("\n    %s %d",__FILE__,__LINE__);
