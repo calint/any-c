@@ -90,7 +90,7 @@ inline static xfunc*xtype_get_func_for_name(const xtype*o,cstr field_name){
 	return NULL;
 }
 
-inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
+inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		token type,token name){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
@@ -136,24 +136,27 @@ inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 	dynp_add(&c->funcs,f);
 	xcode_read_next(&f->code,tc);
 	toc_pop_scope(tc);
-	return f;
 }
 
-inline static xfield*xfield_read_next(toc*tc,xtype*c,cstr typenm,
-		token tk,bool is_ref){
+inline static void xfield_read_next(toc*tc,xtype*c,cstr tktype,
+		token tkname,bool is_ref){
+
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
-	f->token=tk;
-	f->type=typenm;
+	f->token=tkname; //? tktype
+	f->type=tktype;
 	f->is_ref=is_ref;
-	f->name=token_is_empty(&tk)?f->type:token_to_new_cstr(&tk);
+	if(token_is_empty(&tkname))
+		f->name=f->type;
+	else
+		f->name=token_to_new_cstr(&tkname);
 
 
 	dynp_add(&c->fields,f);
 	toc_add_declaration(tc,f->type,f->is_ref,f->name);
 
 	if(toc_srcp_is_take(tc,'=')){
-		xexpls_parse_next(&f->initval,tc,tk);
+		xexpls_parse_next(&f->initval,tc,tkname);
 		if(strcmp(f->type,"var")){
 				xset tmp=xset_def;
 				tmp.name=f->name;
@@ -164,16 +167,17 @@ inline static xfield*xfield_read_next(toc*tc,xtype*c,cstr typenm,
 		f->type=f->initval.super.type;
 	}
 	toc_srcp_is_take(tc,';');
-	return f;
 }
 
-inline static xtype*xtype_read_next(toc*tc,token nmtk){
+inline static xtype*xtype_read_next(toc*tc,token tkname){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
-	dynp_add(&tc->types,c);
-	c->token=nmtk;
+	c->token=tkname;
 	c->name=token_to_new_cstr(&c->token);
+
+	dynp_add(&tc->types,c);
 	toc_push_scope(tc,'c',c->name);
+
 	if(!toc_srcp_is(tc,'{')){
 		toc_print_source_location(tc,c->token,4);
 		printf("expected '{' to open class body\n");
