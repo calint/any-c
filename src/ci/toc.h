@@ -1,4 +1,5 @@
 #pragma once
+#include"decouple.h"
 #include"xexp.h"
 
 typedef struct toc{
@@ -9,10 +10,6 @@ typedef struct toc{
 	cstr filepth;
 	unsigned indent;
 }toc;
-
-#include"decouple.h"
-//inline static void ci_assert_set(const toc*,cstr,cstr,token);
-//inline static cstr ci_get_type_for_accessor(const toc*,cstr,token);
 
 #define toc_def {dynp_def,dynp_def,cstr_def,NULL,NULL,0}
 
@@ -41,8 +38,8 @@ typedef struct tocloc{
 }tocloc;
 
 
-inline static tocloc toc_get_line_number_from_pp(const toc*o,cstr p,
-		unsigned tabsize){
+inline static tocloc toc_get_line_number_in_src(const toc*o,cstr p,
+		unsigned tabsize){//? rewrite
 
 	cstr pt=o->src;
 	int line=1,col=1;
@@ -63,7 +60,7 @@ inline static tocloc toc_get_line_number_from_pp(const toc*o,cstr p,
 }
 
 inline static void toc_print_source_location(const toc*o,token tk,int tabsize){
-	tocloc tl=toc_get_line_number_from_pp(o,tk.content,tabsize);
+	tocloc tl=toc_get_line_number_in_src(o,tk.content,tabsize);
 	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
 }
 
@@ -240,8 +237,9 @@ inline static void toc_print_indent_for_compile(const toc*o){
 
 inline static token toc_next_token(toc*o){return token_next(&o->srcp);}
 inline static void toc_srcp_inc(toc*o){o->srcp++;}
-inline static bool toc_srcp_is(const toc*o,const char ch)
-	{return *o->srcp==ch;}
+inline static bool toc_srcp_is(const toc*o,const char ch){
+	return *o->srcp==ch;
+}
 inline static bool toc_srcp_is_take(toc*o,const char ch){
 	if(*o->srcp==ch){
 		o->srcp++;
@@ -253,18 +251,6 @@ inline static void toc_srcp_skip_if(toc*o,const char ch){
 	if(toc_srcp_is(o,ch))
 		toc_srcp_inc(o);
 }
-//inline static bool toc_is_type_builtin(const toc*o,cstr typenm){
-//	if(!strcmp("int",typenm))return true;
-//	if(!strcmp("str",typenm))return true;
-//	if(!strcmp("float",typenm))return true;
-//	if(!strcmp("bool",typenm))return true;
-//	if(!strcmp("char",typenm))return true;
-//	if(!strcmp("ccharp",typenm))return true;
-////	if(!strcmp("short",typenm))return true;
-////	if(!strcmp("long",typenm))return true;
-////	if(!strcmp("double",typenm))return true;
-//	return false;
-//}
 
 
 
