@@ -3,23 +3,23 @@
 #include"xexp.h"
 
 typedef struct toc{
-	dynp types;
-	dynp scopes;
+	ptrs types;
+	ptrs scopes;
 	cstr src;
 	cstr srcp;
 	cstr filepth;
 	unsigned indent;
 }toc;
 
-#define toc_def {dynp_def,dynp_def,cstr_def,NULL,NULL,0}
+#define toc_def {ptrs_def,ptrs_def,cstr_def,NULL,NULL,0}
 
 typedef struct tocscope{
 	char type;
 	cstr name;
-	dynp tocdecls;
+	ptrs tocdecls;
 }tocscope;
 
-#define ci_toc_scope_def (tocscope){0,NULL,dynp_def}
+#define ci_toc_scope_def (tocscope){0,NULL,ptrs_def}
 
 typedef struct tocdecl{
 	token token;
@@ -66,7 +66,7 @@ inline static void toc_print_source_location(const toc*o,token tk,int tabsize){
 
 inline static cstr toc_get_typenm_in_context(const toc*tc,token tk){
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 		if(s->type=='c'){
 			return s->name;
 		}
@@ -79,7 +79,7 @@ inline static cstr toc_get_typenm_in_context(const toc*tc,token tk){
 
 inline static tocscope*toc_get_loop_scope_in_context(const toc*tc,token tk){
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 		if(s->type=='l'){
 			return s;
 		}
@@ -92,10 +92,10 @@ inline static tocscope*toc_get_loop_scope_in_context(const toc*tc,token tk){
 
 inline static void tocscope_free(tocscope*o){
 	for(unsigned i=0;i<o->tocdecls.count;i++){
-		tocdecl*td=dynp_get(&o->tocdecls,i);
+		tocdecl*td=ptrs_get(&o->tocdecls,i);
 		free(td);
 	}
-	dynp_free(&o->tocdecls);
+	ptrs_free(&o->tocdecls);
 	free(o);
 }
 
@@ -104,14 +104,14 @@ inline static void toc_push_scope(toc*o,char type,cstr name){
 	*s=ci_toc_scope_def;
 	s->type=type;
 	s->name=name;
-	dynp_add(&o->scopes,s);
+	ptrs_add(&o->scopes,s);
 	if(s->type!='l')
 		o->indent++;
 
 
 //	printf("//");
 //	for(unsigned i=0;i<o->scopes.count;i++){
-//			ci_toc_scope*s=(ci_toc_scope*)dynp_get(&o->scopes,i);
+//			ci_toc_scope*s=(ci_toc_scope*)ptrs_get(&o->scopes,i);
 //			printf(" %s :: ",s->name);
 //	}
 //	printf("\n");
@@ -119,10 +119,10 @@ inline static void toc_push_scope(toc*o,char type,cstr name){
 
 inline static void toc_print(const toc*o){
 	for(unsigned j=0;j<o->scopes.count;j++){
-		tocscope*s=dynp_get(&o->scopes,j);
+		tocscope*s=ptrs_get(&o->scopes,j);
 		printf("%c %s\n",s->type,s->name);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
-			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
+			tocdecl*id=(tocdecl*)ptrs_get(&s->tocdecls,i);
 			for(unsigned k=0;k<=j;k++){
 				printf("    ");
 			}
@@ -137,17 +137,17 @@ inline static void toc_add_declaration(toc*o,cstr type,bool is_ref,cstr name){
 	id->type=type;
 	id->name=name;
 	id->is_ref=is_ref;
-	tocscope*s=dynp_get_last(&o->scopes);
-	dynp_add(&s->tocdecls,id);
+	tocscope*s=ptrs_get_last(&o->scopes);
+	ptrs_add(&s->tocdecls,id);
 //	ci_toc_print(o);
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
 }
 
 inline static char toc_get_declaration_scope_type(const toc*oo,cstr name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
-			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
+			tocdecl*id=(tocdecl*)ptrs_get(&s->tocdecls,i);
 			if(!strcmp(id->name,name))
 				return s->type;
 		}
@@ -161,9 +161,9 @@ inline static char toc_get_declaration_scope_type(const toc*oo,cstr name){
 
 inline static bool toc_is_declaration_ref(const toc*oo,cstr name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&oo->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
-			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
+			tocdecl*id=(tocdecl*)ptrs_get(&s->tocdecls,i);
 			if(!strcmp(id->name,name))
 				return id->is_ref;
 		}
@@ -181,19 +181,19 @@ inline static const tocdecl*toc_get_declaration_for_accessor(
 	cstr p=strpbrk(name,".");
 	cstr variable_name;
 	if(p){
-		str s=str_def;//? leak
-		str_add_list(&s,name,p-name);
-		str_add(&s,0);
+		strb s=strb_def;//? leak
+		strb_add_list(&s,name,p-name);
+		strb_add(&s,0);
 		variable_name=s.data;
-		dynp_add(&_token_to_new_cstr_,s.data);//? adhock
+		ptrs_add(&_token_to_new_cstr_,s.data);//? adhock
 	}else{
 		variable_name=name;
 	}
 
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&o->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
-			const tocdecl*td=(const tocdecl*)dynp_get(&s->tocdecls,i);
+			const tocdecl*td=(const tocdecl*)ptrs_get(&s->tocdecls,i);
 			if(!strcmp(td->name,variable_name))
 				return td;
 		}
@@ -209,9 +209,9 @@ inline static const tocdecl*toc_get_declaration_for_accessor(
 
 inline static void toc_set_declaration_type(toc*o,cstr name,cstr type){
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&o->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&o->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
-			tocdecl*id=(tocdecl*)dynp_get(&s->tocdecls,i);
+			tocdecl*id=(tocdecl*)ptrs_get(&s->tocdecls,i);
 			if(!strcmp(id->name,name)){
 				id->type=type;
 				return;
@@ -222,7 +222,7 @@ inline static void toc_set_declaration_type(toc*o,cstr name,cstr type){
 }
 
 inline static void toc_pop_scope(toc*o){
-	tocscope*s=dynp_get_last(&o->scopes);
+	tocscope*s=ptrs_get_last(&o->scopes);
 	if(s->type!='l')
 		o->indent--;
 	tocscope_free(s);

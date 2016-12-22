@@ -1,29 +1,30 @@
 #pragma once
 #include"xexpls.h"
 #include"decouple.h"
+#include"../lib.h"
 
 typedef struct xcall{
 	xexp super;
 	cstr name;
-	dynp args;
+	ptrs args;
 }xcall;
 
 inline static void _xcall_free_(xexp*oo){
 	xcall*o=(xcall*)oo;
 	for(unsigned i=0;i<o->args.count;i++){
-		xexp*e=(xexp*)dynp_get(&o->args,i);
+		xexp*e=(xexp*)ptrs_get(&o->args,i);
 		if(e->free)
 			e->free(e);
 		free(e);
 	}
-	dynp_free(&o->args);
+	ptrs_free(&o->args);
 }
 
 inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	const xcall*o=(xcall*)oo;
 	ci_xcall_compile(tc,o);
 	for(unsigned i=0;i<o->args.count;i++){
-		const xexp*e=(xexp*)dynp_get(&o->args,i);
+		const xexp*e=(xexp*)ptrs_get(&o->args,i);
 		const bool func_arg_is_ref=ci_is_func_param_ref(tc,e->token,o->name,i);
 		if(func_arg_is_ref && !e->is_ref)
 			printf("&");
@@ -38,7 +39,7 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 
 #define xcall_def (xcall){\
 	{_xcall_compile_,_xcall_free_,cstr_def,token_def,0,false},\
-	cstr_def,dynp_def\
+	cstr_def,ptrs_def\
 }
 
 inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
@@ -61,7 +62,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
 			printf("<file> <line> <col> expected ')' or more arguments");
 			longjmp(_jmp_buf,1);
 		}
-		dynp_add(&o->args,a);
+		ptrs_add(&o->args,a);
 		if(toc_srcp_is_take(tc,','))
 			continue;
 		if(toc_srcp_is_take(tc,')'))

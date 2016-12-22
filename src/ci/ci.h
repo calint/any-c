@@ -17,9 +17,9 @@
 #define ci_identifier_maxlen 1024
 
 typedef struct ci{
-	dynp types;
+	ptrs types;
 }ci;
-#define ci_def {dynp_def}
+#define ci_def {ptrs_def}
 
 inline static bool ci_is_builtin_type(cstr typenm){
 	if(!strcmp("var",typenm))return true;
@@ -38,7 +38,7 @@ inline static bool ci_is_builtin_type(cstr typenm){
 
 inline static xtype*ci_get_type_for_name_try(const toc*o,cstr name){
 	for(unsigned i=0;i<o->types.count;i++){
-		xtype*c=dynp_get(&o->types,i);
+		xtype*c=ptrs_get(&o->types,i);
 		if(!strcmp(c->name,name)){
 			return c;
 		}
@@ -49,7 +49,7 @@ inline static xtype*ci_get_type_for_name_try(const toc*o,cstr name){
 inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 	cstr funcname=null;
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 		if(s->type!='f')
 			continue;
 		funcname=s->name;
@@ -57,7 +57,7 @@ inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 	}
 	cstr typenm=null;
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 		if(s->type!='c')
 			continue;
 		typenm=s->name;
@@ -92,12 +92,12 @@ inline static xtyperef ci_get_typeref_for_accessor(
 			break;
 		accessor=dotixptr+1; // id
 		dotixptr=strchr(accessor,'.');
-		str s=str_def;
+		strb s=strb_def;
 		if(dotixptr)
-			str_add_list(&s,accessor,(unsigned)(dotixptr-accessor));
+			strb_add_list(&s,accessor,(unsigned)(dotixptr-accessor));
 		else
-			str_add_string(&s,accessor);
-		str_add(&s,0);
+			strb_add_string(&s,accessor);
+		strb_add(&s,0);
 		xfield*fld=xtype_get_field_for_name(tp,s.data);
 		if(fld){
 			isref=fld->is_ref;
@@ -121,7 +121,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 			else
 				tpnm=fn->type;
 		}
-		str_free(&s);
+		strb_free(&s);
 		if(!tp)
 			break;
 	}
@@ -184,9 +184,9 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 			}
 			cstr lookup=cur_accessor;
 			if(p){
-				str s=str_def;
-				str_add_list(&s,cur_accessor,(unsigned)(p-cur_accessor));
-				str_add(&s,0);
+				strb s=strb_def;
+				strb_add_list(&s,cur_accessor,(unsigned)(p-cur_accessor));
+				strb_add(&s,0);
 				lookup=s.data;//? leak
 			}
 			const xfield*fld=xtype_get_field_for_name(cur_type,lookup);
@@ -234,7 +234,7 @@ inline static void ci_xcall_assert(const toc*tc,xcall*o){
 //
 //inline static xtype*toc_get_type_in_context(const toc*tc,token tk){
 //	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-//		tocscope*s=dynp_get(&tc->scopes,(unsigned)j);
+//		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 //		if(s->type!='c')
 //			continue;
 //		xtype*tp=ci_get_type_by_name(tc,s->name);
@@ -261,9 +261,9 @@ inline static bool ci_xvar_needs_init(const toc*tc,cstr name){
 }
 
 inline static void ci_xcode_compile_free_current_scope(toc*tc){
-	const tocscope*ts=dynp_get_last(&tc->scopes);
+	const tocscope*ts=ptrs_get_last(&tc->scopes);
 	for(long i=ts->tocdecls.count-1;i>=0;i--){
-		const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
+		const tocdecl*td=(tocdecl*)ptrs_get(&ts->tocdecls,i);
 		if(ci_is_builtin_type(td->type))
 			continue;
 		const xtype*t=ci_get_type_for_name_try(tc,td->type);
@@ -278,9 +278,9 @@ inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 		token tk){
 //	bool nl=false;
 	for(long j=tc->scopes.count-1;j>=0;j--){
-		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
+		const tocscope*ts=(const tocscope*)ptrs_get(&tc->scopes,j);
 		for(long i=ts->tocdecls.count-1;i>=0;i--){
-			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
+			const tocdecl*td=(tocdecl*)ptrs_get(&ts->tocdecls,i);
 			if(ci_is_builtin_type(td->type))
 				continue;
 			const xtype*t=ci_get_type_for_name_try(tc,td->type);
@@ -300,9 +300,9 @@ inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 		token tk){
 	for(long j=tc->scopes.count-1;j>=0;j--){
-		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
+		const tocscope*ts=(const tocscope*)ptrs_get(&tc->scopes,j);
 		for(long i=ts->tocdecls.count-1;i>=0;i--){
-			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
+			const tocdecl*td=(tocdecl*)ptrs_get(&ts->tocdecls,i);
 			if(ci_is_builtin_type(td->type))
 				continue;
 			const xtype*t=ci_get_type_for_name_try(tc,td->type);
@@ -339,9 +339,9 @@ inline static cstr ci_get_field_type_for_accessor(const toc*tc,
 			p=strpbrk(current_accessor,".");
 			cstr lookup=current_accessor;
 			if(p){
-				str s=str_def;
-				str_add_list(&s,current_accessor,p-current_accessor);
-				str_add(&s,0);
+				strb s=strb_def;
+				strb_add_list(&s,current_accessor,p-current_accessor);
+				strb_add(&s,0);
 				lookup=s.data;//? leak
 			}
 			const xfield*fld=xtype_get_field_for_name(current_type,lookup);
@@ -393,9 +393,9 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 			p=strpbrk(current_accessor,".");
 			cstr lookup=current_accessor;
 			if(p){
-				str s=str_def;
-				str_add_list(&s,current_accessor,p-current_accessor);
-				str_add(&s,0);
+				strb s=strb_def;
+				strb_add_list(&s,current_accessor,p-current_accessor);
+				strb_add(&s,0);
 				lookup=s.data;//? leak
 			}
 			const xfield*fld=xtype_get_field_for_name(current_type,lookup);
@@ -706,7 +706,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("#define float_def 0.0f\n");
 	printf("#define null 0\n");
 	for(unsigned i=0;i<tc->types.count;i++){
-		xtype*c=dynp_get(&tc->types,i);
+		xtype*c=ptrs_get(&tc->types,i);
 		toc_push_scope(tc,'c',c->name);
 		// type
 		ci_print_right_aligned_comment(c->name);
@@ -715,7 +715,7 @@ inline static void ci_compile_to_c(toc*tc){
 		if(c->fields.count)
 			printf("\n");
 		for(unsigned i=0;i<c->fields.count;i++){
-			xfield*f=(xfield*)dynp_get(&c->fields,i);
+			xfield*f=(xfield*)ptrs_get(&c->fields,i);
 			toc_add_declaration(tc,f->type,f->is_ref,f->name);
 			if(!strcmp(f->type,"var")){
 				if(!f->initval.exps.count){
@@ -742,7 +742,7 @@ inline static void ci_compile_to_c(toc*tc){
 		// #define object_def {...}
 		printf("#define %s_def (%s){",c->name,c->name);
 		for(unsigned i=0;i<c->fields.count;i++){
-			xfield*f=(xfield*)dynp_get(&c->fields,i);
+			xfield*f=(xfield*)ptrs_get(&c->fields,i);
 			if(f->initval.exps.count){
 				f->initval.super.compile((xexp*)&f->initval,tc);
 			}else{
@@ -759,7 +759,7 @@ inline static void ci_compile_to_c(toc*tc){
 		if(c->funcs.count){
 			ci_print_right_aligned_comment("funcs");
 			for(unsigned i=0;i<c->funcs.count;i++){
-				xfunc*f=(xfunc*)dynp_get(&c->funcs,i);
+				xfunc*f=(xfunc*)ptrs_get(&c->funcs,i);
 				toc_push_scope(tc,'f',f->name);
 				printf("inline static %s",f->type);
 				if(f->is_ref)
@@ -768,7 +768,7 @@ inline static void ci_compile_to_c(toc*tc){
 					printf(" ");
 				printf("%s_%s(%s*o",c->name,f->name,c->name);
 				for(unsigned j=0;j<f->params.count;j++){
-					xfuncparam*fp=dynp_get(&f->params,j);
+					xfuncparam*fp=ptrs_get(&f->params,j);
 					printf(",");
 					printf("%s",fp->type);
 					if(fp->is_ref)
@@ -790,7 +790,7 @@ inline static void ci_compile_to_c(toc*tc){
 			if(c->fields.count)
 				printf("\n");
 			for(unsigned i=0;i<c->fields.count;i++){
-				xfield*f=dynp_get(&c->fields,i);
+				xfield*f=ptrs_get(&c->fields,i);
 				if(ci_is_builtin_type(f->type))
 					continue;
 				xtype*cc=ci_get_type_for_name_try(tc,f->type);
@@ -809,7 +809,7 @@ inline static void ci_compile_to_c(toc*tc){
 			if(c->bits&2) // has _free
 				printf("    %s__free(o);\n",c->name);
 			for(long i=c->fields.count-1;i>=0;i--){
-				xfield*f=(xfield*)dynp_get(&c->fields,i);
+				xfield*f=(xfield*)ptrs_get(&c->fields,i);
 				if(ci_is_builtin_type(f->type))
 					continue;
 				xtype*cc=ci_get_type_for_name_try(tc,f->type);
@@ -837,7 +837,7 @@ inline static int ci_compile_file(cstr path){
 		return ret;
 	toc tc=toc_def;
 	tc.filepth=path;
-	str srcstr=str_from_file(path);
+	strb srcstr=strb_from_file(path);
 	tc.srcp=tc.src=srcstr.data;
 	while(1){
 		token typenm=toc_next_token(&tc);
@@ -847,14 +847,14 @@ inline static int ci_compile_file(cstr path){
 	}
 	ci_compile_to_c(&tc);
 	for(unsigned i=0;i<tc.types.count;i++){
-		xtype*t=(xtype*)dynp_get(&tc.types,i);
+		xtype*t=(xtype*)ptrs_get(&tc.types,i);
 		xtype_free(t);
 		free(t);
 	}
-	dynp_free(&tc.types);
-	dynp_free(&tc.scopes);
+	ptrs_free(&tc.types);
+	ptrs_free(&tc.scopes);
 	token_free();
-	str_free(&srcstr);
+	strb_free(&srcstr);
 	ci_free();
 	return 0;
 }
@@ -864,9 +864,9 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 	cstr id=o->name;
 	cstr p=strpbrk(id,".");
 	if(p){
-		str sid=str_def;
-		str_add_list(&sid,id,p-id);
-		str_add(&sid,0);
+		strb sid=strb_def;
+		strb_add_list(&sid,id,p-id);
+		strb_add(&sid,0);
 
 		const tocdecl*i=toc_get_declaration_for_accessor(tc,sid.data);
 		if(!i){
@@ -877,12 +877,12 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
 		sid.count--;//? adhock
 		if(i->is_ref){
-			str_add_list(&sid,"->",2);
-			str_add_string(&sid,p+1);
+			strb_add_list(&sid,"->",2);
+			strb_add_string(&sid,p+1);
 		}else{
-			str_add_string(&sid,p);
+			strb_add_string(&sid,p);
 		}
-		str_add(&sid,0);
+		strb_add(&sid,0);
 		if(scopetype){
 			if(scopetype=='c'){// class member
 				printf("o->%s",sid.data);
@@ -912,29 +912,29 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 
 inline static/*gives*/cstr ci_get_c_accessor_for_accessor(
 		const toc*tc,token tk,cstr accessor){
-	str cacc=str_def;
+	strb cacc=strb_def;
 	cstr ap=accessor;
 	cstr p=strchr(ap,'.');
 	while(1){
 		if(p)
-			str_add_list(&cacc,ap,p-ap);
+			strb_add_list(&cacc,ap,p-ap);
 		else
-			str_add_string(&cacc,ap);
+			strb_add_string(&cacc,ap);
 		if(!p)
 			break;
-		str temp=str_def;
-		str_add_list(&temp,ap,p-ap);
-		str_add(&temp,0);
+		strb temp=strb_def;
+		strb_add_list(&temp,ap,p-ap);
+		strb_add(&temp,0);
 		const xtyperef tr=ci_get_typeref_for_accessor(tc,tk,temp.data);
-		str_free(&temp);
+		strb_free(&temp);
 		if(tr.is_ref)
-			str_add_string(&cacc,"->");
+			strb_add_string(&cacc,"->");
 		else
-			str_add_string(&cacc,".");
+			strb_add_string(&cacc,".");
 		ap=p+1;
 		p=strchr(ap,'.');
 	}
-	str_add(&cacc,0);
+	strb_add(&cacc,0);
 	return cacc.data;
 }
 
@@ -996,7 +996,7 @@ inline static bool ci_is_func_param_ref(
 		cstr vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
-		const xfuncparam*fna=dynp_get(&fn->params,param_index);
+		const xfuncparam*fna=ptrs_get(&fn->params,param_index);
 		return fna->is_ref;
 	}
 	return false;

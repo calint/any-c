@@ -16,6 +16,6 @@ typedef const char* cstr;
 
 #define null 0
 
-#include"lib/str.h"
-#include"lib/dynp.h"
+#include"lib/strb.h"
+#include"lib/ptrs.h"
 #include"lib/token.h"

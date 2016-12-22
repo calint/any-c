@@ -12,8 +12,8 @@ typedef struct xbool{
 	struct xexpls rh;
 
 	// list
-	str bool_op_list;
-	dynp bool_list;
+	strb bool_op_list;
+	ptrs bool_list;
 	bool is_encapsulated;
 	bool is_negated;
 }xbool;
@@ -29,8 +29,8 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 			printf("(");
 		}
 		for(unsigned i=0;i<o->bool_list.count;i++){
-			xbool*b=(xbool*)dynp_get(&o->bool_list,i);
-			char op=str_get(&o->bool_op_list,i);
+			xbool*b=(xbool*)ptrs_get(&o->bool_list,i);
+			char op=strb_get(&o->bool_op_list,i);
 			if(op){
 				if(op=='&'){
 					printf(" && ");
@@ -91,8 +91,8 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 
 #define xbool_def (xbool){{_xbool_compile_,NULL,cstr_def,token_def,0,false},\
 	false,xexpls_def,0,false,xexpls_def,\
-	str_def,\
-	dynp_def,\
+	strb_def,\
+	ptrs_def,\
 	false,false}
 
 inline static void xbool_parse(xbool*o,toc*tc,token tk){
@@ -203,12 +203,12 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 	o->is_encapsulated=true;
 	o->is_negated=neg;
 	tc->srcp++;
-	str_add(&o->bool_op_list,0);
+	strb_add(&o->bool_op_list,0);
 	while(1){
 		xbool*e=malloc(sizeof(xbool));
 		*e=xbool_def;
 		xbool_parse(e,tc,tk);
-		dynp_add(&o->bool_list,e);
+		ptrs_add(&o->bool_list,e);
 		token_skip_empty_space(&tc->srcp);
 		if(*tc->srcp==')'){
 			tc->srcp++;
@@ -221,7 +221,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 				longjmp(_jmp_buf,1);
 			}
 			tc->srcp++;
-			str_add(&o->bool_op_list,'&');
+			strb_add(&o->bool_op_list,'&');
 		}else if(*tc->srcp=='|'){
 			tc->srcp++;
 			if(*tc->srcp!='|'){
@@ -229,7 +229,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 				longjmp(_jmp_buf,1);
 			}
 			tc->srcp++;
-			str_add(&o->bool_op_list,'|');
+			strb_add(&o->bool_op_list,'|');
 		}else{
 			printf("<file> <line:col> expected && or ||\n");
 			longjmp(_jmp_buf,1);

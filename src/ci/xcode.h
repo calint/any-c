@@ -5,23 +5,23 @@
 
 typedef struct xcode{
 	xexp super;
-	dynp exps;
+	ptrs exps;
 }xcode;
 
 #define xcode_def (xcode){\
 	{_xcode_compile_,_xcode_free_,cstr_def,token_def,1,false},\
-	dynp_def\
+	ptrs_def\
 }
 
 inline static void _xcode_free_(xexp*oo){
 	xcode*o=(xcode*)oo;
 	for(unsigned i=0;i<o->exps.count;i++){
-		xexp*e=(xexp*)dynp_get(&o->exps,i);
+		xexp*e=(xexp*)ptrs_get(&o->exps,i);
 		if(e->free)
 			e->free(e);
 		free(e);
 	}
-	dynp_free(&o->exps);
+	ptrs_free(&o->exps);
 }
 
 inline static void _xcode_compile_(const xexp*oo,toc*tc){
@@ -34,7 +34,7 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 //		printf("\n");
 	printf("{\n");
 	for(unsigned i=0;i<o->exps.count;i++){
-		xexp*e=dynp_get(&o->exps,i);
+		xexp*e=ptrs_get(&o->exps,i);
 		toc_print_indent_for_compile(tc);
 		e->compile(e,tc);
 		if(xexpr_is_block(e))
@@ -67,7 +67,7 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 			xexp*e=ci_read_next_statement(tc);
 			if(!e)
 				break;
-			dynp_add(&o->exps,e);
+			ptrs_add(&o->exps,e);
 			if(*tc->srcp==';'){
 				tc->srcp++;
 				continue;
@@ -83,7 +83,7 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 	}
 	o->super.bits&=~1;
 	xexp*e=ci_read_next_statement(tc);
-	dynp_add(&o->exps,e);
+	ptrs_add(&o->exps,e);
 	if(*tc->srcp==';'){
 		tc->srcp++;
 	}

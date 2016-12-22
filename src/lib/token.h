@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<ctype.h>
-#include"dynp.h"
+#include"ptrs.h"
 
 typedef struct token{
 	const char*begin;
@@ -202,22 +202,22 @@ inline static const char*scan_to_including_newline(const char*p){
 //	str_add(s,0);
 //}
 
-static dynp _token_to_new_cstr_=dynp_def;
+static ptrs _token_to_new_cstr_=ptrs_def;
 inline static /*gives*/cstr token_to_new_cstr(token*o){
 	const long len=o->content_end-o->content;
 	char*s=malloc((size_t)len+1);
 	memcpy(s,o->content,(size_t)len);
 	s[len]='\0';
 
-	dynp_add(&_token_to_new_cstr_,s);
+	ptrs_add(&_token_to_new_cstr_,s);
 	return(cstr)s;
 }
 inline static void token_free(){
 	for(unsigned i=0;i<_token_to_new_cstr_.count;i++){
-		char*s=(char*)dynp_get(&_token_to_new_cstr_,i);
+		char*s=(char*)ptrs_get(&_token_to_new_cstr_,i);
 		free(s);
 	}
-	dynp_free(&_token_to_new_cstr_);
+	ptrs_free(&_token_to_new_cstr_);
 }
 
 //

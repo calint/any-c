@@ -35,16 +35,16 @@ inline static xif*xif_read_next(toc*tc,token tk){
 
 typedef struct xife{
 	xexp super;
-	dynp ifs;
+	ptrs ifs;
 	xcode elsecode;
 }xife;
 
 inline static void _xife_compile_(const xexp*oo,toc*tc){
 	xife*o=(xife*)oo;
 	for(unsigned i=0;i<o->ifs.count;i++){
-		xif*fi=(xif*)dynp_get(&o->ifs,i);
+		xif*fi=(xif*)ptrs_get(&o->ifs,i);
 		if(i>0){
-			xif*prvfi=(xif*)dynp_get(&o->ifs,i-1);
+			xif*prvfi=(xif*)ptrs_get(&o->ifs,i-1);
 			if(xexpr_is_encapsulated(&prvfi->super)){
 				printf(" else ");
 			}else{
@@ -54,7 +54,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 		}
 		_xif_compile_((xexp*)fi,tc);
 	}
-	xif*lastif=(xif*)dynp_get_last(&o->ifs);
+	xif*lastif=(xif*)ptrs_get_last(&o->ifs);
 	if(o->elsecode.exps.count){
 		if(xexpr_is_encapsulated(&lastif->code.super))
 			printf(" else ");
@@ -74,7 +74,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 
 #define xife_def (xife){\
 	{_xife_compile_,NULL,cstr_def,token_def,2,false},\
-		dynp_def,xcode_def\
+		ptrs_def,xcode_def\
 }
 
 inline static xife*xife_read_next(toc*tc,token tk){
@@ -83,7 +83,7 @@ inline static xife*xife_read_next(toc*tc,token tk){
 	o->super.token=tk;
 	while(1){
 		xif*i=xif_read_next(tc,tk);
-		dynp_add(&o->ifs,i);
+		ptrs_add(&o->ifs,i);
 		token t=toc_next_token(tc);
 		if(!token_equals(&t,"else")){
 			tc->srcp=t.begin;

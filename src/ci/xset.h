@@ -14,7 +14,7 @@ typedef struct xset{
 inline static void _xset_compile_(const xexp*oo,toc*tc){
 	xset*o=(xset*)oo;
 	ci_xset_compile(tc,o);
-	xexp*e=dynp_get(&o->expls.exps,0);
+	xexp*e=ptrs_get(&o->expls.exps,0);
 	if(o->super.is_ref && !e->is_ref){
 		printf("&");
 	}else if(!o->super.is_ref && e->is_ref){
