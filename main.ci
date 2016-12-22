@@ -1,18 +1,12 @@
-entity{
-	id=0
-	print{
-		p("entity %d\n",id)
+player{
+	int ret(int a){
+		return a+2;
 	}
 }
 
 global{
 	main{
-		var i=0
-		loop{
-			if i++==3 break
-			entity e
-			e.id=i
-			e.print()
-		}
+		player p
+		printf("4=%d\n",p.ret(2));
 	}
 }

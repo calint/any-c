@@ -90,18 +90,20 @@ inline static xfunc*xtype_get_func_for_name(const xtype*o,cstr field_name){
 	return NULL;
 }
 
-inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
+inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
+		token type,token name){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
 	f->is_ref=is_ref;
 	bool enclosed_args=false;
 	if(toc_srcp_is(tc,'{') || toc_srcp_is(tc,'(')){
-		f->type="void";
-		f->name=token_to_new_cstr(&type);
-	}else{
-		token tkname=toc_next_token(tc);
-		f->type=token_to_new_cstr(&type);
-		f->name=token_to_new_cstr(&tkname);
+		if(token_is_empty(&name)){ // global{main{}}
+			f->type="void";
+			f->name=token_to_new_cstr(&type);
+		}else{ // global{int main{}}
+			f->type=token_to_new_cstr(&type);
+			f->name=token_to_new_cstr(&name);
+		}
 	}
 	if(toc_srcp_is_take(tc,'('))
 		enclosed_args=true;
@@ -137,10 +139,11 @@ inline static xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,token type){
 	return f;
 }
 
-inline static xfield*xfield_read_next(toc*tc,cstr type,token name){
+inline static xfield*xfield_read_next(toc*tc,cstr type,token name,bool is_ref){
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
 	f->type=type;
+	f->is_ref=is_ref;
 	if(toc_srcp_is_take(tc,'&'))
 		f->is_ref=true;
 
@@ -161,11 +164,11 @@ inline static xfield*xfield_read_next(toc*tc,cstr type,token name){
 	return f;
 }
 
-inline static xtype*xtype_read_next(toc*tc,token name){
+inline static xtype*xtype_read_next(toc*tc,token nmtk){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
 	dynp_add(&tc->types,c);
-	c->token=name;
+	c->token=nmtk;
 	c->name=token_to_new_cstr(&c->token);
 	toc_push_scope(tc,'c',c->name);
 	if(!toc_srcp_is(tc,'{')){
@@ -175,10 +178,10 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 	}
 	toc_srcp_inc(tc);
 	while(1){
-		token t1=toc_next_token(tc);
-		if(token_is_empty(&t1)){
+		token tptk=toc_next_token(tc);
+		if(token_is_empty(&tptk)){
 			if(!toc_srcp_is(tc,'}')){
-				toc_print_source_location(tc,t1,4);
+				toc_print_source_location(tc,tptk,4);
 				printf("expected '}' to close '%s' declared at %d",c->name,0);
 				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
@@ -190,23 +193,20 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 		const bool is_ref=toc_srcp_is_take(tc,'&');
 
 		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-			xfunc_read_next(tc,c,is_ref,t1);
+			xfunc_read_next(tc,c,is_ref,tptk,token_def);
 		}else if(toc_srcp_is(tc,'=')){
-			xfield*f=xfield_read_next(tc,"var",t1);
-			f->is_ref=is_ref;
+			xfield*f=xfield_read_next(tc,"var",tptk,is_ref);
 			dynp_add(&c->fields,f);
 		}else if(toc_srcp_is(tc,';')){
-			xfield*f=xfield_read_next(tc,token_to_new_cstr(&t1),t1);
-			f->is_ref=is_ref;
+			xfield*f=xfield_read_next(tc,token_to_new_cstr(&tptk),tptk,is_ref);
 			dynp_add(&c->fields,f);
 		}else{
-			token name=toc_next_token(tc);
+			token nm=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-				tc->srcp=name.content;
-				xfunc_read_next(tc,c,is_ref,t1);
+//				tc->srcp=nm.content;
+				xfunc_read_next(tc,c,is_ref,tptk,nm);
 			}else{
-				xfield*f=xfield_read_next(tc,token_to_new_cstr(&t1),name);
-				f->is_ref=is_ref;
+				xfield*f=xfield_read_next(tc,token_to_new_cstr(&tptk),nm,is_ref);
 				dynp_add(&c->fields,f);
 			}
 		}

@@ -243,6 +243,7 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	o->super.is_ref=fn->is_ref;
 	if(!strcmp(fn->type,o->expls.super.type))
 			return;
+	toc_print_source_location(tc,o->super.token,4);
 	printf("return type '%s' does not match function return type '%s'",
 			o->expls.super.type,
 			fn->type
