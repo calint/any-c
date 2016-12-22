@@ -14,8 +14,10 @@ inline static void _xloop_compile_(const xexp*oo,toc*tc){
 	toc_pop_scope(tc);
 }
 
-#define xloop_def (xloop){{_xloop_compile_,NULL,cstr_def,token_def,1},\
-							xcode_def}
+#define xloop_def (xloop){\
+	{_xloop_compile_,NULL,cstr_def,token_def,1,false},\
+		xcode_def\
+}
 
 inline static xloop*xloop_read_next(toc*tc,token tk){
 	toc_push_scope(tc,'l',"");

@@ -8,7 +8,7 @@ typedef struct xident{
 	char incdecbits;
 }xident;
 
-#define xident_def (xident){{_xident_compile_,NULL,cstr_def,token_def,0},\
+#define xident_def (xident){{_xident_compile_,NULL,cstr_def,token_def,0,false},\
 							cstr_def,false}
 
 inline static void _xident_compile_(const xexp*oo,toc*tc){

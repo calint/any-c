@@ -431,8 +431,34 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	return(xexp*)e;
 }
 
-inline static xexp*ci_read_next_expression(toc*tc){
-	token tk=toc_next_token(tc);
+
+#define ci_identifier_maxlen 1024
+inline static bool ci_is_func_return_ref(
+		toc*tc,token tk,cstr accessor){
+
+	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
+		return false;
+	}
+
+	char cb[ci_identifier_maxlen];
+	strcpy(cb,accessor);
+//	const char*path_ptr=cb;
+	const char*varnm_ptr=cb;
+	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
+	if(funcnm_ptr){                           //
+		cb[funcnm_ptr-cb]=0;
+		funcnm_ptr++;                         // func: print
+	}
+	cstr vartypestr=ci_get_type_for_accessor(tc,varnm_ptr,tk);
+	const xtype*tp=ci_get_type_by_name(tc,vartypestr);
+	const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
+	return fn->return_is_ref;
+}
+
+// returns NULL if not constant
+inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
+//	bool is_ref=toc_srcp_is_take(tc,'&');
+//	token tk=toc_next_token(tc);
 	if(token_is_empty(&tk)){
 		if(toc_srcp_is_take(tc,'"')){ // string
 			while(1){
@@ -550,61 +576,22 @@ inline static xexp*ci_read_next_expression(toc*tc){
 			}
 		}
 	}
-//
-//	// keywords
-//	if(token_equals(&tk,"loop")){
-//		xloop*e=xloop_read_next(tc);
-//		e->super.token=tk;
-//		return (xexpr*)e;
-//	}
-//
-//	if(token_equals(&tk,"break")){
-//		xbreak*e=xbreak_read_next(tc);
-//		e->super.token=tk;
-//		return (xexpr*)e;
-//	}
-//
-//	if(token_equals(&tk,"continue")){
-//		xcont*e=xcont_read_next(tc,tk);
-//		return (xexpr*)e;
-//	}
-//
-//	if(token_equals(&tk,"if")){
-//		xife*e=xife_read_next(tc,tk);
-//		return (xexpr*)e;
-//	}
+	return NULL;
+}
 
+inline static xexp*ci_read_next_expression(toc*tc){
+	token tk=toc_next_token(tc);
+	xexp*ce=ci_read_next_constant_try(tc,tk);
+	if(ce)
+		return ce;
 	// built in types
 	cstr name=token_to_new_cstr(&tk);
-//	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
-//			token_equals(&tk,"bool")||token_equals(&tk,"char")||
-//			token_equals(&tk,"var")||token_equals(&tk,"ccharp")){//const char*
-//		xvar*e=xvar_read_next(tc,name);
-//		return(xexpr*)e;
-//	}
-
-	//  class instance
-//	type*c=toc_get_type_by_name(tc,name.data);
-//	if(c){// instantiate
-//		xvar*e=xvar_read_next(tc,name);
-//		return(xexpr*)e;
-//	}
 
 	// function call
 	if(*tc->srcp=='('){
 		xcall*e=xcall_read_next(tc,tk,name);
 		return(xexp*)e;
 	}
-
-	// assignment
-//	if(*tc->srcp=='='){
-//		tc->srcp++;
-//		if(*tc->srcp!='='){
-//			xset*e=xset_read_next(tc,name,tk);
-//			return(xexpr*)e;
-//		}
-//		tc->srcp--;
-//	}
 
 	char incdecbits=0;
 	if(toc_srcp_is_take(tc,'+')){
@@ -621,12 +608,24 @@ inline static xexp*ci_read_next_expression(toc*tc){
 		}
 	}
 
+
+	const tocdecl*decl=toc_get_declaration(tc,name);
+	if(!decl){
+		toc_print_source_location(tc,tk,4);
+		printf("declaration for '%s' not found",name);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
+	}
+
+	cstr accesor_type=ci_get_type_for_accessor(tc,name,tk);
+
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
 	e->name=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
-	e->super.type=ci_get_type_for_accessor(tc,e->name,tk);
+	e->super.type=accesor_type;
+	e->super.is_ref=decl->is_ref;
 	return(xexp*)e;
 }
 
@@ -704,12 +703,12 @@ inline static void ci_compile_to_c(toc*tc){
 					xfuncarg*a=(xfuncarg*)dynp_get(&f->funcargs,j);
 					printf(",");
 					printf("%s",a->type);
-					if(a->is_ref)
+					if(a->func_arg_is_ref)
 						printf("*");
 					else
 						printf(" ");
 					printf("%s",a->name);
-					toc_add_declaration(tc,a->type,a->is_ref,a->name);
+					toc_add_declaration(tc,a->type,a->func_arg_is_ref,a->name);
 				}
 				printf(")");
 				f->code.super.compile((xexp*)&f->code,tc);
@@ -839,7 +838,15 @@ inline static void ci_xset_compile(const toc*tc,token tk,
 }
 
 
-#define ci_identifier_maxlen 1024
+inline static bool ci_is_func_builtin(cstr funcnamne){
+	if(!strcmp("p",funcnamne) || !strcmp("printf",funcnamne)){
+		printf("printf(");
+		return true;
+	}
+	return false;
+}
+
+
 inline static void ci_xcall_compile(
 		toc*tc,token tk,cstr accessor,unsigned argcount){
 
@@ -920,7 +927,7 @@ inline static bool ci_is_func_arg_ref(
 		const xtype*tp=ci_get_type_by_name(tc,vartypestr);
 		const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
 		const xfuncarg*fna=(xfuncarg*)dynp_get(&fn->funcargs,arg_index);
-		return fna->is_ref;
+		return fna->func_arg_is_ref;
 	}
 	return false;
 //	funcnm_ptr=cb;       // func: draw
@@ -933,5 +940,37 @@ inline static bool ci_is_func_arg_ref(
 //	if(argcount)
 //		printf(",");
 }
-
+//
+//inline static bool ci_is_func_return_ref(
+//		toc*tc,token tk,cstr accessor,unsigned arg_index){
+//
+//	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
+//		return false;
+//	}
+//
+//	char cb[ci_identifier_maxlen];
+//	strcpy(cb,accessor);
+////	const char*path_ptr=cb;
+//	const char*varnm_ptr=cb;
+//	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
+//	if(funcnm_ptr){                           //
+//		cb[funcnm_ptr-cb]=0;
+//		funcnm_ptr++;                         // func: print
+//		cstr vartypestr=ci_get_type_for_accessor(tc,varnm_ptr,tk);
+//		const xtype*tp=ci_get_type_by_name(tc,vartypestr);
+//		const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
+//		const xfuncarg*fna=(xfuncarg*)dynp_get(&fn->funcargs,arg_index);
+//		return fna->func_arg_is_ref;
+//	}
+//	return false;
+////	funcnm_ptr=cb;       // func: draw
+////	cstr target_type=toc_get_type_in_context(tc,tk);
+////	printf("%s_%s((%s*)&o",
+////		target_type,
+////		funcnm_ptr,
+////		target_type
+////	);
+////	if(argcount)
+////		printf(",");
+//}
 

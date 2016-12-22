@@ -19,7 +19,7 @@ inline static void _xset_compile_(const xexp*oo,toc*tc){
 	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
-#define xset_def (xset){{_xset_compile_,NULL,cstr_def,token_def,0},\
+#define xset_def (xset){{_xset_compile_,NULL,cstr_def,token_def,0,false},\
 	cstr_def,xexpls_def,false\
 }
 

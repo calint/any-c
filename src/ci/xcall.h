@@ -24,9 +24,10 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	ci_xcall_compile(tc,o->super.token,o->name,o->args.count);
 	for(unsigned i=0;i<o->args.count;i++){
 		xexp*e=(xexp*)dynp_get(&o->args,i);
-		const bool fargisref=ci_is_func_arg_ref(tc,e->token,o->name,i);
-		if(fargisref)
+		const bool func_arg_is_ref=ci_is_func_arg_ref(tc,e->token,o->name,i);
+		if(func_arg_is_ref){
 			printf("&");
+		}
 		e->compile(e,tc);
 		if(i!=o->args.count-1){
 			printf(",");
@@ -36,7 +37,7 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 }
 
 #define xcall_def (xcall){\
-	{_xcall_compile_,_xcall_free_,cstr_def,token_def,0},\
+	{_xcall_compile_,_xcall_free_,cstr_def,token_def,0,false},\
 	cstr_def,dynp_def\
 }
 
@@ -52,7 +53,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
 		longjmp(_jmp_buf,1);
 	}
 	toc_srcp_inc(tc);
-	while(1){
+	while(1){ // arguments passed to function
 		if(toc_srcp_is_take(tc,')'))
 			break;
 		xexp*a=(xexp*)xexpls_read_next(tc,tk);
@@ -67,7 +68,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
 		if(toc_srcp_is_take(tc,')'))
 			break;
 		toc_print_source_location(tc,o->super.token,4);
-		printf("expected ',' followed by more arguments to function '%s'",
+		printf("expected ',' or ')' for function '%s'",
 				name);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);

@@ -10,7 +10,7 @@ typedef struct xexpls{
 }xexpls;
 
 #define xexpls_def (xexpls){\
-	{_xexpls_compile_,_xexpls_free_,cstr_def,token_def,0},\
+	{_xexpls_compile_,_xexpls_free_,cstr_def,token_def,0,false},\
 		dynp_def,str_def}
 
 inline static void _xexpls_free_(xexp*oo){
@@ -85,6 +85,7 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 	}
 	xexp*first=dynp_get(&o->exps,0);//? morechecks
 	o->super.type=first->type;
+	o->super.is_ref=first->is_ref;
 }
 
 

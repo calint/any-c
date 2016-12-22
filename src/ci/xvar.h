@@ -38,8 +38,10 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 
 }
 
-#define xvar_def (xvar){{_xvar_compile_,NULL,cstr_def,token_def,0},\
-						cstr_def,xset_def,false}
+#define xvar_def (xvar){\
+	{_xvar_compile_,NULL,cstr_def,token_def,0,false},\
+		cstr_def,xset_def,false\
+}
 
 inline static xvar*xvar_read_next(toc*tc,cstr type){
 	xvar*o=malloc(sizeof(xvar));

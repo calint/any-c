@@ -15,10 +15,10 @@ typedef char bool;
 typedef struct entity{
     int id;
 }entity;
-#define entity_def (entity){1}
+#define entity_def (entity){0}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static void entity_p(entity*o){
-	printf("p entity %d\n",o->id);
+inline static void entity_ref(entity*o,entity*e){
+	printf("hello world for entity %d\n",e->id);
 }
 
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
@@ -26,13 +26,10 @@ typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	entity e1=entity_def;
-	entity*e2=&e1;
-	entity_p((entity*)&e1);
-	entity_p((entity*)e2);
-	e2->id=2;
-	entity_p((entity*)&e1);
-	entity_p((entity*)e2);
+	entity a=entity_def;
+	entity*b=&a;
+	a.id=2;
+	entity_ref((entity*)b,&a);
 }
 
 inline static void global_init(global*o){

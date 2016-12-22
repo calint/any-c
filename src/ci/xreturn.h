@@ -12,8 +12,10 @@ inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
-#define xreturn_def (xreturn){{_xreturn_compile_,NULL,cstr_def,token_def,0},\
-	xexpls_def}
+#define xreturn_def (xreturn){\
+	{_xreturn_compile_,NULL,cstr_def,token_def,0,false},\
+	xexpls_def\
+}
 
 inline static xreturn*xreturn_read_next(toc*tc,token tk){
 	toc_srcp_skip_if(tc,';');

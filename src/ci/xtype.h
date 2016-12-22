@@ -22,7 +22,7 @@ typedef struct xfuncarg{
 	cstr type;
 	cstr name;
 	token token;
-	bool is_ref;
+	bool func_arg_is_ref;
 }xfuncarg;
 
 #define xfuncarg_def (xfuncarg){cstr_def,cstr_def,token_def,false}
@@ -33,9 +33,11 @@ typedef struct xfunc{
 	dynp funcargs;
 	xcode code;
 	token token;
+	bool return_is_ref;
 }xfunc;
 
-#define xfunc_def (xfunc){cstr_def,cstr_def,dynp_def,xcode_def,token_def}
+#define xfunc_def (xfunc){\
+	cstr_def,cstr_def,dynp_def,xcode_def,token_def,false}
 
 inline static void xfunc_free(xfunc*o){
 	dynp_free(&o->funcargs);
@@ -118,11 +120,11 @@ inline static xfunc*xfunc_read_next(toc*tc,token type){
 		dynp_add(&f->funcargs,fa);
 		*fa=xfuncarg_def;
 		if(toc_srcp_is_take(tc,'&'))
-			fa->is_ref=true;
+			fa->func_arg_is_ref=true;
 		token tkn=toc_next_token(tc);
 		fa->type=token_to_new_cstr(&tkt);
 		fa->name=token_to_new_cstr(&tkn);
-		toc_add_declaration(tc,fa->type,fa->is_ref,fa->name);
+		toc_add_declaration(tc,fa->type,fa->func_arg_is_ref,fa->name);
 		toc_srcp_is_take(tc,',');
 	}
 	if(enclosed_args){
