@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CC='gcc -std=gnu11'
+CC='gcc -std=c99'
 SRC=src/main.c
 BIN=any-c
 
