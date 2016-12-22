@@ -651,27 +651,27 @@ inline static xexp*ci_read_next_statement(toc*tc){
 
 
 #define ci_identifier_maxlen 1024
-inline static bool ci_is_func_return_ref(
-		toc*tc,token tk,cstr accessor){
-
-	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
-		return false;
-	}
-
-	char cb[ci_identifier_maxlen];
-	strcpy(cb,accessor);
-//	const char*path_ptr=cb;
-	const char*varnm_ptr=cb;
-	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
-	if(funcnm_ptr){                           //
-		cb[funcnm_ptr-cb]=0;
-		funcnm_ptr++;                         // func: print
-	}
-	cstr vartypestr=ci_get_field_type_for_accessor(tc,varnm_ptr,tk);
-	const xtype*tp=ci_get_type_by_name(tc,vartypestr);
-	const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
-	return fn->return_is_ref;
-}
+//inline static bool ci_is_func_return_ref(
+//		toc*tc,token tk,cstr accessor){
+//
+//	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
+//		return false;
+//	}
+//
+//	char cb[ci_identifier_maxlen];
+//	strcpy(cb,accessor);
+////	const char*path_ptr=cb;
+//	const char*varnm_ptr=cb;
+//	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
+//	if(funcnm_ptr){                           //
+//		cb[funcnm_ptr-cb]=0;
+//		funcnm_ptr++;                         // func: print
+//	}
+//	cstr vartypestr=ci_get_field_type_for_accessor(tc,varnm_ptr,tk);
+//	const xtype*tp=ci_get_type_by_name(tc,vartypestr);
+//	const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
+//	return fn->return_is_ref;
+//}
 
 inline static xexp*ci_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
