@@ -4,7 +4,7 @@ CC='gcc -std=gnu11'
 SRC=src/main.c
 BIN=any-c
 
-WARNINGS='-Wall -Wextra -Wfatal-errors -Wno-unused-parameter -Wno-discarded-qualifiers'
+WARNINGS='-Wall -Wextra -Wpedantic -Wfatal-errors -Wno-unused-parameter'
 
 LIBS=
 

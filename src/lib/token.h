@@ -151,31 +151,6 @@ inline static token token_next(const char**s){
 	return t;
 }
 
-inline static token token_next2(const char**s){
-	const char*p=*s;
-	token t;
-	t.begin=p;
-	while(1){
-		if(!*p)break;
-		if(!isspace(*p))break;
-		p++;
-	}
-	t.content=p;
-	while(1){
-		if(!*p)break;
-		if(isspace(*p))break;
-		p++;
-	}
-	t.content_end=p;
-	while(1){
-		if(!*p)break;
-		if(!isspace(*p))break;
-		p++;
-	}
-	*s=t.end=p;
-	return t;
-}
-
 inline static token token_from_string_additional_delim(
 		const char*s,
 		char delim)
@@ -221,17 +196,17 @@ inline static const char*scan_to_including_newline(const char*p){
 	}
 }
 
-inline static void token_setz(token*o,str*s){
-	str_clear(s);
-	str_add_list(s,o->content,(unsigned)(o->content_end-o->content));
-	str_add(s,0);
-}
+//inline static void token_setz(token*o,str*s){
+//	str_clear(s);
+//	str_add_list(s,o->content,(unsigned)(o->content_end-o->content));
+//	str_add(s,0);
+//}
 
 static dynp _token_to_new_cstr_=dynp_def;
 inline static /*gives*/cstr token_to_new_cstr(token*o){
-	const unsigned len=o->content_end-o->content;
-	char*s=malloc(len+1);
-	memcpy(s,o->content,len);
+	const long len=o->content_end-o->content;
+	char*s=malloc((size_t)len+1);
+	memcpy(s,o->content,(size_t)len);
 	s[len]='\0';
 
 	dynp_add(&_token_to_new_cstr_,s);

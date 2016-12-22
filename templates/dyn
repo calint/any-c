@@ -17,7 +17,7 @@ typedef struct ${name}{
 	unsigned count;
 	unsigned cap;
 }${name};
-#define ${name}_def (${name}){0,0,0}
+#define ${name}_def {0,0,0}
 
 //--------------------------------------------------------------------- private
 
@@ -81,7 +81,7 @@ inline static ${type} ${name}_get_last(const ${name}*o){
 
 //-----------------------------------------------------------------------------
 
-inline static size_t ${name}_size_in_bytes(const ${name}*o){
+inline static size_t ${name}_size_in_bytes(${name} const*o){
 	return o->count*sizeof(${type});
 }
 
@@ -95,9 +95,9 @@ inline static void ${name}_free(${name}*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_add_list(${name}*o,/*copies*/const ${type}*str,unsigned n){
+inline static void ${name}_add_list(${name}*o,/*copies*/${type} const*str,unsigned n){
 	//? optimize memcpy
-	const ${type}*p=str;
+	${type} const*p=str;
 	while(n--){
 		_${name}_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
@@ -106,9 +106,9 @@ inline static void ${name}_add_list(${name}*o,/*copies*/const ${type}*str,unsign
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_add_string(${name}*o,/*copies*/const ${type}*str){
+inline static void ${name}_add_string(${name}*o,/*copies*/${type} const*str){
 	//? optimize
-	const ${type}*p=str;
+	${type} const*p=str;
 	while(*p){
 		_${name}_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
@@ -176,9 +176,9 @@ inline static void ${name}_clear(${name}*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_setz(${name}*o,/*copies*/const ${type}*s){
+inline static void ${name}_setz(${name}*o,/*copies*/${type} const*s){
 	//? optimize
-	const ${type}*p=s;
+	${type} const*p=s;
 	o->count=0;
 	while(*p){
 		_${name}_insure_free_capcity(o,1);
@@ -247,7 +247,7 @@ inline static unsigned ${name}_has(const ${name}*o,${type} oo){
 	return 1;
 }
 //-----------------------------------------------------------------------------
-inline static/*gives*/${name} ${name}_from_string(const ${type}*s){
+inline static/*gives*/${name} ${name}_from_string(${type} const*s){
 	${name} o=${name}_def;
 	${name}_add_string(&o,s);
 	${name}_add(&o,0);

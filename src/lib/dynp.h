@@ -17,7 +17,7 @@ typedef struct dynp{
 	unsigned count;
 	unsigned cap;
 }dynp;
-#define dynp_def (dynp){0,0,0}
+#define dynp_def {0,0,0}
 
 //--------------------------------------------------------------------- private
 
@@ -81,7 +81,7 @@ inline static void* dynp_get_last(const dynp*o){
 
 //-----------------------------------------------------------------------------
 
-inline static size_t dynp_size_in_bytes(const dynp*o){
+inline static size_t dynp_size_in_bytes(dynp const*o){
 	return o->count*sizeof(void*);
 }
 
@@ -95,9 +95,9 @@ inline static void dynp_free(dynp*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void dynp_add_list(dynp*o,/*copies*/const void**str,unsigned n){
+inline static void dynp_add_list(dynp*o,/*copies*/void* const*str,unsigned n){
 	//? optimize memcpy
-	const void**p=str;
+	void* const*p=str;
 	while(n--){
 		_dynp_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
@@ -106,9 +106,9 @@ inline static void dynp_add_list(dynp*o,/*copies*/const void**str,unsigned n){
 
 //-----------------------------------------------------------------------------
 
-inline static void dynp_add_string(dynp*o,/*copies*/const void**str){
+inline static void dynp_add_string(dynp*o,/*copies*/void* const*str){
 	//? optimize
-	const void**p=str;
+	void* const*p=str;
 	while(*p){
 		_dynp_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
@@ -176,9 +176,9 @@ inline static void dynp_clear(dynp*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void dynp_setz(dynp*o,/*copies*/const void**s){
+inline static void dynp_setz(dynp*o,/*copies*/void* const*s){
 	//? optimize
-	const void**p=s;
+	void* const*p=s;
 	o->count=0;
 	while(*p){
 		_dynp_insure_free_capcity(o,1);
@@ -247,7 +247,7 @@ inline static unsigned dynp_has(const dynp*o,void* oo){
 	return 1;
 }
 //-----------------------------------------------------------------------------
-inline static/*gives*/dynp dynp_from_string(const void**s){
+inline static/*gives*/dynp dynp_from_string(void* const*s){
 	dynp o=dynp_def;
 	dynp_add_string(&o,s);
 	dynp_add(&o,0);

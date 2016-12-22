@@ -17,7 +17,7 @@ typedef struct str{
 	unsigned count;
 	unsigned cap;
 }str;
-#define str_def (str){0,0,0}
+#define str_def {0,0,0}
 
 //--------------------------------------------------------------------- private
 
@@ -81,7 +81,7 @@ inline static char str_get_last(const str*o){
 
 //-----------------------------------------------------------------------------
 
-inline static size_t str_size_in_bytes(const str*o){
+inline static size_t str_size_in_bytes(str const*o){
 	return o->count*sizeof(char);
 }
 
@@ -95,9 +95,9 @@ inline static void str_free(str*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void str_add_list(str*o,/*copies*/const char*str,unsigned n){
+inline static void str_add_list(str*o,/*copies*/char const*str,unsigned n){
 	//? optimize memcpy
-	const char*p=str;
+	char const*p=str;
 	while(n--){
 		_str_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
@@ -106,9 +106,9 @@ inline static void str_add_list(str*o,/*copies*/const char*str,unsigned n){
 
 //-----------------------------------------------------------------------------
 
-inline static void str_add_string(str*o,/*copies*/const char*str){
+inline static void str_add_string(str*o,/*copies*/char const*str){
 	//? optimize
-	const char*p=str;
+	char const*p=str;
 	while(*p){
 		_str_insure_free_capcity(o,1);
 		*(o->data+o->count++)=*p++;
@@ -176,9 +176,9 @@ inline static void str_clear(str*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void str_setz(str*o,/*copies*/const char*s){
+inline static void str_setz(str*o,/*copies*/char const*s){
 	//? optimize
-	const char*p=s;
+	char const*p=s;
 	o->count=0;
 	while(*p){
 		_str_insure_free_capcity(o,1);
@@ -247,7 +247,7 @@ inline static unsigned str_has(const str*o,char oo){
 	return 1;
 }
 //-----------------------------------------------------------------------------
-inline static/*gives*/str str_from_string(const char*s){
+inline static/*gives*/str str_from_string(char const*s){
 	str o=str_def;
 	str_add_string(&o,s);
 	str_add(&o,0);
