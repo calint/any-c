@@ -153,10 +153,11 @@ inline static xfield*xfield_read_next(toc*tc,cstr type,token name){
 	if(toc_srcp_is_take(tc,'=')){
 		xexpls_parse_next(&f->initval,tc,name);
 		if(strcmp(f->type,"var")){
-				ci_xset_assert(tc,
-					f->name,
-					f->initval.super.type,
-					f->initval.super.token);
+				xset tmp=xset_def;
+				tmp.name=f->name;
+				tmp.super.type=f->initval.super.type;
+				tmp.super.token=f->initval.super.token;
+				ci_xset_assert(tc,&tmp);
 		}
 		f->type=f->initval.super.type;
 	}

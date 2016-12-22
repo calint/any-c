@@ -21,7 +21,7 @@ inline static void _xcall_free_(xexp*oo){
 
 inline static void _xcall_compile_(const xexp*oo,toc*tc){
 	xcall*o=(xcall*)oo;
-	ci_xcall_compile(tc,o->super.token,o->name,o->args.count);
+	ci_xcall_compile(tc,(const struct xcall*)o);
 	for(unsigned i=0;i<o->args.count;i++){
 		xexp*e=(xexp*)dynp_get(&o->args,i);
 		const bool func_arg_is_ref=ci_is_func_arg_ref(tc,e->token,o->name,i);

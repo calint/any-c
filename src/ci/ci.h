@@ -47,7 +47,7 @@ inline static xtype*ci_get_type_by_name_try(const toc*o,cstr name){
 }
 
 inline static struct xtyperef ci_get_typeref_for_accessor(
-		toc*tc,token tk,cstr accessor){
+		const toc*tc,token tk,cstr accessor){
 
 	const tocdecl*td=toc_get_declaration_for_accessor(tc,accessor);
 	if(!td){
@@ -250,7 +250,7 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
-inline static bool ci_xvar_needs_init(toc*tc,cstr name){
+inline static bool ci_xvar_needs_init(const toc*tc,cstr name){
 	xtype*t=ci_get_type_by_name_try(tc,name);
 	return (t->bits&4)==4;
 }
@@ -269,7 +269,8 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 	}
 }
 
-inline static void ci_xcode_compile_free_current_loop_scope(toc*tc,token tk){
+inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
+		token tk){
 //	bool nl=false;
 	for(int j=tc->scopes.count-1;j>=0;j--){
 		const tocscope*ts=(const tocscope*)dynp_get(&tc->scopes,j);
@@ -358,8 +359,10 @@ inline static cstr ci_get_field_type_for_accessor(const toc*tc,
 	return current_class_name;
 }
 
-inline static void ci_xset_assert(const toc*tc,
-		cstr accessor,cstr settype,token tk){
+inline static void ci_xset_assert(const toc*tc,const xset*o){
+	cstr accessor=o->name;
+	cstr settype=o->super.type;
+	token tk=o->super.token;
 
 	cstr current_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration_for_accessor(tc,current_accessor);
@@ -846,8 +849,10 @@ inline static int ci_compile_file(cstr path){
 	return 0;
 }
 
-inline static void ci_xset_compile(const toc*tc,token tk,
-						cstr id,cstr type){
+inline static void ci_xset_compile(const toc*tc,const xset*o){
+	token tk=o->super.token;
+	cstr id=o->name;
+//	cstr type=o->expls.super.type;
 	cstr p=strpbrk(id,".");
 	if(p){
 		str sid=str_def;
@@ -859,7 +864,7 @@ inline static void ci_xset_compile(const toc*tc,token tk,
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			longjmp(_jmp_buf,1);
 		}
-		ci_xset_assert(tc,id,type,tk);
+		ci_xset_assert(tc,o);
 		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
 		sid.count--;//? adhock
 		if(i->is_ref){
@@ -897,7 +902,7 @@ inline static void ci_xset_compile(const toc*tc,token tk,
 }
 
 inline static/*gives*/cstr ci_get_c_accessor_for_accessor(
-		toc*tc,token tk,cstr accessor){
+		const toc*tc,token tk,cstr accessor){
 	str cacc=str_def;
 	cstr ap=accessor;
 	cstr p=strchr(ap,'.');
@@ -924,8 +929,11 @@ inline static/*gives*/cstr ci_get_c_accessor_for_accessor(
 	return cacc.data;
 }
 
-inline static void ci_xcall_compile(
-		toc*tc,token tk,cstr accessor,unsigned argcount){
+inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
+//		toc*tc,token tk,cstr accessor,unsigned argcount){
+	cstr accessor=c->name;
+	unsigned argcount=c->args.count;
+	token tk=c->super.token;
 
 	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
 		printf("printf(");
@@ -995,7 +1003,7 @@ inline static void ci_xcall_compile(
 }
 
 inline static bool ci_is_func_arg_ref(
-		toc*tc,token tk,cstr accessor,unsigned arg_index){
+		const toc*tc,token tk,cstr accessor,unsigned arg_index){
 
 	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
 		return false;

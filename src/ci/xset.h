@@ -13,7 +13,7 @@ typedef struct xset{
 
 inline static void _xset_compile_(const xexp*oo,toc*tc){
 	xset*o=(xset*)oo;
-	ci_xset_compile(tc,o->super.token,o->name,o->expls.super.type);
+	ci_xset_compile(tc,o);
 	xexp*e=dynp_get(&o->expls.exps,0);
 	if(o->super.is_ref && !e->is_ref){
 		printf("&");
@@ -45,7 +45,7 @@ inline static void _xset_parse(toc*tc,xset*o,cstr name,token tk){
 	o->super.is_ref=ai.is_ref;
 
 	xexpls_parse_next(&o->expls,tc, tk);
-	ci_xset_assert(tc,name,o->expls.super.type,tk);
+	ci_xset_assert(tc,o);
 	if(!strcmp(o->super.type,"var"))
 		o->super.type=o->expls.super.type;
 	if(o->super.is_ref==o->super.is_ref)
