@@ -19,8 +19,8 @@ inline static void ci_xcall_assert(const toc*,struct xcall*);
 struct xreturn;
 inline static void ci_xreturn_assert(const toc*tc,struct xreturn*);
 
-struct xaccessorinfo{
+struct xtyperef{
 	cstr type;
 	bool is_ref;
 };
-inline static struct xaccessorinfo ci_get_accessorinfo(toc*,token,cstr);
+inline static struct xtyperef ci_get_typeref_for_accessor(toc*,token,cstr);

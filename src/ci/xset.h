@@ -39,8 +39,8 @@ inline static void _xset_parse(toc*tc,xset*o,cstr name,token tk){
 		longjmp(_jmp_buf,1);
 		return;
 	}
-	struct xaccessorinfo ai;
-	ai=ci_get_accessorinfo(tc,tk,o->name);
+	struct xtyperef ai;
+	ai=ci_get_typeref_for_accessor(tc,tk,o->name);
 	o->super.type=ai.type;
 	o->super.is_ref=ai.is_ref;
 
