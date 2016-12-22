@@ -18,7 +18,7 @@ inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 }
 
 #define xreturn_def (xreturn){\
-	{_xreturn_compile_,NULL,cstr_def,token_def,0,false},\
+	{_xreturn_compile_,NULL,strc_def,token_def,0,false},\
 	xexpls_def\
 }
 

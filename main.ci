@@ -1,13 +1,25 @@
-global{
-	main{
-		var a=0
-		a=a|1
-		p("1==%d\n",a);
-		a=a|2
-		p("3==%d\n",a);
+entity{
+	id=0
+	print{
+		printf("entity %d\n",id);
+	}
+}
 
-		a=3
-		p("1==%d\n",a&1);
-		p("2==%d\n",a&2);
+entities{
+	entity e
+	entity&get(strc nm){
+		return e
+	}
+}
+
+global{
+	entities es;
+	main{
+		es.e.id=1
+		entity&a=es.get("a")
+		a.print();
+		es.e.id=2
+		a=es.get("a")
+		a.print();
 	}
 }

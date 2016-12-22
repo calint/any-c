@@ -21,7 +21,7 @@ typedef struct ci{
 }ci;
 #define ci_def {ptrs_def}
 
-inline static bool ci_is_builtin_type(cstr typenm){
+inline static bool ci_is_builtin_type(strc typenm){
 	if(!strcmp("var",typenm))return true;
 	if(!strcmp("void",typenm))return true;
 	if(!strcmp("int",typenm))return true;
@@ -29,14 +29,14 @@ inline static bool ci_is_builtin_type(cstr typenm){
 	if(!strcmp("float",typenm))return true;
 	if(!strcmp("bool",typenm))return true;
 	if(!strcmp("char",typenm))return true;
-	if(!strcmp("cstr",typenm))return true;
+	if(!strcmp("strc",typenm))return true;
 //	if(!strcmp("short",typenm))return true;
 //	if(!strcmp("long",typenm))return true;
 //	if(!strcmp("double",typenm))return true;
 	return false;
 }
 
-inline static xtype*ci_get_type_for_name_try(const toc*o,cstr name){
+inline static xtype*ci_get_type_for_name_try(const toc*o,strc name){
 	for(unsigned i=0;i<o->types.count;i++){
 		xtype*c=ptrs_get(&o->types,i);
 		if(!strcmp(c->name,name)){
@@ -47,7 +47,7 @@ inline static xtype*ci_get_type_for_name_try(const toc*o,cstr name){
 }
 
 inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
-	cstr funcname=null;
+	strc funcname=null;
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 		if(s->type!='f')
@@ -55,7 +55,7 @@ inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 		funcname=s->name;
 		break;
 	}
-	cstr typenm=null;
+	strc typenm=null;
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 		if(s->type!='c')
@@ -69,7 +69,7 @@ inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 }
 
 inline static xtyperef ci_get_typeref_for_accessor(
-		const toc*tc,token tk,cstr accessor){
+		const toc*tc,token tk,strc accessor){
 
 	const tocdecl*td=toc_get_declaration_for_accessor(tc,accessor);
 	if(!td){
@@ -83,10 +83,10 @@ inline static xtyperef ci_get_typeref_for_accessor(
 		longjmp(_jmp_buf,1);
 	}
 	xtype*tp=ci_get_type_for_name_try(tc,td->type);
-	cstr tpnm=tp?tp->name:td->type;
+	strc tpnm=tp?tp->name:td->type;
 	bool isref=td->is_ref;
 
-	cstr dotixptr=strchr(accessor,'.');
+	strc dotixptr=strchr(accessor,'.');
 	while(1){ // e2.id
 		if(!dotixptr)
 			break;
@@ -136,7 +136,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 }
 
 
-inline static bool ci_is_builtin_func(cstr funcnamne){
+inline static bool ci_is_builtin_func(strc funcnamne){
 	if(!strcmp("p",funcnamne) ||
 		!strcmp("printf",funcnamne))
 		return true;
@@ -144,12 +144,12 @@ inline static bool ci_is_builtin_func(cstr funcnamne){
 }
 
 inline static xfunc*ci_get_func_for_accessor(const toc*tc,
-						cstr accessor,token tk){
+						strc accessor,token tk){
 
-	cstr cur_accessor=accessor;
+	strc cur_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration_for_accessor(tc,cur_accessor);
 	if(!decl){// no declaration found, func call to member or builtin or error
-		cstr tpnm=toc_get_typenm_in_context(tc,tk);
+		strc tpnm=toc_get_typenm_in_context(tc,tk);
 		xtype*tp=ci_get_type_for_name_try(tc,tpnm);
 		xfunc*fn=xtype_get_func_for_name(tp,cur_accessor);
 		if(fn)
@@ -159,11 +159,11 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	cstr cur_typenm=decl->type;
+	strc cur_typenm=decl->type;
 	const xtype*cur_type=ci_get_type_for_name_try(tc,cur_typenm);
 	if(cur_type){
 		while(1){
-			cstr p=strpbrk(cur_accessor,".");
+			strc p=strpbrk(cur_accessor,".");
 			if(!p)
 				break;
 			cur_accessor=p+1;
@@ -182,7 +182,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 				}
 				return fn;
 			}
-			cstr lookup=cur_accessor;
+			strc lookup=cur_accessor;
 			if(p){
 				strb s=strb_def;
 				strb_add_list(&s,cur_accessor,(unsigned)(p-cur_accessor));
@@ -255,7 +255,7 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
-inline static bool ci_xvar_needs_init(const toc*tc,cstr name){
+inline static bool ci_xvar_needs_init(const toc*tc,strc name){
 	xtype*t=ci_get_type_for_name_try(tc,name);
 	return (t->bits&4)==4;
 }
@@ -316,10 +316,10 @@ inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 	return false;
 }
 
-inline static cstr ci_get_field_type_for_accessor(const toc*tc,
-						cstr accessor,token tk){
+inline static strc ci_get_field_type_for_accessor(const toc*tc,
+						strc accessor,token tk){
 
-	cstr current_accessor=accessor;
+	strc current_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration_for_accessor(tc,current_accessor);
 	if(!decl){
 		toc_print_source_location(tc,tk,4);
@@ -327,17 +327,17 @@ inline static cstr ci_get_field_type_for_accessor(const toc*tc,
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	cstr current_class_name=decl->type;
+	strc current_class_name=decl->type;
 	const xtype*current_type=ci_get_type_for_name_try(tc,current_class_name);
 	if(current_type){
 		while(1){
-			cstr p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
+			strc p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
 			if(!p){// a=2
 				break;
 			}
 			current_accessor=p+1; // anim.frame
 			p=strpbrk(current_accessor,".");
-			cstr lookup=current_accessor;
+			strc lookup=current_accessor;
 			if(p){
 				strb s=strb_def;
 				strb_add_list(&s,current_accessor,p-current_accessor);
@@ -365,11 +365,11 @@ inline static cstr ci_get_field_type_for_accessor(const toc*tc,
 }
 
 inline static void ci_xset_assert(const toc*tc,const xset*o){
-	cstr accessor=o->name;
-	cstr settype=o->super.type;
+	strc accessor=o->name;
+	strc settype=o->super.type;
 	token tk=o->super.token;
 
-	cstr current_accessor=accessor;
+	strc current_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration_for_accessor(tc,current_accessor);
 	if(!decl){
 		toc_print_source_location(tc,tk,4);
@@ -381,17 +381,17 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 	if(!strcmp(decl->type,"var"))// if dest is var
 		return;
 
-	cstr current_class_name=decl->type;
+	strc current_class_name=decl->type;
 	const xtype*current_type=ci_get_type_for_name_try(tc,current_class_name);
 	if(current_type){
 		while(1){
-			cstr p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
+			strc p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
 			if(!p){// a=2
 				break;
 			}
 			current_accessor=p+1; // anim.frame
 			p=strpbrk(current_accessor,".");
-			cstr lookup=current_accessor;
+			strc lookup=current_accessor;
 			if(p){
 				strb s=strb_def;
 				strb_add_list(&s,current_accessor,p-current_accessor);
@@ -464,8 +464,8 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			e->name=token_to_new_cstr(&tk);
-			e->super.type="cstr";
+			e->name=token_to_new_strc(&tk);
+			e->super.type="strc";
 			return(xexp*)e;
 
 		}else if(toc_srcp_is_take(tc,'\'')){
@@ -482,7 +482,7 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			e->name=token_to_new_cstr(&tk);
+			e->name=token_to_new_strc(&tk);
 			e->super.type="char";
 			return(xexp*)e;
 
@@ -492,7 +492,7 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 	}
 
 	// constant
-	cstr tks=token_to_new_cstr(&tk);
+	strc tks=token_to_new_strc(&tk);
 	const size_t tkslen=strlen(tks);
 
 	// boolean
@@ -583,10 +583,10 @@ inline static xexp*ci_read_next_statement(toc*tc){
 		return(xexp*)xreturn_read_next(tc,tk);
 
 	// built in types
-	cstr name=token_to_new_cstr(&tk);
+	strc name=token_to_new_strc(&tk);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
-			token_equals(&tk,"var")||token_equals(&tk,"cstr"))
+			token_equals(&tk,"var")||token_equals(&tk,"strc"))
 		return(xexp*)xvar_read_next(tc,name);
 
 	//  class instance
@@ -647,7 +647,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 		longjmp(_jmp_buf,1);
 	}
 
-	cstr name=token_to_new_cstr(&tk);
+	strc name=token_to_new_strc(&tk);
 
 	// function call
 	if(toc_srcp_is(tc,'('))
@@ -681,8 +681,8 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	return(xexp*)e;
 }
 
-inline static void ci_print_right_aligned_comment(cstr comment){
-	cstr line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
+inline static void ci_print_right_aligned_comment(strc comment){
+	strc line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
 	const size_t maxlen=strlen(line);
 	const size_t ln=strlen(comment);
 	long start_at=(long)(maxlen-ln)-4;
@@ -696,11 +696,11 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
-	printf("typedef const char*cstr;\n");
+	printf("typedef const char*strc;\n");
 	printf("typedef char bool;\n");
 	printf("#define true 1\n");
 	printf("#define false 0\n");
-	printf("#define cstr_def \"\"\n");
+	printf("#define strc_def \"\"\n");
 	printf("#define bool_def false\n");
 	printf("#define char_def 0\n");
 	printf("#define int_def 0\n");
@@ -832,7 +832,7 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 }
 
-inline static int ci_compile_file(cstr path){
+inline static int ci_compile_file(strc path){
 	const int ret=setjmp(_jmp_buf);
 	if(ret)
 		return ret;
@@ -862,8 +862,8 @@ inline static int ci_compile_file(cstr path){
 
 inline static void ci_xset_compile(const toc*tc,const xset*o){
 	token tk=o->super.token;
-	cstr id=o->name;
-	cstr p=strpbrk(id,".");
+	strc id=o->name;
+	strc p=strpbrk(id,".");
 	if(p){
 		strb sid=strb_def;
 		strb_add_list(&sid,id,p-id);
@@ -911,11 +911,11 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 	longjmp(_jmp_buf,1);
 }
 
-inline static/*gives*/cstr ci_get_c_accessor_for_accessor(
-		const toc*tc,token tk,cstr accessor){
+inline static/*gives*/strc ci_get_c_accessor_for_accessor(
+		const toc*tc,token tk,strc accessor){
 	strb cacc=strb_def;
-	cstr ap=accessor;
-	cstr p=strchr(ap,'.');
+	strc ap=accessor;
+	strc p=strchr(ap,'.');
 	while(1){
 		if(p)
 			strb_add_list(&cacc,ap,p-ap);
@@ -964,7 +964,7 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		if(!pathtr.is_ref)
 			printf("&");
 
-		cstr cacc=ci_get_c_accessor_for_accessor(tc,tk,pathnm);
+		strc cacc=ci_get_c_accessor_for_accessor(tc,tk,pathnm);
 
 		if(scope=='c')
 			printf("o->");
@@ -974,7 +974,7 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		return;
 	}
 	funcnm=cb;
-	cstr typenm=toc_get_typenm_in_context(tc,tk);
+	strc typenm=toc_get_typenm_in_context(tc,tk);
 	printf("%s_%s(o",typenm,funcnm);
 //	printf("%s_%s((%s*)o",typenm,funcnm,typenm);
 	if(c->args.count)
@@ -982,7 +982,7 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 }
 
 inline static bool ci_is_func_param_ref(
-		const toc*tc,token tk,cstr accessor,unsigned param_index){
+		const toc*tc,token tk,strc accessor,unsigned param_index){
 
 	if(!strcmp("p",accessor) || !strcmp("printf",accessor))
 		return false;
@@ -994,7 +994,7 @@ inline static bool ci_is_func_param_ref(
 	if(funcnm){
 		cb[funcnm-cb]=0;
 		funcnm++;
-		cstr vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
+		strc vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
 		const xfuncparam*fna=ptrs_get(&fn->params,param_index);

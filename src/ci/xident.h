@@ -4,20 +4,20 @@
 
 typedef struct xident{
 	xexp super;
-	cstr name;
+	strc name;
 	char incdecbits;
 }xident;
 
 #define xident_def (xident){\
-	{_xident_compile_,NULL,cstr_def,token_def,0,false},\
-	cstr_def,false\
+	{_xident_compile_,NULL,strc_def,token_def,0,false},\
+	strc_def,false\
 }
 
 inline static void _xident_compile_(const xexp*oo,toc*tc){
 	const xident*o=(xident*)oo;
 
 	// identifier ie  p.member  vs  localvar;
-	cstr p=strpbrk(o->name,".");
+	strc p=strpbrk(o->name,".");
 	if(p){//       p.member
 		strb s=strb_def;
 		strb_add_list(&s,o->name,p-o->name);
@@ -42,7 +42,7 @@ inline static void _xident_compile_(const xexp*oo,toc*tc){
 			if(o->incdecbits&2)printf("--");
 			return;
 		}
-		ptrs_add(&_token_to_new_cstr_,s.data);// adhock
+		ptrs_add(&_token_to_new_strc_,s.data);// adhock
 	}else{// localvar or member
 		const char idtype=toc_get_declaration_scope_type(tc,o->name);
 		if(idtype=='c'){// class member

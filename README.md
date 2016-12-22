@@ -15,9 +15,9 @@ simple c++ like language that compiles to c
 source size
 ```
 cat src/ci/* | wc
-   2519    4105   59557
+   2515    4090   59358
 cat src/ci/* | gzip | wc
-     39     254   11897
+     51     242   11847
 ```
 
 
@@ -51,11 +51,11 @@ compiles to
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
-typedef const char*cstr;
+typedef const char*strc;
 typedef char bool;
 #define true 1
 #define false 0
-#define cstr_def ""
+#define strc_def ""
 #define bool_def false
 #define char_def 0
 #define int_def 0

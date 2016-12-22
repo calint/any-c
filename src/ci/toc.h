@@ -5,17 +5,17 @@
 typedef struct toc{
 	ptrs types;
 	ptrs scopes;
-	cstr src;
-	cstr srcp;
-	cstr filepth;
+	strc src;
+	strc srcp;
+	strc filepth;
 	unsigned indent;
 }toc;
 
-#define toc_def {ptrs_def,ptrs_def,cstr_def,NULL,NULL,0}
+#define toc_def {ptrs_def,ptrs_def,strc_def,NULL,NULL,0}
 
 typedef struct tocscope{
 	char type;
-	cstr name;
+	strc name;
 	ptrs tocdecls;
 }tocscope;
 
@@ -23,25 +23,25 @@ typedef struct tocscope{
 
 typedef struct tocdecl{
 	token token;
-	cstr type;
-	cstr name;
+	strc type;
+	strc name;
 	bool is_ref;
 }tocdecl;
 
-#define toctn_def (tocdecl){token_def,cstr_def,cstr_def,false}
+#define toctn_def (tocdecl){token_def,strc_def,strc_def,false}
 
 
 typedef struct tocloc{
-	cstr filenm;
+	strc filenm;
 	int line;
 	int col;
 }tocloc;
 
 
-inline static tocloc toc_get_line_number_in_src(const toc*o,cstr p,
+inline static tocloc toc_get_line_number_in_src(const toc*o,strc p,
 		int tabsize){//? rewrite
 
-	cstr pt=o->src;
+	strc pt=o->src;
 	int line=1,col=1;
 	while(pt<p){
 		if(*pt!='\n'){
@@ -64,7 +64,7 @@ inline static void toc_print_source_location(const toc*o,token tk,int tabsize){
 	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
 }
 
-inline static cstr toc_get_typenm_in_context(const toc*tc,token tk){
+inline static strc toc_get_typenm_in_context(const toc*tc,token tk){
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
 		if(s->type=='c'){
@@ -99,7 +99,7 @@ inline static void tocscope_free(tocscope*o){
 	free(o);
 }
 
-inline static void toc_push_scope(toc*o,char type,cstr name){
+inline static void toc_push_scope(toc*o,char type,strc name){
 	tocscope*s=malloc(sizeof(tocscope));
 	*s=ci_toc_scope_def;
 	s->type=type;
@@ -131,7 +131,7 @@ inline static void toc_print(const toc*o){
 	}
 }
 
-inline static void toc_add_declaration(toc*o,cstr type,bool is_ref,cstr name){
+inline static void toc_add_declaration(toc*o,strc type,bool is_ref,strc name){
 	tocdecl*id=(tocdecl*)malloc(sizeof(tocdecl));
 	*id=toctn_def;
 	id->type=type;
@@ -143,7 +143,7 @@ inline static void toc_add_declaration(toc*o,cstr type,bool is_ref,cstr name){
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
 }
 
-inline static char toc_get_declaration_scope_type(const toc*oo,cstr name){
+inline static char toc_get_declaration_scope_type(const toc*oo,strc name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
@@ -159,7 +159,7 @@ inline static char toc_get_declaration_scope_type(const toc*oo,cstr name){
 	return 0;
 }
 
-inline static bool toc_is_declaration_ref(const toc*oo,cstr name){
+inline static bool toc_is_declaration_ref(const toc*oo,strc name){
 	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&oo->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
@@ -177,15 +177,15 @@ inline static bool toc_is_declaration_ref(const toc*oo,cstr name){
 
 
 inline static const tocdecl*toc_get_declaration_for_accessor(
-		const toc*o,cstr name){
-	cstr p=strpbrk(name,".");
-	cstr variable_name;
+		const toc*o,strc name){
+	strc p=strpbrk(name,".");
+	strc variable_name;
 	if(p){
 		strb s=strb_def;//? leak
 		strb_add_list(&s,name,p-name);
 		strb_add(&s,0);
 		variable_name=s.data;
-		ptrs_add(&_token_to_new_cstr_,s.data);//? adhock
+		ptrs_add(&_token_to_new_strc_,s.data);//? adhock
 	}else{
 		variable_name=name;
 	}
@@ -207,7 +207,7 @@ inline static const tocdecl*toc_get_declaration_for_accessor(
 	return 0;
 }
 
-inline static void toc_set_declaration_type(toc*o,cstr name,cstr type){
+inline static void toc_set_declaration_type(toc*o,strc name,strc type){
 	for(int j=(signed)o->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&o->scopes,(unsigned)j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){

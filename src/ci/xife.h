@@ -19,7 +19,7 @@ inline static void _xif_compile_(const xexp*oo,toc*tc){
 }
 
 #define xif_def (xif){\
-	{_xif_compile_,NULL,cstr_def,token_def,0,false},\
+	{_xif_compile_,NULL,strc_def,token_def,0,false},\
 	xbool_def,xcode_def\
 }
 
@@ -73,7 +73,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 }
 
 #define xife_def (xife){\
-	{_xife_compile_,NULL,cstr_def,token_def,2,false},\
+	{_xife_compile_,NULL,strc_def,token_def,2,false},\
 		ptrs_def,xcode_def\
 }
 

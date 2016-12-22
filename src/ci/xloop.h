@@ -15,7 +15,7 @@ inline static void _xloop_compile_(const xexp*oo,toc*tc){
 }
 
 #define xloop_def (xloop){\
-	{_xloop_compile_,NULL,cstr_def,token_def,1,false},\
+	{_xloop_compile_,NULL,strc_def,token_def,1,false},\
 		xcode_def\
 }
 

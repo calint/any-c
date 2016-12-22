@@ -89,7 +89,7 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 	}
 }
 
-#define xbool_def (xbool){{_xbool_compile_,NULL,cstr_def,token_def,0,false},\
+#define xbool_def (xbool){{_xbool_compile_,NULL,strc_def,token_def,0,false},\
 	false,xexpls_def,0,false,xexpls_def,\
 	strb_def,\
 	ptrs_def,\

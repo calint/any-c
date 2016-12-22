@@ -9,7 +9,7 @@ typedef struct xcode{
 }xcode;
 
 #define xcode_def (xcode){\
-	{_xcode_compile_,_xcode_free_,cstr_def,token_def,1,false},\
+	{_xcode_compile_,_xcode_free_,strc_def,token_def,1,false},\
 	ptrs_def\
 }
 

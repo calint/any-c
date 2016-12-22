@@ -2,31 +2,31 @@
 #include"xcode.h"
 
 typedef struct xfield{
-	cstr type;
-	cstr name;
+	strc type;
+	strc name;
 	xexpls initval;
 	token token;
 	bool is_ref;
 }xfield;
 
-#define xfield_def (xfield){cstr_def,cstr_def,xexpls_def,token_def,false}
+#define xfield_def (xfield){strc_def,strc_def,xexpls_def,token_def,false}
 
 inline static void xfield_free(xfield*o){
 	_xexpls_free_((xexp*)&o->initval);
 }
 
 typedef struct xfuncparam{
-	cstr type;
-	cstr name;
+	strc type;
+	strc name;
 	token token;
 	bool is_ref;
 }xfuncparam;
 
-#define xfuncparam_def (xfuncparam){cstr_def,cstr_def,token_def,false}
+#define xfuncparam_def (xfuncparam){strc_def,strc_def,token_def,false}
 
 typedef struct xfunc{
-	cstr type;
-	cstr name;
+	strc type;
+	strc name;
 	ptrs params;
 	xcode code;
 	token token;
@@ -34,7 +34,7 @@ typedef struct xfunc{
 }xfunc;
 
 #define xfunc_def (xfunc){\
-	cstr_def,cstr_def,ptrs_def,xcode_def,token_def,false}
+	strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
 
 inline static void xfunc_free(xfunc*o){
 	ptrs_free(&o->params);
@@ -44,7 +44,7 @@ inline static void xfunc_free(xfunc*o){
 #include"decouple.h"
 
 typedef struct xtype{
-	cstr name;
+	strc name;
 	ptrs fields;
 	ptrs funcs;
 	token token;
@@ -52,9 +52,7 @@ typedef struct xtype{
 	           // 3: needs call to init   4: has _init
 }xtype;
 
-#define xtype_def (xtype){cstr_def,ptrs_def,ptrs_def,token_def,0}
-
-//inline static struct xtype*ci_get_type_by_name(const toc*o,cstr);
+#define xtype_def (xtype){strc_def,ptrs_def,ptrs_def,token_def,0}
 
 inline static void xtype_free(xtype*o){
 	for(unsigned i=0;i<o->fields.count;i++){
@@ -72,7 +70,7 @@ inline static void xtype_free(xtype*o){
 	ptrs_free(&o->funcs);
 }
 
-inline static xfield*xtype_get_field_for_name(const xtype*o,cstr field_name){
+inline static xfield*xtype_get_field_for_name(const xtype*o,strc field_name){
 	for(unsigned i=0;i<o->fields.count;i++){
 		xfield*f=ptrs_get(&o->fields,i);
 		if(!strcmp(f->name,field_name))
@@ -81,7 +79,7 @@ inline static xfield*xtype_get_field_for_name(const xtype*o,cstr field_name){
 	return NULL;
 }
 
-inline static xfunc*xtype_get_func_for_name(const xtype*o,cstr field_name){
+inline static xfunc*xtype_get_func_for_name(const xtype*o,strc field_name){
 	for(unsigned i=0;i<o->funcs.count;i++){
 		xfunc*f=ptrs_get(&o->funcs,i);
 		if(!strcmp(f->name,field_name))
@@ -99,10 +97,10 @@ inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 	if(toc_srcp_is(tc,'{') || toc_srcp_is(tc,'(')){
 		if(token_is_empty(&name)){ // global{main{}}
 			f->type="void";
-			f->name=token_to_new_cstr(&type);
+			f->name=token_to_new_strc(&type);
 		}else{ // global{int main{}}
-			f->type=token_to_new_cstr(&type);
-			f->name=token_to_new_cstr(&name);
+			f->type=token_to_new_strc(&type);
+			f->name=token_to_new_strc(&name);
 		}
 	}
 	if(toc_srcp_is_take(tc,'('))
@@ -120,8 +118,8 @@ inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		if(toc_srcp_is_take(tc,'&'))
 			fp->is_ref=true;
 		token tkn=toc_next_token(tc);
-		fp->type=token_to_new_cstr(&tkt);
-		fp->name=token_to_new_cstr(&tkn);
+		fp->type=token_to_new_strc(&tkt);
+		fp->name=token_to_new_strc(&tkn);
 		toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
 		toc_srcp_is_take(tc,',');
 	}
@@ -138,7 +136,7 @@ inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 	toc_pop_scope(tc);
 }
 
-inline static void xfield_read_next(toc*tc,xtype*c,cstr tktype,
+inline static void xfield_read_next(toc*tc,xtype*c,strc tktype,
 		token tkname,bool is_ref){
 
 	xfield*f=malloc(sizeof(xfield));
@@ -149,7 +147,7 @@ inline static void xfield_read_next(toc*tc,xtype*c,cstr tktype,
 	if(token_is_empty(&tkname))
 		f->name=f->type;
 	else
-		f->name=token_to_new_cstr(&tkname);
+		f->name=token_to_new_strc(&tkname);
 
 
 	ptrs_add(&c->fields,f);
@@ -173,7 +171,7 @@ inline static xtype*xtype_read_next(toc*tc,token tkname){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
 	c->token=tkname;
-	c->name=token_to_new_cstr(&c->token);
+	c->name=token_to_new_strc(&c->token);
 
 	ptrs_add(&tc->types,c);
 	toc_push_scope(tc,'c',c->name);
@@ -204,13 +202,13 @@ inline static xtype*xtype_read_next(toc*tc,token tkname){
 		}else if(toc_srcp_is(tc,'=')){// global{id=1}
 			xfield_read_next(tc,c,"var",tptk,is_ref);
 		}else if(toc_srcp_is(tc,';')){// global{tokens;}
-			xfield_read_next(tc,c,token_to_new_cstr(&tptk),tptk,is_ref);
+			xfield_read_next(tc,c,token_to_new_strc(&tptk),tptk,is_ref);
 		}else{
 			token nm=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 				xfunc_read_next(tc,c,is_ref,tptk,nm);
 			}else{
-				xfield_read_next(tc,c,token_to_new_cstr(&tptk),nm,is_ref);
+				xfield_read_next(tc,c,token_to_new_strc(&tptk),nm,is_ref);
 			}
 		}
 	}

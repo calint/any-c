@@ -1,12 +1,10 @@
 #pragma once
 #include"xexpls.h"
 #include"decouple.h"
-//inline static void ci_assert_set(const toc*,cstr,cstr,token);
-//inline static void ci_xset_compile(const toc*,token,cstr,cstr);
 
 typedef struct xset{
 	xexp super;
-	cstr name;
+	strc name;
 	xexpls expls;//? xexpls
 //	bool is_set_ref;
 }xset;
@@ -24,11 +22,11 @@ inline static void _xset_compile_(const xexp*oo,toc*tc){
 	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
-#define xset_def (xset){{_xset_compile_,NULL,cstr_def,token_def,0,false},\
-	cstr_def,xexpls_def\
+#define xset_def (xset){{_xset_compile_,NULL,strc_def,token_def,0,false},\
+	strc_def,xexpls_def\
 }
 
-inline static void _xset_parse(toc*tc,xset*o,cstr name,token tk){
+inline static void _xset_parse(toc*tc,xset*o,strc name,token tk){
 	o->super.token=tk;
 	o->name=name;
 	const tocdecl*d=toc_get_declaration_for_accessor(tc,name);
@@ -57,13 +55,13 @@ inline static void _xset_parse(toc*tc,xset*o,cstr name,token tk){
 	return;
 }
 
-inline static/*gives*/xset*xset_read_next(toc*tc,cstr name,token tk){
+inline static/*gives*/xset*xset_read_next(toc*tc,strc name,token tk){
 	xset*o=malloc(sizeof(xset));
 	*o=xset_def;
 	_xset_parse(tc,o,name,tk);
 	return o;
 }
 
-inline static void xset_parse_next(xset*o,toc*tc,cstr name,token tk){
+inline static void xset_parse_next(xset*o,toc*tc,strc name,token tk){
 	_xset_parse(tc,o,name,tk);
 }

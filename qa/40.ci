@@ -12,7 +12,7 @@ materials{
 		m1.id=1
 		m2.id=2
 	}
-	material&get(cstr nm){
+	material&get(strc nm){
 		if nm=="mat1" return m1
 		if nm=="mat2" return m2
 	}
@@ -35,7 +35,7 @@ glob{
 globs{
 	glob e1
 	glob e2
-	glob&get(cstr nm){
+	glob&get(strc nm){
 		return e1
 	}
 }

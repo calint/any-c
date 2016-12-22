@@ -11,7 +11,7 @@ typedef struct xexpls{
 }xexpls;
 
 #define xexpls_def (xexpls){\
-	{_xexpls_compile_,_xexpls_free_,cstr_def,token_def,0,false},\
+	{_xexpls_compile_,_xexpls_free_,strc_def,token_def,0,false},\
 		ptrs_def,strb_def}
 
 inline static void _xexpls_free_(xexp*oo){

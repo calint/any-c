@@ -12,7 +12,7 @@ inline static void _xcont_compile_(const xexp*oo,toc*tc){
 }
 
 #define xcont_def (xcont){\
-	{_xcont_compile_,NULL,cstr_def,token_def,0,false}\
+	{_xcont_compile_,NULL,strc_def,token_def,0,false}\
 }
 
 inline static xcont*xcont_read_next(toc*tc,token tk){

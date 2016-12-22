@@ -2,11 +2,11 @@
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
-typedef const char*cstr;
+typedef const char*strc;
 typedef char bool;
 #define true 1
 #define false 0
-#define cstr_def ""
+#define strc_def ""
 #define bool_def false
 #define char_def 0
 #define int_def 0
@@ -17,7 +17,7 @@ typedef struct player{
     int i;
     float f;
     bool b;
-    cstr s;
+    strc s;
     char ch;
 }player;
 #define player_def (player){1,2.2f,true,"hello",'.'}

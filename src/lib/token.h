@@ -202,22 +202,22 @@ inline static const char*scan_to_including_newline(const char*p){
 //	str_add(s,0);
 //}
 
-static ptrs _token_to_new_cstr_=ptrs_def;
-inline static /*gives*/cstr token_to_new_cstr(token*o){
+static ptrs _token_to_new_strc_=ptrs_def;
+inline static /*gives*/strc token_to_new_strc(token*o){
 	const long len=o->content_end-o->content;
 	char*s=malloc((size_t)len+1);
 	memcpy(s,o->content,(size_t)len);
 	s[len]='\0';
 
-	ptrs_add(&_token_to_new_cstr_,s);
-	return(cstr)s;
+	ptrs_add(&_token_to_new_strc_,s);
+	return(strc)s;
 }
 inline static void token_free(){
-	for(unsigned i=0;i<_token_to_new_cstr_.count;i++){
-		char*s=(char*)ptrs_get(&_token_to_new_cstr_,i);
+	for(unsigned i=0;i<_token_to_new_strc_.count;i++){
+		char*s=(char*)ptrs_get(&_token_to_new_strc_,i);
 		free(s);
 	}
-	ptrs_free(&_token_to_new_cstr_);
+	ptrs_free(&_token_to_new_strc_);
 }
 
 //

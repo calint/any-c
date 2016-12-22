@@ -21,7 +21,7 @@ entity{
 entities{
 	entity e1
 	entity e2
-	entity&get(cstr nm){
+	entity&get(strc nm){
 		return e1
 	}
 }

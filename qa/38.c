@@ -2,11 +2,11 @@
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
-typedef const char*cstr;
+typedef const char*strc;
 typedef char bool;
 #define true 1
 #define false 0
-#define cstr_def ""
+#define strc_def ""
 #define bool_def false
 #define char_def 0
 #define int_def 0
@@ -44,7 +44,7 @@ typedef struct entities{
 }entities;
 #define entities_def (entities){entity_def,entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static entity*entities_get(entities*o,cstr nm){
+inline static entity*entities_get(entities*o,strc nm){
     return &o->e1;
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global

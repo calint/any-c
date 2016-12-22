@@ -3,12 +3,12 @@
 
 typedef struct xconst{
 	xexp super;
-	cstr name;
+	strc name;
 }xconst;
 
 #define xconst_def (xconst){\
-	{_xconst_compile_,NULL,cstr_def,token_def,0,false},\
-		cstr_def\
+	{_xconst_compile_,NULL,strc_def,token_def,0,false},\
+		strc_def\
 }
 
 inline static void _xconst_compile_(const xexp*oo,toc*tc){

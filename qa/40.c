@@ -2,11 +2,11 @@
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
-typedef const char*cstr;
+typedef const char*strc;
 typedef char bool;
 #define true 1
 #define false 0
-#define cstr_def ""
+#define strc_def ""
 #define bool_def false
 #define char_def 0
 #define int_def 0
@@ -32,7 +32,7 @@ inline static void materials__init(materials*o){
     o->m1.id=1;
     o->m2.id=2;
 }
-inline static material*materials_get(materials*o,cstr nm){
+inline static material*materials_get(materials*o,strc nm){
     if (nm=="mat1") {
         return &o->m1;
     }
@@ -68,7 +68,7 @@ typedef struct globs{
 }globs;
 #define globs_def (globs){glob_def,glob_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
-inline static glob*globs_get(globs*o,cstr nm){
+inline static glob*globs_get(globs*o,strc nm){
     return &o->e1;
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global

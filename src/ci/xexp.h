@@ -5,13 +5,13 @@ struct toc;
 typedef struct xexp{
 	void (*compile)(const struct xexp*,struct toc*);
 	void (*free)(struct xexp*);
-	cstr type;
+	strc type;
 	token token;
 	char bits; //  1 is encapsulated     2 is block { }
 	bool is_ref;
 }xexp;
 
-#define xexp_def (xexp){NULL,NULL,cstr_def,token_def,0,false}
+#define xexp_def (xexp){NULL,NULL,strc_def,token_def,0,false}
 
 inline static int xexpr_is_empty(const xexp*o){return o->compile==NULL;}
 inline static bool xexpr_is_encapsulated(const xexp*o){return(o->bits&1)==1;}

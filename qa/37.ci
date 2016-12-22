@@ -7,7 +7,7 @@ entity{
 
 entities{
 	entity e
-	entity&get(cstr nm){
+	entity&get(strc nm){
 		return e
 	}
 }

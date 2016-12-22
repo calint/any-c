@@ -11,8 +11,8 @@ typedef char bool;
 #define bool_def false
 #define true 1
 
-typedef const char* cstr;
-#define cstr_def ""
+typedef const char* strc;
+#define strc_def ""
 
 #define null 0
 

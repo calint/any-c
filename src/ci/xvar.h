@@ -4,7 +4,7 @@
 
 typedef struct xvar{
 	xexp super;
-	cstr name;
+	strc name;
 	xset initval;
 	bool is_ref;
 }xvar;
@@ -39,18 +39,18 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 }
 
 #define xvar_def (xvar){\
-	{_xvar_compile_,NULL,cstr_def,token_def,0,false},\
-		cstr_def,xset_def,false\
+	{_xvar_compile_,NULL,strc_def,token_def,0,false},\
+		strc_def,xset_def,false\
 }
 
-inline static xvar*xvar_read_next(toc*tc,cstr type){
+inline static xvar*xvar_read_next(toc*tc,strc type){
 	xvar*o=malloc(sizeof(xvar));
 	*o=xvar_def;
 	o->super.type=type;
 	if(toc_srcp_is_take(tc,'&'))
 		o->is_ref=true;
 	o->super.token=toc_next_token(tc);
-	o->name=token_to_new_cstr(&o->super.token);
+	o->name=token_to_new_strc(&o->super.token);
 
 	if(!strcmp("o",o->name)){
 		toc_print_source_location(tc,o->super.token,4);

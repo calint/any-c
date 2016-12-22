@@ -5,7 +5,7 @@
 
 typedef struct xcall{
 	xexp super;
-	cstr name;
+	strc name;
 	ptrs args;
 }xcall;
 
@@ -38,11 +38,11 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 }
 
 #define xcall_def (xcall){\
-	{_xcall_compile_,_xcall_free_,cstr_def,token_def,0,false},\
-	cstr_def,ptrs_def\
+	{_xcall_compile_,_xcall_free_,strc_def,token_def,0,false},\
+	strc_def,ptrs_def\
 }
 
-inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
+inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 	xcall*o=malloc(sizeof(xcall));
 	*o=xcall_def;
 	o->name=name;
