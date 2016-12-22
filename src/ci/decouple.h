@@ -12,7 +12,7 @@ inline static bool ci_is_builtin_type(cstr);
 inline static bool ci_is_func_arg_ref(const toc*,token,cstr,unsigned);
 
 
-inline static struct xtype*ci_get_type_by_name_try(const toc*,cstr);
+inline static struct xtype*ci_get_type_for_name_try(const toc*,cstr);
 struct xcall;
 struct xset;
 struct xreturn;

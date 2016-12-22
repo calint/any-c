@@ -36,7 +36,7 @@ inline static bool ci_is_builtin_type(cstr typenm){
 	return false;
 }
 
-inline static xtype*ci_get_type_by_name_try(const toc*o,cstr name){
+inline static xtype*ci_get_type_for_name_try(const toc*o,cstr name){
 	for(unsigned i=0;i<o->types.count;i++){
 		xtype*c=dynp_get(&o->types,i);
 		if(!strcmp(c->name,name)){
@@ -56,7 +56,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	xtype*tp=ci_get_type_by_name_try(tc,td->type);
+	xtype*tp=ci_get_type_for_name_try(tc,td->type);
 	cstr tpnm=tp?tp->name:td->type;
 	bool isref=td->is_ref;
 
@@ -75,13 +75,13 @@ inline static xtyperef ci_get_typeref_for_accessor(
 		xfield*fld=xtype_get_field_by_name(tp,s.data);
 		if(fld){
 			isref=fld->is_ref;
-			tp=ci_get_type_by_name_try(tc,fld->type);
+			tp=ci_get_type_for_name_try(tc,fld->type);
 			if(tp)
 				tpnm=tp->name;
 			else
 				tpnm=fld->type;
 		}else{
-			xfunc*fn=xtype_get_func_by_name(tp,s.data);
+			xfunc*fn=xtype_get_func_for_name(tp,s.data);
 			if(!fn){
 				toc_print_source_location(tc,tk,4);
 				printf("'%s' not found in '%s'",accessor,tpnm);
@@ -89,7 +89,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 				longjmp(_jmp_buf,1);
 			}
 			isref=fn->return_is_ref;
-			tp=ci_get_type_by_name_try(tc,fn->type);
+			tp=ci_get_type_for_name_try(tc,fn->type);
 			if(tp)
 				tpnm=tp->name;
 			else
@@ -134,8 +134,8 @@ inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 		typenm=s->name;
 		break;
 	}
-	xtype*tp=ci_get_type_by_name_try(tc,typenm);
-	xfunc*fn=xtype_get_func_by_name(tp,funcname);
+	xtype*tp=ci_get_type_for_name_try(tc,typenm);
+	xfunc*fn=xtype_get_func_for_name(tp,funcname);
 	return fn;
 }
 
@@ -146,8 +146,8 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 	const tocdecl*decl=toc_get_declaration_for_accessor(tc,cur_accessor);
 	if(!decl){// no declaration found, func call to member or builtin or error
 		cstr tpnm=toc_get_type_in_context(tc,tk);
-		xtype*tp=ci_get_type_by_name_try(tc,tpnm);
-		xfunc*fn=xtype_get_func_by_name(tp,cur_accessor);
+		xtype*tp=ci_get_type_for_name_try(tc,tpnm);
+		xfunc*fn=xtype_get_func_for_name(tp,cur_accessor);
 		if(fn)
 			return fn;
 		toc_print_source_location(tc,tk,4);
@@ -156,7 +156,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 		longjmp(_jmp_buf,1);
 	}
 	cstr cur_typenm=decl->type;
-	const xtype*cur_type=ci_get_type_by_name_try(tc,cur_typenm);
+	const xtype*cur_type=ci_get_type_for_name_try(tc,cur_typenm);
 	if(cur_type){
 		while(1){
 			cstr p=strpbrk(cur_accessor,".");
@@ -165,7 +165,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 			cur_accessor=p+1;
 			p=strpbrk(cur_accessor,".");
 			if(!p){
-				xfunc*fn=xtype_get_func_by_name(cur_type,cur_accessor);
+				xfunc*fn=xtype_get_func_for_name(cur_type,cur_accessor);
 				if(!fn){
 					toc_print_source_location(tc,tk,4);
 					printf("cannot find function '%s' in '%s', using '%s'",
@@ -197,7 +197,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 				longjmp(_jmp_buf,1);
 			}
 			cur_typenm=fld->type;
-			cur_type=ci_get_type_by_name_try(tc,cur_typenm);
+			cur_type=ci_get_type_for_name_try(tc,cur_typenm);
 			if(!cur_type)
 				break;
 		}
@@ -251,7 +251,7 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	longjmp(_jmp_buf,1);
 }
 inline static bool ci_xvar_needs_init(const toc*tc,cstr name){
-	xtype*t=ci_get_type_by_name_try(tc,name);
+	xtype*t=ci_get_type_for_name_try(tc,name);
 	return (t->bits&4)==4;
 }
 
@@ -261,7 +261,7 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 		const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 		if(ci_is_builtin_type(td->type))
 			continue;
-		const xtype*t=ci_get_type_by_name_try(tc,td->type);
+		const xtype*t=ci_get_type_for_name_try(tc,td->type);
 		if(t->bits&1){ // needs free
 			toc_print_indent_for_compile(tc);
 			printf("%s_free(&%s);",t->name,td->name);
@@ -278,7 +278,7 @@ inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 			if(ci_is_builtin_type(td->type))
 				continue;
-			const xtype*t=ci_get_type_by_name_try(tc,td->type);
+			const xtype*t=ci_get_type_for_name_try(tc,td->type);
 			if(!(t->bits&1)) // needs free
 				continue;
 			toc_print_indent_for_compile(tc);
@@ -300,7 +300,7 @@ inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 			const tocdecl*td=(tocdecl*)dynp_get(&ts->tocdecls,i);
 			if(ci_is_builtin_type(td->type))
 				continue;
-			const xtype*t=ci_get_type_by_name_try(tc,td->type);
+			const xtype*t=ci_get_type_for_name_try(tc,td->type);
 			if(!(t->bits&1)) // needs free?
 				continue;
 			return true;
@@ -323,7 +323,7 @@ inline static cstr ci_get_field_type_for_accessor(const toc*tc,
 		longjmp(_jmp_buf,1);
 	}
 	cstr current_class_name=decl->type;
-	const xtype*current_type=ci_get_type_by_name_try(tc,current_class_name);
+	const xtype*current_type=ci_get_type_for_name_try(tc,current_class_name);
 	if(current_type){
 		while(1){
 			cstr p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -351,7 +351,7 @@ inline static cstr ci_get_field_type_for_accessor(const toc*tc,
 				longjmp(_jmp_buf,1);
 			}
 			current_class_name=fld->type;
-			current_type=ci_get_type_by_name_try(tc,current_class_name);
+			current_type=ci_get_type_for_name_try(tc,current_class_name);
 			if(!current_type)
 				break;
 		}
@@ -377,7 +377,7 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 		return;
 
 	cstr current_class_name=decl->type;
-	const xtype*current_type=ci_get_type_by_name_try(tc,current_class_name);
+	const xtype*current_type=ci_get_type_for_name_try(tc,current_class_name);
 	if(current_type){
 		while(1){
 			cstr p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
@@ -405,7 +405,7 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 				longjmp(_jmp_buf,1);
 			}
 			current_class_name=fld->type;
-			current_type=ci_get_type_by_name_try(tc,current_class_name);
+			current_type=ci_get_type_for_name_try(tc,current_class_name);
 			if(!current_type)
 				break;
 		}
@@ -591,7 +591,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 		return(xexp*)xvar_read_next(tc,name);
 
 	//  class instance
-	xtype*c=ci_get_type_by_name_try(tc,name);
+	xtype*c=ci_get_type_for_name_try(tc,name);
 	if(c) // instantiate
 		return(xexp*)xvar_read_next(tc,name);
 
@@ -785,7 +785,7 @@ inline static void ci_compile_to_c(toc*tc){
 				xfield*f=(xfield*)dynp_get(&c->fields,i);
 				if(ci_is_builtin_type(f->type))
 					continue;
-				xtype*cc=ci_get_type_by_name_try(tc,f->type);
+				xtype*cc=ci_get_type_for_name_try(tc,f->type);
 				if(cc->bits&4)// has init
 					printf("    %s_init(&o->%s);\n",f->type,f->name);
 			}
@@ -802,7 +802,7 @@ inline static void ci_compile_to_c(toc*tc){
 				xfield*f=(xfield*)dynp_get(&c->fields,i);
 				if(ci_is_builtin_type(f->type))
 					continue;
-				xtype*cc=ci_get_type_by_name_try(tc,f->type);
+				xtype*cc=ci_get_type_for_name_try(tc,f->type);
 				if(cc->bits&1) // needs _free?
 					printf("    %s_free(&o->%s);\n",f->type,f->name);
 			}
@@ -930,141 +930,62 @@ inline static/*gives*/cstr ci_get_c_accessor_for_accessor(
 }
 
 inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
-//		toc*tc,token tk,cstr accessor,unsigned argcount){
-	cstr accessor=c->name;
-	unsigned argcount=c->args.count;
 	token tk=c->super.token;
 
-	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
+	if(!strcmp("p",c->name) || !strcmp("printf",c->name)){
 		printf("printf(");
 		return;
 	}
 
 	char cb[ci_identifier_maxlen];
-	strcpy(cb,accessor);
-	const char*path_ptr=cb;
-	const char*varnm_ptr=cb;
-	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
-	if(funcnm_ptr){                           //
-		cb[funcnm_ptr-cb]=0;
-//		*funcnm_ptr=0;                        // path: g.gl
-		funcnm_ptr++;                         // func: print
-//		cstr target_type=ci_get_field_type_for_accessor(tc,varnm_ptr,tk);
-		const xtyperef tra=ci_get_typeref_for_accessor(tc,tk,varnm_ptr);
-		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
-//		const bool is_arg_ref=toc_is_declaration_ref(tc,varnm_ptr);
-		printf("%s_%s((%s*)",tra.type,funcnm_ptr,tra.type);
-
-		const xtyperef tr=ci_get_typeref_for_accessor(tc,tk,path_ptr);
-
-		if(!tr.is_ref)
+	strcpy(cb,c->name);
+	const char*pathnm=cb;
+	const char*varnm=cb;
+	const char*funcnm=strrchr(cb,'.');
+	if(funcnm){
+		cb[funcnm-cb]=0;
+		funcnm++;
+		const xtyperef vartr=ci_get_typeref_for_accessor(tc,tk,varnm);
+		const char scope=toc_get_declaration_scope_type(tc,varnm);
+		const xtyperef pathtr=ci_get_typeref_for_accessor(tc,tk,pathnm);
+		printf("%s_%s((%s*)",vartr.type,funcnm,vartr.type);
+		if(!pathtr.is_ref)
 			printf("&");
 
-		cstr cacc=ci_get_c_accessor_for_accessor(tc,tk,path_ptr);
+		cstr cacc=ci_get_c_accessor_for_accessor(tc,tk,pathnm);
 
-		if(scope=='c'){
-			printf("o->%s",cacc);
-			if(argcount)
-				printf(",");
-			return;
-		}
-//		char*first_dot=strchr(cb,'.'); // g.gl
-//		if(first_dot){
-//			*first_dot=0;                        // var: g
-//			path_ptr=first_dot+1;
-//			printf("%s.%s",varnm_ptr,path_ptr);
-//			if(argcount)
-//				printf(",");
-//			return;
-//		}
-//		printf("%s",varnm_ptr);
-//		if(argcount)
-//			printf(",");
+		if(scope=='c')
+			printf("o->");
 		printf("%s",cacc);
-		if(argcount)
+		if(c->args.count)
 			printf(",");
 		return;
 	}
-	funcnm_ptr=cb;       // func: draw
-	cstr target_type=toc_get_type_in_context(tc,tk);
-//	const bool is_arg_ref=ci_is_func_arg_ref(tc,tk,funcnm_ptr,0);
-	printf("%s_%s((%s*)",
-		target_type,
-		funcnm_ptr,
-		target_type
-	);
-//	if(is_arg_ref){
-//		printf("&o");
-//	}else{
-		printf("o");
-//	}
-	if(argcount)
+	funcnm=cb;
+	cstr typenm=toc_get_type_in_context(tc,tk);
+	printf("%s_%s((%s*)o",typenm,funcnm,typenm);
+	if(c->args.count)
 		printf(",");
 }
 
 inline static bool ci_is_func_arg_ref(
 		const toc*tc,token tk,cstr accessor,unsigned arg_index){
 
-	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
+	if(!strcmp("p",accessor) || !strcmp("printf",accessor))
 		return false;
-	}
 
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,accessor);
-//	const char*path_ptr=cb;
-	const char*varnm_ptr=cb;
-	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
-	if(funcnm_ptr){                           //
-		cb[funcnm_ptr-cb]=0;
-		funcnm_ptr++;                         // func: print
-		cstr vartypestr=ci_get_field_type_for_accessor(tc,varnm_ptr,tk);
-		const xtype*tp=ci_get_type_by_name_try(tc,vartypestr);
-		const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
-		const xfuncarg*fna=(xfuncarg*)dynp_get(&fn->funcargs,arg_index);
+	const char*varnm=cb;
+	const char*funcnm=strrchr(cb,'.');   // g.gl.draw
+	if(funcnm){                           //
+		cb[funcnm-cb]=0;
+		funcnm++;                         // func: print
+		cstr vartypenm=ci_get_field_type_for_accessor(tc,varnm,tk);
+		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
+		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
+		const xfuncarg*fna=dynp_get(&fn->funcargs,arg_index);
 		return fna->func_arg_is_ref;
 	}
 	return false;
-//	funcnm_ptr=cb;       // func: draw
-//	cstr target_type=toc_get_type_in_context(tc,tk);
-//	printf("%s_%s((%s*)&o",
-//		target_type,
-//		funcnm_ptr,
-//		target_type
-//	);
-//	if(argcount)
-//		printf(",");
 }
-//
-//inline static bool ci_is_func_return_ref(
-//		toc*tc,token tk,cstr accessor,unsigned arg_index){
-//
-//	if(!strcmp("p",accessor) || !strcmp("printf",accessor)){
-//		return false;
-//	}
-//
-//	char cb[ci_identifier_maxlen];
-//	strcpy(cb,accessor);
-////	const char*path_ptr=cb;
-//	const char*varnm_ptr=cb;
-//	const char*funcnm_ptr=strrchr(cb,'.');   // g.gl.draw
-//	if(funcnm_ptr){                           //
-//		cb[funcnm_ptr-cb]=0;
-//		funcnm_ptr++;                         // func: print
-//		cstr vartypestr=ci_get_type_for_accessor(tc,varnm_ptr,tk);
-//		const xtype*tp=ci_get_type_by_name(tc,vartypestr);
-//		const xfunc*fn=xtype_get_func_by_name(tp,funcnm_ptr);
-//		const xfuncarg*fna=(xfuncarg*)dynp_get(&fn->funcargs,arg_index);
-//		return fna->func_arg_is_ref;
-//	}
-//	return false;
-////	funcnm_ptr=cb;       // func: draw
-////	cstr target_type=toc_get_type_in_context(tc,tk);
-////	printf("%s_%s((%s*)&o",
-////		target_type,
-////		funcnm_ptr,
-////		target_type
-////	);
-////	if(argcount)
-////		printf(",");
-//}
-

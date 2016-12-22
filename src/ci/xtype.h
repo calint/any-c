@@ -83,7 +83,7 @@ inline static xfield*xtype_get_field_by_name(const xtype*o,cstr field_name){
 	return NULL;
 }
 
-inline static xfunc*xtype_get_func_by_name(const xtype*o,cstr field_name){
+inline static xfunc*xtype_get_func_for_name(const xtype*o,cstr field_name){
 	for(unsigned i=0;i<o->funcs.count;i++){
 		xfunc*f=dynp_get(&o->funcs,i);
 		if(!strcmp(f->name,field_name))
@@ -228,7 +228,7 @@ inline static xtype*xtype_read_next(toc*tc,token name){
 		xfield*f=(xfield*)dynp_get(&c->fields,i);
 		if(ci_is_builtin_type(f->type))
 			continue;
-		xtype*mc=ci_get_type_by_name_try(tc,f->type);
+		xtype*mc=ci_get_type_for_name_try(tc,f->type);
 		if(mc->bits&1) // needs free?
 			c->bits|=1;
 		if(mc->bits&4) // needs init?

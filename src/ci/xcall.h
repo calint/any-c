@@ -20,20 +20,18 @@ inline static void _xcall_free_(xexp*oo){
 }
 
 inline static void _xcall_compile_(const xexp*oo,toc*tc){
-	xcall*o=(xcall*)oo;
-	ci_xcall_compile(tc,(const struct xcall*)o);
+	const xcall*o=(xcall*)oo;
+	ci_xcall_compile(tc,o);
 	for(unsigned i=0;i<o->args.count;i++){
-		xexp*e=(xexp*)dynp_get(&o->args,i);
+		const xexp*e=(xexp*)dynp_get(&o->args,i);
 		const bool func_arg_is_ref=ci_is_func_arg_ref(tc,e->token,o->name,i);
-		if(func_arg_is_ref && !e->is_ref){
+		if(func_arg_is_ref && !e->is_ref)
 			printf("&");
-		}else if(!func_arg_is_ref && e->is_ref){
+		else if(!func_arg_is_ref && e->is_ref)
 			printf("*");
-		}
 		e->compile(e,tc);
-		if(i!=o->args.count-1){
+		if(i!=o->args.count-1)
 			printf(",");
-		}
 	}
 	printf(")");
 }
@@ -59,18 +57,18 @@ inline static xcall*xcall_read_next(toc*tc,token tk,cstr name){
 		if(toc_srcp_is_take(tc,')'))
 			break;
 		xexp*a=(xexp*)xexpls_read_next(tc,tk);
-		if(xexpr_is_empty(a)){
+		if(xexpr_is_empty(a)){//?
 			printf("<file> <line> <col> expected ')' or more arguments");
 			longjmp(_jmp_buf,1);
 		}
 		dynp_add(&o->args,a);
-		//? assert can set  ci_assert_xcall_arg_type(name.data,i)
 		if(toc_srcp_is_take(tc,','))
 			continue;
 		if(toc_srcp_is_take(tc,')'))
 			break;
+
 		toc_print_source_location(tc,o->super.token,4);
-		printf("expected ',' or ')' for function '%s'",
+		printf("expected ',' and more arguments or ')' for function '%s'",
 				name);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
