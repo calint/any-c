@@ -50,3 +50,19 @@
 [ ]   foo
 [ ]   fow
 [ ] qa valgrind for leaks at test-and-commit
+[ ] refactoring
+[ ]    print source
+[ ]    rename type
+[ ]    rename function
+[ ]    re-arrange function parameters
+[ ]    rename field
+[ ]    rename variable
+[ ] inline
+[ ]    ansi c
+
+
+
+
+
+
+
