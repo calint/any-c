@@ -589,28 +589,20 @@ inline static xexp*ci_read_next_statement(toc*tc){
 
 	//  class instance
 	xtype*c=ci_get_type_by_name_try(tc,name);
-	if(c){// instantiate
-		xvar*e=xvar_read_next(tc,name);
-		return(xexp*)e;
-	}
+	if(c) // instantiate
+		return(xexp*)xvar_read_next(tc,name);
 
 	// function call
-	if(*tc->srcp=='('){
-		xcall*e=xcall_read_next(tc,tk,/*gives*/name);
-		return(xexp*)e;
-	}
+	if(toc_srcp_is(tc,'('))
+		return(xexp*)xcall_read_next(tc,tk,name);
 
 	// assignment
-	if(*tc->srcp=='='){
-		tc->srcp++;
-		if(*tc->srcp!='='){
-			xset*e=xset_read_next(tc,name,tk);
-			return(xexp*)e;
-		}
-		tc->srcp--;
-	}
+	if(toc_srcp_is_take(tc,'='))
+		return(xexp*)xset_read_next(tc,name,tk);
 
+	// incdecs
 	char incdecbits=0;
+//	if(toc_srcp_peek_is(tk,"++")) //?
 	if(toc_srcp_is_take(tc,'+')){
 		if(toc_srcp_is_take(tc,'+')){
 			incdecbits|=1;
@@ -640,20 +632,20 @@ inline static xexp*ci_read_next_statement(toc*tc){
 
 inline static xexp*ci_read_next_expression(toc*tc){
 	token tk=toc_next_token(tc);
+
+	// try to read constant
 	xexp*ce=ci_read_next_constant_try(tc,tk);
 	if(ce)
 		return ce;
 
-	// built in types
 	cstr name=token_to_new_cstr(&tk);
 
 	// function call
-	if(toc_srcp_is(tc,'(')){
-		xcall*e=xcall_read_next(tc,tk,name);
-		return(xexp*)e;
-	}
+	if(toc_srcp_is(tc,'('))
+		return(xexp*)xcall_read_next(tc,tk,name);
 
 	char incdecbits=0;
+	// toc_src_peek_is(tc,"++") //?
 	if(toc_srcp_is_take(tc,'+')){
 		if(toc_srcp_is_take(tc,'+')){
 			incdecbits|=1;
@@ -668,15 +660,15 @@ inline static xexp*ci_read_next_expression(toc*tc){
 		}
 	}
 
-	struct xtyperef ai=ci_get_typeref_for_accessor(tc,tk,name);
+	struct xtyperef tr=ci_get_typeref_for_accessor(tc,tk,name);
 
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
 	e->name=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
-	e->super.type=ai.type;
-	e->super.is_ref=ai.is_ref;
+	e->super.type=tr.type;
+	e->super.is_ref=tr.is_ref;
 	return(xexp*)e;
 }
 
