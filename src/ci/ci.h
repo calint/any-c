@@ -559,14 +559,13 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 inline static xexp*ci_read_next_statement(toc*tc){
 	token tk=toc_next_token(tc);
 
+	if(token_is_empty(&tk)) // end of stream
+		return NULL;
+
 	// try read constant
 	xexp*ce=ci_read_next_constant_try(tc,tk);
 	if(ce)
 		return ce;
-
-	if(token_is_empty(&tk)) // end of stream
-		return NULL;
-
 	// keywords
 	if(token_equals(&tk,"loop"))
 		return(xexp*)xloop_read_next(tc,tk);
@@ -587,7 +586,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	cstr name=token_to_new_cstr(&tk);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
-			token_equals(&tk,"var")||token_equals(&tk,"cstr")) //const char*
+			token_equals(&tk,"var")||token_equals(&tk,"cstr"))
 		return(xexp*)xvar_read_next(tc,name);
 
 	//  class instance
