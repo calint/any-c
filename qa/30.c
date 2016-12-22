@@ -56,7 +56,7 @@ inline static void global__init(global*o){
     printf("init global\n");
 }
 inline static void global_main(global*o){
-    entity_print((entity*)&o->e);
+    entity_print(&o->e);
 }
 inline static void global__free(global*o){
     printf("free global\n");

@@ -30,8 +30,8 @@ inline static void global_main(global*o){
     e1.id=1;
     entity e2=entity_def;
     e2.id=2;
-    entity_print((entity*)&e1,e2);
-    entity_print((entity*)&e2,e1);
+    entity_print(&e1,e2);
+    entity_print(&e2,e1);
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}

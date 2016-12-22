@@ -957,7 +957,9 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		const xtyperef vartr=ci_get_typeref_for_accessor(tc,tk,varnm);
 		const char scope=toc_get_declaration_scope_type(tc,varnm);
 		const xtyperef pathtr=ci_get_typeref_for_accessor(tc,tk,pathnm);
-		printf("%s_%s((%s*)",vartr.type,funcnm,vartr.type);
+//		printf("%s_%s((%s*)",vartr.type,funcnm,vartr.type);
+		printf("%s_%s(",vartr.type,funcnm);
+//		printf("(%s*)",vartr.type);
 		if(!pathtr.is_ref)
 			printf("&");
 
@@ -972,7 +974,8 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 	}
 	funcnm=cb;
 	cstr typenm=toc_get_typenm_in_context(tc,tk);
-	printf("%s_%s((%s*)o",typenm,funcnm,typenm);
+	printf("%s_%s(o",typenm,funcnm);
+//	printf("%s_%s((%s*)o",typenm,funcnm,typenm);
 	if(c->args.count)
 		printf(",");
 }

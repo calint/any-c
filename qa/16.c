@@ -42,7 +42,7 @@ typedef struct glo{
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void glo_draw(glo*o){
     printf("draw_glo\n");
-    render_range_draw((render_range*)&o->rendrngs);
+    render_range_draw(&o->rendrngs);
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{
@@ -54,11 +54,11 @@ inline static void global_draw(global*o){
     printf("draw_global\n");
 }
 inline static void global_main(global*o){
-    global_draw((global*)o);
-    glo_draw((glo*)&o->gl);
+    global_draw(o);
+    glo_draw(&o->gl);
     glo g=glo_def;
-    glo_draw((glo*)&g);
-    render_range_draw((render_range*)&g.rendrngs);
+    glo_draw(&g);
+    render_range_draw(&g.rendrngs);
 }
 inline static void global_init(global*o){
 }

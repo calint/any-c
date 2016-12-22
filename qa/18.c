@@ -30,10 +30,10 @@ typedef struct global{
 #define global_def (global){entity_def,entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-    entity_print((entity*)&o->e1);
-    entity_print((entity*)&o->e2);
+    entity_print(&o->e1);
+    entity_print(&o->e2);
     o->e1.i=2;
-    entity_print((entity*)&o->e1);
+    entity_print(&o->e1);
 }
 inline static void global_init(global*o){
 }

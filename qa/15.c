@@ -36,7 +36,7 @@ typedef struct global{}global;
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
     render_range rr=render_range_def;
-    render_range_draw((render_range*)&rr);
+    render_range_draw(&rr);
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}

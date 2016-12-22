@@ -33,7 +33,7 @@ inline static void global_main(global*o){
         }
         entity e=entity_def;
         e.id=i;
-        entity_print((entity*)&e);
+        entity_print(&e);
     }
 
 }

@@ -31,7 +31,7 @@ typedef struct global{}global;
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
     player p=player_def;
-    player_print((player*)&p);
+    player_print(&p);
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}

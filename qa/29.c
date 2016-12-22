@@ -42,7 +42,7 @@ typedef struct global{
 #define global_def (global){entity_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-    entity_print((entity*)&o->e);
+    entity_print(&o->e);
 }
 inline static void global_init(global*o){
     entity_init(&o->e);

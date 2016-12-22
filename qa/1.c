@@ -29,9 +29,9 @@ inline static void global_main(global*o){
     player p1=player_def;
     player p2=player_def;
     p1.c=1;
-    player_print((player*)&p1);
+    player_print(&p1);
     p2.c=p1.c;
-    player_print((player*)&p2);
+    player_print(&p2);
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}

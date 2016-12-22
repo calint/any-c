@@ -38,11 +38,11 @@ typedef struct global{
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
     o->es.e.id=1;
-    entity*a=entities_get((entities*)&o->es,"a");
-    entity_print((entity*)a);
+    entity*a=entities_get(&o->es,"a");
+    entity_print(a);
     o->es.e.id=2;
-    a=entities_get((entities*)&o->es,"a");
-    entity_print((entity*)a);
+    a=entities_get(&o->es,"a");
+    entity_print(a);
 }
 inline static void global_init(global*o){
 }

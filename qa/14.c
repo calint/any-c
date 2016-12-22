@@ -21,7 +21,7 @@ inline static void global_print(global*o,int a){
 }
 inline static void global_main(global*o){
     int a=5;
-    global_print((global*)o,1+(5+2)/a);
+    global_print(o,1+(5+2)/a);
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}

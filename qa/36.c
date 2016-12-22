@@ -29,7 +29,7 @@ inline static void global_main(global*o){
     entity a=entity_def;
     entity*b=&a;
     a.id=2;
-    entity_ref((entity*)b,&a);
+    entity_ref(b,&a);
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}

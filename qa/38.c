@@ -55,11 +55,11 @@ typedef struct global{
 #define global_def (global){entities_def,materials_def}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-    entity*e=entities_get((entities*)&o->entities,"a");
+    entity*e=entities_get(&o->entities,"a");
     e->mref=&o->materials.m1;
-    material_print((material*)e->mref);
+    material_print(e->mref);
     o->materials.m1.id=4;
-    material_print((material*)e->mref);
+    material_print(e->mref);
 }
 inline static void global_init(global*o){
 }

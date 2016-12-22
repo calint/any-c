@@ -50,11 +50,11 @@ typedef struct global{
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
     o->e1.id.i=1;
-    entity_print((entity*)&o->e1);
+    entity_print(&o->e1);
     o->e2.id.i=2;
-    entity_print((entity*)&o->e2);
+    entity_print(&o->e2);
     o->e1.id.i=3;
-    entity_print((entity*)&o->e1);
+    entity_print(&o->e1);
 }
 inline static void global__free(global*o){
     printf("free global\n");

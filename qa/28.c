@@ -37,7 +37,7 @@ inline static void global_main(global*o){
     while(1){
         entity e=entity_def;
         e.id=i++;
-        entity_print((entity*)&e);
+        entity_print(&e);
         if (i<4) {
                         entity_free(&e);
 continue;
@@ -48,7 +48,7 @@ break;
         }
         entity e2=entity_def;
         e2.id=i++;
-        entity_print((entity*)&e2);
+        entity_print(&e2);
         entity_free(&e2);        entity_free(&e);    }
 
 }
