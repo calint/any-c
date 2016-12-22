@@ -2,5 +2,8 @@
 
 ./alltests > log &&
 cat log && 
+cd .. &&
+./README.md.update &&
+cd qa &&
 xii-commit-project-in-workspace-to-github any-c &&
 echo ok

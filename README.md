@@ -15,9 +15,9 @@ simple c++ like language that compiles to c
 source size
 ```
 cat src/ci/* | wc
-   2508    4091   59069
+   2511    4097   59177
 cat src/ci/* | gzip | wc
-     43     270   11810
+     39     262   11828
 ```
 
 
@@ -77,11 +77,11 @@ typedef struct global{}global;
 inline static void global_main(global*o){
     entity e1=entity_def;
     entity*e2=&e1;
-    entity_p((entity*)&e1);
-    entity_p((entity*)e2);
+    entity_p(&e1);
+    entity_p(e2);
     e2->id=2;
-    entity_p((entity*)&e1);
-    entity_p((entity*)e2);
+    entity_p(&e1);
+    entity_p(e2);
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}
