@@ -48,6 +48,12 @@ inline static struct xaccessorinfo ci_get_accessorinfo(
 		toc*tc,token tk,cstr accessor){
 
 	const tocdecl*td=toc_get_declaration_for_accessor(tc,accessor);
+	if(!td){
+		toc_print_source_location(tc,tk,4);
+		printf("'%s' not found",accessor);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
+	}
 	xtype*tp=ci_get_type_by_name(tc,td->type);
 	cstr tpnm=tp?tp->name:td->type;
 	bool isref=td->is_ref;

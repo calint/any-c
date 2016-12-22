@@ -12,12 +12,31 @@ typedef char bool;
 #define int_def 0
 #define float_def 0.0f
 #define null 0
+//--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
+typedef struct entity{
+    int id;
+}entity;
+#define entity_def (entity){0}
+//--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
+inline static void entity_print(entity*o){
+	printf("entity %d\n",o->id);
+}
+
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  global
 typedef struct global{}global;
 #define global_def (global){}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
-	printf("hello world\n");
+	int i=0;
+	while(1){
+			if (i++==3) {
+				break;
+			}
+			entity e=entity_def;
+			e.id=i;
+			entity_print((entity*)&e);
+		}
+
 }
 
 inline static void global_init(global*o){
