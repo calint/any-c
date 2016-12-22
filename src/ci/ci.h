@@ -46,7 +46,7 @@ inline static xtype*ci_get_type_by_name_try(const toc*o,cstr name){
 	return NULL;
 }
 
-inline static struct xtyperef ci_get_typeref_for_accessor(
+inline static xtyperef ci_get_typeref_for_accessor(
 		const toc*tc,token tk,cstr accessor){
 
 	const tocdecl*td=toc_get_declaration_for_accessor(tc,accessor);
@@ -663,7 +663,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 		}
 	}
 
-	struct xtyperef tr=ci_get_typeref_for_accessor(tc,tk,name);
+	const xtyperef tr=ci_get_typeref_for_accessor(tc,tk,name);
 
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
@@ -916,9 +916,9 @@ inline static/*gives*/cstr ci_get_c_accessor_for_accessor(
 		str temp=str_def;
 		str_add_list(&temp,ap,p-ap);
 		str_add(&temp,0);
-		const struct xtyperef ai=ci_get_typeref_for_accessor(tc,tk,temp.data);
+		const xtyperef tr=ci_get_typeref_for_accessor(tc,tk,temp.data);
 		str_free(&temp);
-		if(ai.is_ref)
+		if(tr.is_ref)
 			str_add_string(&cacc,"->");
 		else
 			str_add_string(&cacc,".");
@@ -950,14 +950,14 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 //		*funcnm_ptr=0;                        // path: g.gl
 		funcnm_ptr++;                         // func: print
 //		cstr target_type=ci_get_field_type_for_accessor(tc,varnm_ptr,tk);
-		struct xtyperef fai=ci_get_typeref_for_accessor(tc,tk,varnm_ptr);
+		const xtyperef tra=ci_get_typeref_for_accessor(tc,tk,varnm_ptr);
 		const char scope=toc_get_declaration_scope_type(tc,varnm_ptr);
 //		const bool is_arg_ref=toc_is_declaration_ref(tc,varnm_ptr);
-		printf("%s_%s((%s*)",fai.type,funcnm_ptr,fai.type);
+		printf("%s_%s((%s*)",tra.type,funcnm_ptr,tra.type);
 
-		struct xtyperef ai=ci_get_typeref_for_accessor(tc,tk,path_ptr);
+		const xtyperef tr=ci_get_typeref_for_accessor(tc,tk,path_ptr);
 
-		if(!ai.is_ref)
+		if(!tr.is_ref)
 			printf("&");
 
 		cstr cacc=ci_get_c_accessor_for_accessor(tc,tk,path_ptr);
