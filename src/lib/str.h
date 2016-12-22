@@ -21,7 +21,7 @@ typedef struct str{
 
 //--------------------------------------------------------------------- private
 
-inline static void _str_insure_free_capcity(str*o,unsigned n){
+inline static void _str_insure_free_capcity(str*o,long n){
 	const long rem=o->cap-o->count;
 	if(rem>=n)
 		return;
@@ -95,7 +95,7 @@ inline static void str_free(str*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void str_add_list(str*o,/*copies*/char const*str,unsigned n){
+inline static void str_add_list(str*o,/*copies*/char const*str,long n){
 	//? optimize memcpy
 	char const*p=str;
 	while(n--){
@@ -190,14 +190,14 @@ inline static void str_setz(str*o,/*copies*/char const*s){
 
 //-----------------------------------------------------------------------------
 #define str_foa(ls,body)str_foreach_all(ls,({void __fn__ (char o) body __fn__;}))
-#define str_foac(ls,body)str_foreach_all_count(ls,({void __fn__ (char o,unsigned i) body __fn__;}))
+#define str_foac(ls,body)str_foreach_all_count(ls,({void __fn__ (char o,long i) body __fn__;}))
 #define str_fou(ls,body)str_foreach(ls,({int __fn__ (char o) body __fn__;}))
 #define str_foar(ls,body)str_foreach_all_rev(ls,({void __fn__ (char o) body __fn__;}))
 //-----------------------------------------------------------------------------
 inline static void str_foreach(str*o,int(*f)(char)){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		char oo=o->data[i];
 		if(f(oo))
 			break;
@@ -207,16 +207,16 @@ inline static void str_foreach(str*o,int(*f)(char)){
 inline static void str_foreach_all(str*o,void(*f)(char)){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		char oo=o->data[i];
 		f(oo);
 	}
 }
 //-----------------------------------------------------------------------------
-inline static void str_foreach_all_count(str*o,void(*f)(char,unsigned)){
+inline static void str_foreach_all_count(str*o,void(*f)(char,long)){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		char oo=o->data[i];
 		f(oo,i);
 	}
@@ -233,14 +233,14 @@ inline static void str_foreach_all_rev(str*o,void(*f)(char)){
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
 inline static long str_find_index(const str*o,char oo){
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		if(str_get(o,i)==oo)
 			return i;
 	}
 	return o->count;
 }
 //-----------------------------------------------------------------------------
-inline static unsigned str_has(const str*o,char oo){
+inline static long str_has(const str*o,char oo){
 	const long i=str_find_index(o,oo);
 	if(i==o->count)
 		return 0;

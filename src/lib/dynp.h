@@ -21,7 +21,7 @@ typedef struct dynp{
 
 //--------------------------------------------------------------------- private
 
-inline static void _dynp_insure_free_capcity(dynp*o,unsigned n){
+inline static void _dynp_insure_free_capcity(dynp*o,long n){
 	const long rem=o->cap-o->count;
 	if(rem>=n)
 		return;
@@ -95,7 +95,7 @@ inline static void dynp_free(dynp*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void dynp_add_list(dynp*o,/*copies*/void* const*str,unsigned n){
+inline static void dynp_add_list(dynp*o,/*copies*/void* const*str,long n){
 	//? optimize memcpy
 	void* const*p=str;
 	while(n--){
@@ -190,14 +190,14 @@ inline static void dynp_setz(dynp*o,/*copies*/void* const*s){
 
 //-----------------------------------------------------------------------------
 #define dynp_foa(ls,body)dynp_foreach_all(ls,({void __fn__ (void* o) body __fn__;}))
-#define dynp_foac(ls,body)dynp_foreach_all_count(ls,({void __fn__ (void* o,unsigned i) body __fn__;}))
+#define dynp_foac(ls,body)dynp_foreach_all_count(ls,({void __fn__ (void* o,long i) body __fn__;}))
 #define dynp_fou(ls,body)dynp_foreach(ls,({int __fn__ (void* o) body __fn__;}))
 #define dynp_foar(ls,body)dynp_foreach_all_rev(ls,({void __fn__ (void* o) body __fn__;}))
 //-----------------------------------------------------------------------------
 inline static void dynp_foreach(dynp*o,int(*f)(void*)){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		void* oo=o->data[i];
 		if(f(oo))
 			break;
@@ -207,16 +207,16 @@ inline static void dynp_foreach(dynp*o,int(*f)(void*)){
 inline static void dynp_foreach_all(dynp*o,void(*f)(void*)){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		void* oo=o->data[i];
 		f(oo);
 	}
 }
 //-----------------------------------------------------------------------------
-inline static void dynp_foreach_all_count(dynp*o,void(*f)(void*,unsigned)){
+inline static void dynp_foreach_all_count(dynp*o,void(*f)(void*,long)){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		void* oo=o->data[i];
 		f(oo,i);
 	}
@@ -233,14 +233,14 @@ inline static void dynp_foreach_all_rev(dynp*o,void(*f)(void*)){
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
 inline static long dynp_find_index(const dynp*o,void* oo){
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		if(dynp_get(o,i)==oo)
 			return i;
 	}
 	return o->count;
 }
 //-----------------------------------------------------------------------------
-inline static unsigned dynp_has(const dynp*o,void* oo){
+inline static long dynp_has(const dynp*o,void* oo){
 	const long i=dynp_find_index(o,oo);
 	if(i==o->count)
 		return 0;

@@ -21,7 +21,7 @@ typedef struct ${name}{
 
 //--------------------------------------------------------------------- private
 
-inline static void _${name}_insure_free_capcity(${name}*o,unsigned n){
+inline static void _${name}_insure_free_capcity(${name}*o,long n){
 	const long rem=o->cap-o->count;
 	if(rem>=n)
 		return;
@@ -95,7 +95,7 @@ inline static void ${name}_free(${name}*o){
 
 //-----------------------------------------------------------------------------
 
-inline static void ${name}_add_list(${name}*o,/*copies*/${type} const*str,unsigned n){
+inline static void ${name}_add_list(${name}*o,/*copies*/${type} const*str,long n){
 	//? optimize memcpy
 	${type} const*p=str;
 	while(n--){
@@ -190,14 +190,14 @@ inline static void ${name}_setz(${name}*o,/*copies*/${type} const*s){
 
 //-----------------------------------------------------------------------------
 #define ${name}_foa(ls,body)${name}_foreach_all(ls,({void __fn__ (${type} o) body __fn__;}))
-#define ${name}_foac(ls,body)${name}_foreach_all_count(ls,({void __fn__ (${type} o,unsigned i) body __fn__;}))
+#define ${name}_foac(ls,body)${name}_foreach_all_count(ls,({void __fn__ (${type} o,long i) body __fn__;}))
 #define ${name}_fou(ls,body)${name}_foreach(ls,({int __fn__ (${type} o) body __fn__;}))
 #define ${name}_foar(ls,body)${name}_foreach_all_rev(ls,({void __fn__ (${type} o) body __fn__;}))
 //-----------------------------------------------------------------------------
 inline static void ${name}_foreach(${name}*o,int(*f)(${type})){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		${type} oo=o->data[i];
 		if(f(oo))
 			break;
@@ -207,16 +207,16 @@ inline static void ${name}_foreach(${name}*o,int(*f)(${type})){
 inline static void ${name}_foreach_all(${name}*o,void(*f)(${type})){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		${type} oo=o->data[i];
 		f(oo);
 	}
 }
 //-----------------------------------------------------------------------------
-inline static void ${name}_foreach_all_count(${name}*o,void(*f)(${type},unsigned)){
+inline static void ${name}_foreach_all_count(${name}*o,void(*f)(${type},long)){
 	if(!o->count)
 		return;
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		${type} oo=o->data[i];
 		f(oo,i);
 	}
@@ -233,14 +233,14 @@ inline static void ${name}_foreach_all_rev(${name}*o,void(*f)(${type})){
 //-----------------------------------------------------------------------------
 // returns count if not found otherwise index
 inline static long ${name}_find_index(const ${name}*o,${type} oo){
-	for(unsigned i=0;i<o->count;i++){
+	for(long i=0;i<o->count;i++){
 		if(${name}_get(o,i)==oo)
 			return i;
 	}
 	return o->count;
 }
 //-----------------------------------------------------------------------------
-inline static unsigned ${name}_has(const ${name}*o,${type} oo){
+inline static long ${name}_has(const ${name}*o,${type} oo){
 	const long i=${name}_find_index(o,oo);
 	if(i==o->count)
 		return 0;
