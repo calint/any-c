@@ -1,25 +1,31 @@
 entity{
 	id=0
 	print{
-		printf("entity %d\n",id);
+		p("entity: %d\n",id)
 	}
 }
 
 entities{
-	entity e
-	entity&get(strc nm){
-		return e
+	entity&all
+	_init{
+		all=malloc(4*10)
+	}
+	_free{
+		free(all)
+	}
+	entity&get(int ix){
+		return all+ix*4
 	}
 }
 
 global{
 	entities es;
 	main{
-		es.e.id=1
-		entity&a=es.get("a")
-		a.print();
-		es.e.id=2
-		a=es.get("a")
-		a.print();
+		entity&e=es.get(0)
+		e.print()
+		e.id=2
+		e.print()
+		entity e2=es.get(1)
+		e2.print()
 	}
 }

@@ -46,6 +46,10 @@ inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 	xcall*o=malloc(sizeof(xcall));
 	*o=xcall_def;
 	o->name=name;
+	if(!strcmp(o->name,"malloc")){
+		o->super.is_ref=true;
+	}
+
 	o->super.token=tk;
 	if(!toc_srcp_is(tc,'(')){// arguments
 		toc_print_source_location(tc,o->super.token,4);

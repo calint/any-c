@@ -138,7 +138,11 @@ inline static xtyperef ci_get_typeref_for_accessor(
 
 inline static bool ci_is_builtin_func(strc funcnamne){
 	if(!strcmp("p",funcnamne) ||
-		!strcmp("printf",funcnamne))
+		!strcmp("printf",funcnamne)||
+		!strcmp("malloc",funcnamne)||
+		!strcmp("sizeof",funcnamne)||
+		!strcmp("calloc",funcnamne)||
+		!strcmp("free",funcnamne))
 		return true;
 	return false;
 }
@@ -865,30 +869,30 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 	strc id=o->name;
 	strc p=strpbrk(id,".");
 	if(p){
-		strb sid=strb_def;
-		strb_add_list(&sid,id,p-id);
-		strb_add(&sid,0);
+		strb idstr=strb_def;
+		strb_add_list(&idstr,id,p-id);
+		strb_add(&idstr,0);
 
-		const tocdecl*i=toc_get_declaration_for_accessor(tc,sid.data);
+		const tocdecl*i=toc_get_declaration_for_accessor(tc,idstr.data);
 		if(!i){
 			printf("<file> <line:col> identifier '%s' not found\n",id);
 			longjmp(_jmp_buf,1);
 		}
 		ci_xset_assert(tc,o);
-		const char scopetype=toc_get_declaration_scope_type(tc,sid.data);
-		sid.count--;//? adhock
+		const char scopetype=toc_get_declaration_scope_type(tc,idstr.data);
+		idstr.count--;//? adhock
 		if(i->is_ref){
-			strb_add_list(&sid,"->",2);
-			strb_add_string(&sid,p+1);
+			strb_add_list(&idstr,"->",2);
+			strb_add_string(&idstr,p+1);
 		}else{
-			strb_add_string(&sid,p);
+			strb_add_string(&idstr,p);
 		}
-		strb_add(&sid,0);
+		strb_add(&idstr,0);
 		if(scopetype){
 			if(scopetype=='c'){// class member
-				printf("o->%s",sid.data);
+				printf("o->%s",idstr.data);
 			}else{// local identifier
-				printf("%s",sid.data);
+				printf("%s",idstr.data);
 			}
 			printf("=");
 			return;
@@ -942,11 +946,15 @@ inline static/*gives*/strc ci_get_c_accessor_for_accessor(
 inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 	token tk=c->super.token;
 
+	//? builtins
 	if(!strcmp("p",c->name) || !strcmp("printf",c->name)){
 		printf("printf(");
 		return;
 	}
-
+	if(!strcmp("malloc",c->name) || !strcmp("calloc",c->name)){
+		printf("%s(",c->name);
+		return;
+	}
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,c->name);
 	const char*pathnm=cb;
@@ -974,9 +982,12 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		return;
 	}
 	funcnm=cb;
+	if(ci_is_builtin_func(funcnm)){
+		printf("%s(",funcnm);
+		return;
+	}
 	strc typenm=toc_get_typenm_in_context(tc,tk);
 	printf("%s_%s(o",typenm,funcnm);
-//	printf("%s_%s((%s*)o",typenm,funcnm,typenm);
 	if(c->args.count)
 		printf(",");
 }
@@ -984,8 +995,13 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 inline static bool ci_is_func_param_ref(
 		const toc*tc,token tk,strc accessor,unsigned param_index){
 
+	//? builtins
 	if(!strcmp("p",accessor) || !strcmp("printf",accessor))
 		return false;
+
+	if(!strcmp("free",accessor) && param_index==0)
+		return true;
+
 
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,accessor);

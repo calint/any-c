@@ -43,9 +43,11 @@ inline static void _xset_parse(toc*tc,xset*o,strc name,token tk){
 
 	xexpls_parse_next(&o->expls,tc, tk);
 	ci_xset_assert(tc,o);
+
 	if(!strcmp(o->super.type,"var"))
 		o->super.type=o->expls.super.type;
-	if(o->super.is_ref==o->super.is_ref)
+
+	if(o->super.is_ref==o->super.is_ref)//? alwaystrue
 		return;
 
 	toc_print_source_location(tc,o->super.token,4);
