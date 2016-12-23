@@ -8,8 +8,8 @@ WARNINGS='-Wall -Wextra -Wpedantic -Wfatal-errors -Wno-unused-parameter'
 
 LIBS=
 
-OPTIMIZATION='-O0 -g'
-#OPTIMIZATION=-Os
+#OPTIMIZATION='-O0 -g'
+OPTIMIZATION=-Os
 #OPTIMIZATION=-O3
 #OPTIMIZATION=-Ofast
 
@@ -21,6 +21,7 @@ PROFILE=
 
 rm -f $BIN &&
 
+echo optimization $OPTIMIZATION &&
 $CC -o $BIN $SRC $PROFILE $OPTIMIZATION $CFLAGS $LIBS $WARNINGS &&
 
 ls -la --color $BIN

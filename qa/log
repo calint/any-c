@@ -1,5 +1,6 @@
-Fri Dec 23 22:04:23 ICT 2016
--rwxrwxr-x 1 c c 85232 Dec 23 22:04 [0m[01;32many-c[0m
+Sat Dec 24 02:34:36 ICT 2016
+optimization -Os
+-rwxrwxr-x 1 c c 41560 Dec 24 02:34 [0m[01;32many-c[0m
 0 : ok
 1 : ok
 2 : ok
@@ -43,5 +44,5 @@ Fri Dec 23 22:04:23 ICT 2016
 39 : ok
 40 : ok
 41 : ok
-Fri Dec 23 22:04:32 ICT 2016
+Sat Dec 24 02:34:45 ICT 2016
 ok
