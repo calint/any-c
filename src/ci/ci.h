@@ -696,7 +696,7 @@ inline static void ci_print_right_aligned_comment(strc comment){
 }
 
 inline static void ci_compile_to_c(toc*tc){
-	ci_print_right_aligned_comment("generated c source");
+	ci_print_right_aligned_comment("tidy salami");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
