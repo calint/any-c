@@ -15,9 +15,9 @@ simple c++ like language that compiles to c
 source size
 ```
 cat src/ci/* | wc
-   2537    4115   59797
+   2537    4114   59790
 cat src/ci/* | gzip | wc
-     36     240   11944
+     39     267   11947
 ```
 
 
@@ -47,7 +47,7 @@ global{
 
 compiles to
 ```
-//--- - - -------------------  - -- - - - - - - -- - - -  generated c source
+//--- - - -------------------  - -- - - - - - - -- - - - -- - -  tidy salami
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
