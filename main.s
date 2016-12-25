@@ -28,7 +28,7 @@ main:
 	movl	$1, %edi
 	xorl	%eax, %eax
 	call	__printf_chk
-	movl	16(%rbx), %edx
+	movl	$2, %edx
 	movl	$.LC0, %esi
 	movl	$1, %edi
 	xorl	%eax, %eax

@@ -1,4 +1,4 @@
-//--- - - -------------------  - -- - - - - - - -- - - -  generated c source
+//--- - - -------------------  - -- - - - - - - -- - - - -- - -  tidy salami
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
@@ -53,7 +53,7 @@ inline static void global_main(global*o){
     entity_print(e);
     e->id=2;
     entity_print(e);
-    entity e2=*entities_get(&o->es,1);
+    entity e2=*entities_get(&o->es,0);
     entity_print(&e2);
 }
 inline static void global_init(global*o){
