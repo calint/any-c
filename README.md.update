@@ -14,10 +14,10 @@ echo                 >> $f  &&
 echo                 >> $f  &&
 echo "source size"              >> $f  &&
 echo '```'                      >> $f  &&
-echo 'cat src/ci/* | wc'        >> $f &&
-cat src/ci/* | wc               >> $f &&
-echo 'cat src/ci/* | gzip | wc' >> $f &&
-cat src/ci/* | gzip | wc        >> $f &&
+echo 'cat src/ci/* src/lib/* src/lib.h | wc'        >> $f &&
+cat src/ci/* src/lib/* src/lib.h | wc >> $f &&
+echo 'cat src/ci/* src/lib/* src/lib.h | gzip | wc' >> $f &&
+cat src/ci/* src/lib/* src/lib.h | gzip | wc >> $f &&
 echo '```'                      >> $f  &&
 echo                            >> $f &&
 echo                 >> $f  &&
