@@ -14,9 +14,9 @@ echo                 >> $f  &&
 echo                 >> $f  &&
 echo "source size"              >> $f  &&
 echo '```'                      >> $f  &&
-echo 'cat src/ci/* src/lib/* src/lib.h | wc'        >> $f &&
+echo 'cat src/ci/* src/lib/* src/lib.h main.c | wc'        >> $f &&
 cat src/ci/* src/lib/* src/lib.h | wc >> $f &&
-echo 'cat src/ci/* src/lib/* src/lib.h | gzip | wc' >> $f &&
+echo 'cat src/ci/* src/lib/* src/lib.h main.c | gzip | wc' >> $f &&
 cat src/ci/* src/lib/* src/lib.h | gzip | wc >> $f &&
 echo '```'                      >> $f  &&
 echo                            >> $f &&
