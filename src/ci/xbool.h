@@ -99,18 +99,21 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 	o->super.type="bool";
 	token_skip_empty_space(&tc->srcp);
 	bool neg=false;
-	if(*tc->srcp=='!'){// if(!ok){}
-		tc->srcp++;
+//	if(*tc->srcp=='!'){// if(!ok){}
+//		tc->srcp++;
+//		neg=true;
+//	}
+	if(toc_srcp_is_take(tc,'!'))
 		neg=true;
-	}
 
 	if(*tc->srcp!='('){//   keybits==1 && ok || (a&b!=0)
 		o->is_encapsulated=false;
-
-		if(!neg && *tc->srcp=='!'){// if(!ok){}
-			tc->srcp++;
+//		if(!neg && *tc->srcp=='!'){// if(!ok){}
+//			tc->srcp++;
+//			o->lh_negate=true;
+		if(!neg && toc_srcp_is_take(tc,'!')){// if(!ok){}
 			o->lh_negate=true;
-		}else if(neg && *tc->srcp=='!'){// if(!!ok){}
+		}else if(neg && toc_srcp_is(tc,'!')){// if(!!ok){} //? delete
 			printf("<file> <line:col> did not expect !!\n");
 			longjmp(_jmp_buf,1);
 		}else{

@@ -1,6 +1,6 @@
 global{
 	main{
-		var x=-(-1)-(-2)
-		p("%d\n",x)
+		var p=  - 1
+		p("%x\n",p)
 	}
 }

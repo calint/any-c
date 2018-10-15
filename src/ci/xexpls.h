@@ -60,9 +60,8 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 			strb_add(&o->ops,'\0');
 		xexp*e;
 
-		//? ws_pre_negation
+		token_skip_empty_space(&tc->srcp); //? lost info
 		bool is_negated=toc_srcp_is_take(tc,'-');
-
 
 		if(toc_srcp_is_take(tc,'(')){
 			xexpls*els=xexpls_read_next(tc,tk,true);

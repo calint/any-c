@@ -98,4 +98,4 @@
 [ ]   thread safe
 [ ]   fixed size
 [ ]   resizable
-
+[ ] print source after compile
