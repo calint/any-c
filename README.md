@@ -1,6 +1,6 @@
 # any-c
 ```
-simple c++ like language that compiles to c
+simple language that compiles to c
 
   has
     : structs with functions
