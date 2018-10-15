@@ -37,9 +37,9 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 		xexp*e=ptrs_get(&o->exps,i);
 		toc_print_indent_for_compile(tc);
 		e->compile(e,tc);
-		if(xexpr_is_block(e))
+		if(xexp_is_block(e))
 			continue;
-		if(!xexpr_is_encapsulated(e))
+		if(!xexp_is_encapsulated(e))
 			printf(";\n");
 		else
 			printf("\n");
@@ -62,7 +62,8 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 	toc_push_scope(tc,'b',"");
 	if(*tc->srcp=='{'){
 		tc->srcp++;
-		o->super.bits|=1;
+//		o->super.bits|=1;
+		xexp_set_is_encapsulated(&o->super,true);
 		while(1){
 			xexp*e=ci_read_next_statement(tc);
 			if(!e)
@@ -74,14 +75,17 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 			}
 		}
 		if(*tc->srcp!='}'){
-			printf("<file> <line:col> expected '}' to end block\n");
+//			toc_print_source_location(tc,tk,4);
+			printf("expected '}' to end block");
+			printf("\n    %s %d",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		tc->srcp++;
 		toc_pop_scope(tc);
 		return;
 	}
-	o->super.bits&=~1;
+//	o->super.bits&=~1;
+	xexp_set_is_encapsulated(&o->super,false);
 	xexp*e=ci_read_next_statement(tc);
 	ptrs_add(&o->exps,e);
 	if(*tc->srcp==';'){

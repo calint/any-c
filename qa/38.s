@@ -1,39 +1,31 @@
 	.file	"38.c"
+	.text
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
 	.string	"material %d\n"
-	.section	.text.unlikely,"ax",@progbits
-.LCOLDB1:
 	.section	.text.startup,"ax",@progbits
-.LHOTB1:
 	.p2align 4,,15
 	.globl	main
 	.type	main, @function
 main:
-.LFB44:
+.LFB28:
 	.cfi_startproc
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
-	movl	$3, %edx
-	movl	$.LC0, %esi
-	movl	$1, %edi
+	movl	$3, %esi
+	leaq	.LC0(%rip), %rdi
 	xorl	%eax, %eax
-	call	__printf_chk
-	movl	$4, %edx
-	movl	$.LC0, %esi
-	movl	$1, %edi
+	call	printf@PLT
+	movl	$4, %esi
+	leaq	.LC0(%rip), %rdi
 	xorl	%eax, %eax
-	call	__printf_chk
+	call	printf@PLT
 	xorl	%eax, %eax
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE44:
+.LFE28:
 	.size	main, .-main
-	.section	.text.unlikely
-.LCOLDE1:
-	.section	.text.startup
-.LHOTE1:
-	.ident	"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.4) 5.4.0 20160609"
+	.ident	"GCC: (GNU) 8.2.1 20180831"
 	.section	.note.GNU-stack,"",@progbits

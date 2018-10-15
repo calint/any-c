@@ -27,7 +27,7 @@ inline static xreturn*xreturn_read_next(toc*tc,token tk){
 	xreturn*o=malloc(sizeof(xreturn));
 	*o=xreturn_def;
 	o->super.token=tk;
-	xexpls_parse_next(&o->expls,tc,tk);
+	xexpls_parse_next(&o->expls,tc,tk,false);
 	ci_xreturn_assert(tc,o);
 	return o;
 }

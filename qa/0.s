@@ -1,31 +1,25 @@
 	.file	"0.c"
+	.text
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
 	.string	"hello world"
-	.section	.text.unlikely,"ax",@progbits
-.LCOLDB1:
 	.section	.text.startup,"ax",@progbits
-.LHOTB1:
 	.p2align 4,,15
 	.globl	main
 	.type	main, @function
 main:
-.LFB41:
+.LFB25:
 	.cfi_startproc
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
-	movl	$.LC0, %edi
-	call	puts
+	leaq	.LC0(%rip), %rdi
+	call	puts@PLT
 	xorl	%eax, %eax
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE41:
+.LFE25:
 	.size	main, .-main
-	.section	.text.unlikely
-.LCOLDE1:
-	.section	.text.startup
-.LHOTE1:
-	.ident	"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.4) 5.4.0 20160609"
+	.ident	"GCC: (GNU) 8.2.1 20180831"
 	.section	.note.GNU-stack,"",@progbits

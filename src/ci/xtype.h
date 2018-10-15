@@ -154,7 +154,7 @@ inline static void xfield_read_next(toc*tc,xtype*c,strc tktype,
 	toc_add_declaration(tc,f->type,f->is_ref,f->name);
 
 	if(toc_srcp_is_take(tc,'=')){
-		xexpls_parse_next(&f->initval,tc,tkname);
+		xexpls_parse_next(&f->initval,tc,tkname,false);
 		if(strcmp(f->type,"var")){
 				xset tmp=xset_def;
 				tmp.name=f->name;

@@ -86,7 +86,7 @@
 [ ]    init functions
 [ ]    looped functions
 [ ]    free functions
-[!] parse negative numbers
+[o] parse negative numbers
 [ ] containers
 [ ]   in ram
 [ ]   log file

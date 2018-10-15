@@ -45,7 +45,7 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 		xif*fi=(xif*)ptrs_get(&o->ifs,i);
 		if(i>0){
 			xif*prvfi=(xif*)ptrs_get(&o->ifs,i-1);
-			if(xexpr_is_encapsulated(&prvfi->super)){
+			if(xexp_is_encapsulated(&prvfi->super)){
 				printf(" else ");
 			}else{
 				toc_print_indent_for_compile(tc);
@@ -56,18 +56,18 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 	}
 	xif*lastif=(xif*)ptrs_get_last(&o->ifs);
 	if(o->elsecode.exps.count){
-		if(xexpr_is_encapsulated(&lastif->code.super))
+		if(xexp_is_encapsulated(&lastif->code.super))
 			printf(" else ");
 		else{
 			toc_print_indent_for_compile(tc);
 			printf("else ");
 		}
 		_xcode_compile_((xexp*)&o->elsecode,tc);
-		if(xexpr_is_encapsulated(&o->elsecode.super)){
+		if(xexp_is_encapsulated(&o->elsecode.super)){
 			printf("\n");
 		}
 	}else{
-		if(xexpr_is_encapsulated(&lastif->code.super))
+		if(xexp_is_encapsulated(&lastif->code.super))
 			printf("\n");
 	}
 }

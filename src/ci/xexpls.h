@@ -34,41 +34,53 @@ inline static void _xexpls_compile_(const xexp*oo,toc*tc){
 		if(i!=0){
 			printf("%c",op);
 		}
-		if(e->bits&4)
+		if(xexp_is_negated(e))
+			printf("-");
+		if(xexp_is_parenthesis(e))
 			printf("(");
 		e->compile(e,tc);
-		if(e->bits&4)
+		if(xexp_is_parenthesis(e))
 			printf(")");
 	}
 }
 
-inline static void xexpls_parse_next(xexpls*,toc*,token);
-inline static xexpls*xexpls_read_next(toc*tc,token tk){
+inline static void xexpls_parse_next(xexpls*,toc*,token,bool issubexpr);
+inline static xexpls*xexpls_read_next(toc*tc,token tk,bool issubexpr){
 	xexpls*o=malloc(sizeof(xexpls));
 	*o=xexpls_def;
-	xexpls_parse_next(o,tc,tk);
+	xexp_set_is_parenthesis(&o->super,issubexpr);
+	xexpls_parse_next(o,tc,tk,issubexpr);
 	return o;
 }
 
-inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
+inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 	o->super.token=tk;
-	if(toc_srcp_is_take(tc,'(')){
-		o->super.bits|=4;
-	}
 	while(1){
 		if(!o->exps.count)
 			strb_add(&o->ops,'\0');
 		xexp*e;
-		if(toc_srcp_is(tc,'(')){
-			e=(xexp*)xexpls_read_next(tc,tk);
+
+		//? ws_pre_negation
+		bool is_negated=toc_srcp_is_take(tc,'-');
+
+
+		if(toc_srcp_is_take(tc,'(')){
+			xexpls*els=xexpls_read_next(tc,tk,true);
+			//? xexpls_deduce_typeref(&o->exps)
+			xexp*first=ptrs_get(&els->exps,0);
+			els->super.type=first->type;
+			els->super.is_ref=first->is_ref;
+			e=(xexp*)els;
 		}else{
 			e=ci_read_next_expression(tc);
 		}
+		xexp_set_is_negated(e,is_negated);
 		if(!e)
 			break;
-//		if(xexpr_is_empty(e))
-//			break;
 		ptrs_add(&o->exps,e);
+		if(issubexpr)
+			if(toc_srcp_is_take(tc,')'))
+				return;
 		if(toc_srcp_is_take(tc,'+')){strb_add(&o->ops,'+');}
 		else if(toc_srcp_is_take(tc,'-')){strb_add(&o->ops,'-');}
 		else if(toc_srcp_is_take(tc,'*')){strb_add(&o->ops,'*');}
@@ -81,15 +93,8 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk){
 			break;
 		}
 	}
-	if(o->super.bits&4){
-		if(!toc_srcp_is_take(tc,')')){
-			toc_print_source_location(tc,o->super.token,4);
-			printf("expected ')'");
-			printf("\n    %s %d",__FILE__,__LINE__);
-			longjmp(_jmp_buf,1);
-		}
-	}
-	xexp*first=ptrs_get(&o->exps,0);//? morechecks
+	//? xexpls_deduce_typeref(&o->exps)
+	xexp*first=ptrs_get(&o->exps,0);
 	o->super.type=first->type;
 	o->super.is_ref=first->is_ref;
 }

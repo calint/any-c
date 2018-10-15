@@ -26,7 +26,7 @@ inline static void _xset_compile_(const xexp*oo,toc*tc){
 	strc_def,xexpls_def\
 }
 
-inline static void _xset_parse(toc*tc,xset*o,strc name,token tk){
+inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){
 	o->super.token=tk;
 	o->name=name;
 	const tocdecl*d=toc_get_declaration_for_accessor(tc,name);
@@ -41,29 +41,29 @@ inline static void _xset_parse(toc*tc,xset*o,strc name,token tk){
 	o->super.type=tr.type;
 	o->super.is_ref=tr.is_ref;
 
-	xexpls_parse_next(&o->expls,tc, tk);
+	xexpls_parse_next(&o->expls,tc,tk,false);
 	ci_xset_assert(tc,o);
 
 	if(!strcmp(o->super.type,"var"))
 		o->super.type=o->expls.super.type;
 
-	if(o->super.is_ref==o->super.is_ref)//? alwaystrue
-		return;
-
-	toc_print_source_location(tc,o->super.token,4);
-	printf("cannot set reference to non reference");
-	printf("\n    %s %d",__FILE__,__LINE__);
-	longjmp(_jmp_buf,1);
+//	if(o->super.is_ref==o->super.is_ref)//? alwaystrue
+//		return;
+//
+//	toc_print_source_location(tc,o->super.token,4);
+//	printf("cannot set reference to non reference");
+//	printf("\n    %s %d",__FILE__,__LINE__);
+//	longjmp(_jmp_buf,1);
 	return;
 }
 
 inline static/*gives*/xset*xset_read_next(toc*tc,strc name,token tk){
 	xset*o=malloc(sizeof(xset));
 	*o=xset_def;
-	_xset_parse(tc,o,name,tk);
+	_xset_parse(o,tc,name,tk);
 	return o;
 }
 
 inline static void xset_parse_next(xset*o,toc*tc,strc name,token tk){
-	_xset_parse(tc,o,name,tk);
+	_xset_parse(o,tc,name,tk);
 }

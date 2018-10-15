@@ -1,4 +1,5 @@
 	.file	"19.c"
+	.text
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC1:
 	.string	"entity: %d %f\n"
@@ -8,67 +9,55 @@
 	.string	"free entity: %d\n"
 .LC4:
 	.string	"free id"
-	.section	.text.unlikely,"ax",@progbits
-.LCOLDB5:
 	.section	.text.startup,"ax",@progbits
-.LHOTB5:
 	.p2align 4,,15
 	.globl	main
 	.type	main, @function
 main:
-.LFB47:
+.LFB31:
 	.cfi_startproc
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
-	movl	$1, %edx
-	movl	$.LC1, %esi
-	movsd	.LC0(%rip), %xmm0
-	movl	$1, %edi
+	movl	$1, %esi
 	movl	$1, %eax
-	call	__printf_chk
 	movsd	.LC0(%rip), %xmm0
-	movl	$2, %edx
-	movl	$.LC1, %esi
-	movl	$1, %edi
+	leaq	.LC1(%rip), %rdi
+	call	printf@PLT
+	movl	$2, %esi
 	movl	$1, %eax
-	call	__printf_chk
 	movsd	.LC0(%rip), %xmm0
-	movl	$3, %edx
-	movl	$.LC1, %esi
-	movl	$1, %edi
+	leaq	.LC1(%rip), %rdi
+	call	printf@PLT
+	movl	$3, %esi
 	movl	$1, %eax
-	call	__printf_chk
-	movl	$.LC2, %edi
-	call	puts
-	movl	$2, %edx
-	movl	$.LC3, %esi
-	movl	$1, %edi
+	movsd	.LC0(%rip), %xmm0
+	leaq	.LC1(%rip), %rdi
+	call	printf@PLT
+	leaq	.LC2(%rip), %rdi
+	call	puts@PLT
+	movl	$2, %esi
+	leaq	.LC3(%rip), %rdi
 	xorl	%eax, %eax
-	call	__printf_chk
-	movl	$.LC4, %edi
-	call	puts
-	movl	$3, %edx
-	movl	$.LC3, %esi
-	movl	$1, %edi
+	call	printf@PLT
+	leaq	.LC4(%rip), %rdi
+	call	puts@PLT
+	movl	$3, %esi
+	leaq	.LC3(%rip), %rdi
 	xorl	%eax, %eax
-	call	__printf_chk
-	movl	$.LC4, %edi
-	call	puts
+	call	printf@PLT
+	leaq	.LC4(%rip), %rdi
+	call	puts@PLT
 	xorl	%eax, %eax
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE47:
+.LFE31:
 	.size	main, .-main
-	.section	.text.unlikely
-.LCOLDE5:
-	.section	.text.startup
-.LHOTE5:
 	.section	.rodata.cst8,"aM",@progbits,8
 	.align 8
 .LC0:
 	.long	2684354560
 	.long	1073846681
-	.ident	"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.4) 5.4.0 20160609"
+	.ident	"GCC: (GNU) 8.2.1 20180831"
 	.section	.note.GNU-stack,"",@progbits

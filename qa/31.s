@@ -1,4 +1,5 @@
 	.file	"31.c"
+	.text
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
 	.string	"init id"
@@ -14,45 +15,37 @@
 	.string	"free entity"
 .LC6:
 	.string	"free id"
-	.section	.text.unlikely,"ax",@progbits
-.LCOLDB7:
 	.section	.text.startup,"ax",@progbits
-.LHOTB7:
 	.p2align 4,,15
 	.globl	main
 	.type	main, @function
 main:
-.LFB52:
+.LFB36:
 	.cfi_startproc
 	subq	$8, %rsp
 	.cfi_def_cfa_offset 16
-	movl	$.LC0, %edi
-	call	puts
-	movl	$.LC1, %edi
-	call	puts
-	movl	$.LC2, %edi
-	call	puts
-	movl	$1, %edx
-	movl	$.LC3, %esi
-	movl	$1, %edi
+	leaq	.LC0(%rip), %rdi
+	call	puts@PLT
+	leaq	.LC1(%rip), %rdi
+	call	puts@PLT
+	leaq	.LC2(%rip), %rdi
+	call	puts@PLT
+	movl	$1, %esi
+	leaq	.LC3(%rip), %rdi
 	xorl	%eax, %eax
-	call	__printf_chk
-	movl	$.LC4, %edi
-	call	puts
-	movl	$.LC5, %edi
-	call	puts
-	movl	$.LC6, %edi
-	call	puts
+	call	printf@PLT
+	leaq	.LC4(%rip), %rdi
+	call	puts@PLT
+	leaq	.LC5(%rip), %rdi
+	call	puts@PLT
+	leaq	.LC6(%rip), %rdi
+	call	puts@PLT
 	xorl	%eax, %eax
 	addq	$8, %rsp
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE52:
+.LFE36:
 	.size	main, .-main
-	.section	.text.unlikely
-.LCOLDE7:
-	.section	.text.startup
-.LHOTE7:
-	.ident	"GCC: (Ubuntu 5.4.0-6ubuntu1~16.04.4) 5.4.0 20160609"
+	.ident	"GCC: (GNU) 8.2.1 20180831"
 	.section	.note.GNU-stack,"",@progbits

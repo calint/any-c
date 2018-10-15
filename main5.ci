@@ -1,0 +1,31 @@
+entity{
+	id=0
+	print{
+		p("entity: %d\n",id)
+	}
+}
+
+entities{
+	entity&all
+	_init{
+		all=malloc(4*10)
+	}
+	_free{
+		free(all)
+	}
+	entity&get(int ix){
+		return all+ix*4
+	}
+}
+
+global{
+	entities es;
+	main{
+		entity&e=es.get(0)
+		e.print()
+		e.id=2
+		e.print()
+		entity e2=es.get(0)
+		e2.print()
+	}
+}

@@ -118,7 +118,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 		}
 
 
-		xexpls_parse_next(&o->lh,tc,tk);
+		xexpls_parse_next(&o->lh,tc,tk,false);
 
 //		o->lh=toc_read_next_xexpr(tc);
 
@@ -164,7 +164,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			o->rh_negate=true;
 		}
 
-		xexpls_parse_next(&o->rh,tc,tk);
+		xexpls_parse_next(&o->rh,tc,tk,false);
 //		o->rh=toc_read_next_xexpr(tc);
 
 		if(*tc->srcp==')'){
