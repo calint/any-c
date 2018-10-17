@@ -2,6 +2,7 @@
 #include"xcode.h"
 
 typedef struct xfield{
+	xexp super;
 	strc type;
 	strc name;
 	xexpls initval;
@@ -9,22 +10,25 @@ typedef struct xfield{
 	bool is_ref;
 }xfield;
 
-#define xfield_def (xfield){strc_def,strc_def,xexpls_def,token_def,false}
+#define xfield_def (xfield){\
+	xexp_def,strc_def,strc_def,xexpls_def,token_def,false}
 
 inline static void xfield_free(xfield*o){
 	_xexpls_free_((xexp*)&o->initval);
 }
 
 typedef struct xfuncparam{
+	xexp super;
 	strc type;
 	strc name;
 	token token;
 	bool is_ref;
 }xfuncparam;
 
-#define xfuncparam_def (xfuncparam){strc_def,strc_def,token_def,false}
+#define xfuncparam_def (xfuncparam){xexp_def,strc_def,strc_def,token_def,false}
 
 typedef struct xfunc{
+	xexp super;
 	strc type;
 	strc name;
 	ptrs params;
@@ -34,7 +38,7 @@ typedef struct xfunc{
 }xfunc;
 
 #define xfunc_def (xfunc){\
-	strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
+	xexp_def,strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
 
 inline static void xfunc_free(xfunc*o){
 	ptrs_free(&o->params);
