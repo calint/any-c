@@ -38,7 +38,7 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 }
 
 #define xcall_def (xcall){\
-	{_xcall_compile_,_xcall_free_,strc_def,token_def,0,false},\
+	{_xcall_compile_,_xcall_free_,NULL,strc_def,token_def,0,false},\
 	strc_def,ptrs_def\
 }
 

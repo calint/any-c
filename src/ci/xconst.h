@@ -7,7 +7,7 @@ typedef struct xconst{
 }xconst;
 
 #define xconst_def (xconst){\
-	{_xconst_compile_,NULL,strc_def,token_def,0,false},\
+	{_xconst_compile_,NULL,NULL,strc_def,token_def,0,false},\
 		strc_def\
 }
 

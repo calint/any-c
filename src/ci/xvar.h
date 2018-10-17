@@ -39,7 +39,7 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 }
 
 #define xvar_def (xvar){\
-	{_xvar_compile_,NULL,strc_def,token_def,0,false},\
+	{_xvar_compile_,NULL,NULL,strc_def,token_def,0,false},\
 		strc_def,xset_def,false\
 }
 

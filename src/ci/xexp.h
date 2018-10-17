@@ -5,6 +5,8 @@ struct toc;
 typedef struct xexp{
 	void (*compile)(const struct xexp*,struct toc*);
 	void (*free)(struct xexp*);
+	void (*print_source)(struct xexp*);
+
 	strc type;
 	token token;
 	char bits; //  1 is encapsulated     2 is block { }    4 is in parenthesis
@@ -12,7 +14,7 @@ typedef struct xexp{
 	bool is_ref;
 }xexp;
 
-#define xexp_def (xexp){NULL,NULL,strc_def,token_def,0,false}
+#define xexp_def (xexp){NULL,NULL,NULL,strc_def,token_def,0,false}
 
 inline static int xexp_is_empty(const xexp*o){return o->compile==NULL;}
 inline static bool xexp_is_encapsulated(const xexp*o){return(o->bits&1)==1;}

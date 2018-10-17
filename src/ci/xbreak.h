@@ -10,7 +10,7 @@ inline static void _xbreak_compile_(const xexp*oo,toc*tc){
 	printf("break");
 }
 
-#define xbreak_def (xbreak){{_xbreak_compile_,NULL,strc_def,token_def,0,false}}
+#define xbreak_def (xbreak){{_xbreak_compile_,NULL,NULL,strc_def,token_def,0,false}}
 
 inline static xbreak*xbreak_read_next(toc*tc,token tk){
 	if(*tc->srcp==';')

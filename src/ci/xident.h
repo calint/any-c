@@ -9,8 +9,11 @@ typedef struct xident{
 }xident;
 
 #define xident_def (xident){\
-	{_xident_compile_,NULL,strc_def,token_def,0,false},\
+	{_xident_compile_,NULL,_xident_print_source_,strc_def,token_def,0,false},\
 	strc_def,false\
+}
+
+inline static void _xident_print_source_(xexp*oo){
 }
 
 inline static void _xident_compile_(const xexp*oo,toc*tc){
