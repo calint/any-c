@@ -468,7 +468,7 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			e->name=token_to_new_strc(&tk);
+			e->name=token_content_to_new_strc(&tk);
 			e->super.type="strc";
 			return(xexp*)e;
 
@@ -486,7 +486,7 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 			xconst*e=malloc(sizeof(xconst));
 			*e=xconst_def;
 			e->super.token=tk;
-			e->name=token_to_new_strc(&tk);
+			e->name=token_content_to_new_strc(&tk);
 			e->super.type="char";
 			return(xexp*)e;
 
@@ -496,7 +496,7 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 	}
 
 	// constant
-	strc tks=token_to_new_strc(&tk);
+	strc tks=token_content_to_new_strc(&tk);
 	const size_t tkslen=strlen(tks);
 
 	// boolean
@@ -587,7 +587,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 		return(xexp*)xreturn_read_next(tc,tk);
 
 	// built in types
-	strc name=token_to_new_strc(&tk);
+	strc name=token_content_to_new_strc(&tk);
 	if(token_equals(&tk,"int")||token_equals(&tk,"float")||
 			token_equals(&tk,"bool")||token_equals(&tk,"char")||
 			token_equals(&tk,"var")||token_equals(&tk,"strc"))
@@ -651,7 +651,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 		longjmp(_jmp_buf,1);
 	}
 
-	strc name=token_to_new_strc(&tk);
+	strc name=token_content_to_new_strc(&tk);
 
 	// function call
 	if(toc_srcp_is(tc,'('))
@@ -845,10 +845,10 @@ inline static int ci_compile_file(strc path){
 	strb srcstr=strb_from_file(path);
 	tc.srcp=tc.src=srcstr.data;
 	while(1){
-		token typenm=toc_next_token(&tc);
-		if(token_is_empty(&typenm))
+		token tk=toc_next_token(&tc);
+		if(token_is_empty(&tk))
 			break;
-		xtype_read_next(&tc,typenm);
+		xtype_read_next(&tc,tk);
 	}
 	ci_compile_to_c(&tc);
 	for(unsigned i=0;i<tc.types.count;i++){

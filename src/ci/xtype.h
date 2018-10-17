@@ -97,10 +97,10 @@ inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 	if(toc_srcp_is(tc,'{') || toc_srcp_is(tc,'(')){
 		if(token_is_empty(&name)){ // global{main{}}
 			f->type="void";
-			f->name=token_to_new_strc(&type);
+			f->name=token_content_to_new_strc(&type);
 		}else{ // global{int main{}}
-			f->type=token_to_new_strc(&type);
-			f->name=token_to_new_strc(&name);
+			f->type=token_content_to_new_strc(&type);
+			f->name=token_content_to_new_strc(&name);
 		}
 	}
 	if(toc_srcp_is_take(tc,'('))
@@ -118,8 +118,8 @@ inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		if(toc_srcp_is_take(tc,'&'))
 			fp->is_ref=true;
 		token tkn=toc_next_token(tc);
-		fp->type=token_to_new_strc(&tkt);
-		fp->name=token_to_new_strc(&tkn);
+		fp->type=token_content_to_new_strc(&tkt);
+		fp->name=token_content_to_new_strc(&tkn);
 		toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
 		toc_srcp_is_take(tc,',');
 	}
@@ -147,7 +147,7 @@ inline static void xfield_read_next(toc*tc,xtype*c,strc tktype,
 	if(token_is_empty(&tkname))
 		f->name=f->type;
 	else
-		f->name=token_to_new_strc(&tkname);
+		f->name=token_content_to_new_strc(&tkname);
 
 
 	ptrs_add(&c->fields,f);
@@ -167,11 +167,11 @@ inline static void xfield_read_next(toc*tc,xtype*c,strc tktype,
 	toc_srcp_is_take(tc,';');
 }
 
-inline static xtype*xtype_read_next(toc*tc,token tkname){
+inline static xtype*xtype_read_next(toc*tc,token tk){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
-	c->token=tkname;
-	c->name=token_to_new_strc(&c->token);
+	c->token=tk;
+	c->name=token_content_to_new_strc(&c->token);
 
 	ptrs_add(&tc->types,c);
 	toc_push_scope(tc,'c',c->name);
@@ -202,13 +202,13 @@ inline static xtype*xtype_read_next(toc*tc,token tkname){
 		}else if(toc_srcp_is(tc,'=')){// global{id=1}
 			xfield_read_next(tc,c,"var",tptk,is_ref);
 		}else if(toc_srcp_is(tc,';')){// global{tokens;}
-			xfield_read_next(tc,c,token_to_new_strc(&tptk),tptk,is_ref);
+			xfield_read_next(tc,c,token_content_to_new_strc(&tptk),tptk,is_ref);
 		}else{
 			token nm=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
 				xfunc_read_next(tc,c,is_ref,tptk,nm);
 			}else{
-				xfield_read_next(tc,c,token_to_new_strc(&tptk),nm,is_ref);
+				xfield_read_next(tc,c,token_content_to_new_strc(&tptk),nm,is_ref);
 			}
 		}
 	}

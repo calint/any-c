@@ -203,7 +203,7 @@ inline static const char*scan_to_including_newline(const char*p){
 //}
 
 static ptrs _token_to_new_strc_=ptrs_def;
-inline static /*gives*/strc token_to_new_strc(token*o){
+inline static /*gives*/strc token_content_to_new_strc(token*o){
 	const long len=o->content_end-o->content;
 	char*s=malloc((size_t)len+1);
 	memcpy(s,o->content,(size_t)len);

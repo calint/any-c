@@ -50,7 +50,7 @@ inline static xvar*xvar_read_next(toc*tc,strc type){
 	if(toc_srcp_is_take(tc,'&'))
 		o->is_ref=true;
 	o->super.token=toc_next_token(tc);
-	o->name=token_to_new_strc(&o->super.token);
+	o->name=token_content_to_new_strc(&o->super.token);
 
 	if(!strcmp("o",o->name)){
 		toc_print_source_location(tc,o->super.token,4);
