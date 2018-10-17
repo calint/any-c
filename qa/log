@@ -1,6 +1,6 @@
-Wed Oct 17 20:56:02 +07 2018
+Wed Oct 17 21:31:03 +07 2018
 optimization -Os
--rwxr-xr-x 1 c c 49688 Oct 17 20:56 [0m[01;32many-c[0m
+-rwxr-xr-x 1 c c 49808 Oct 17 21:31 [0m[01;32many-c[0m
 0 : ok
 1 : ok
 2 : ok
@@ -48,5 +48,5 @@ optimization -Os
 43 : ok
 44 : ok
 45 : ok
-Wed Oct 17 20:56:07 +07 2018
+Wed Oct 17 21:31:08 +07 2018
 ok

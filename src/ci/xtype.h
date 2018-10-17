@@ -43,16 +43,25 @@ inline static void xfunc_free(xfunc*o){
 
 #include"decouple.h"
 
+
+inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){}
+inline static void _xtype_free_(xexp*o){}
+inline static void _xtype_print_(xexp*o){}
+
 typedef struct xtype{
+	xexp super;
 	strc name;
 	ptrs fields;
 	ptrs funcs;
-	token token;
+//	token token;
 	char bits; // 1: needs call to free   2: has _free
 	           // 3: needs call to init   4: has _init
 }xtype;
 
-#define xtype_def (xtype){strc_def,ptrs_def,ptrs_def,token_def,0}
+//#define xtype_def (xtype){xexp_def,strc_def,ptrs_def,ptrs_def,token_def,0}
+#define xtype_def (xtype){\
+	{_xtype_compile_,_xtype_free_,_xtype_print_,strc_def,token_def,0,false},\
+	strc_def,ptrs_def,ptrs_def,0}
 
 inline static void xtype_free(xtype*o){
 	for(unsigned i=0;i<o->fields.count;i++){
@@ -170,14 +179,15 @@ inline static void xfield_read_next(toc*tc,xtype*c,strc tktype,
 inline static xtype*xtype_read_next(toc*tc,token tk){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
-	c->token=tk;
-	c->name=token_content_to_new_strc(&c->token);
+//	c->token=tk;
+	c->super.token=tk;
+	c->name=token_content_to_new_strc(&c->super.token);
 
 	ptrs_add(&tc->types,c);
 	toc_push_scope(tc,'c',c->name);
 
 	if(!toc_srcp_is(tc,'{')){
-		toc_print_source_location(tc,c->token,4);
+		toc_print_source_location(tc,c->super.token,4);
 		printf("expected '{' to open class body\n");
 		longjmp(_jmp_buf,1);
 	}
