@@ -6,7 +6,6 @@ typedef struct xfield{
 	strc type;
 	strc name;
 	xexpls initval;
-//	token token;
 	bool is_ref;
 }xfield;
 
@@ -19,9 +18,7 @@ inline static void _xfield_free_(xexp*o){
 inline static void _xfield_print_source_(xexp*e){
 	xfield*o=(xfield*)e;
 	token_print(&o->super.token);
-	printf("{");
-
-	printf("}");
+	printf("=\n");
 }
 
 #define xfield_def (xfield){\
@@ -32,11 +29,12 @@ typedef struct xfuncparam{
 	xexp super;
 	strc type;
 	strc name;
-	token token;
+//	token token;
 	bool is_ref;
 }xfuncparam;
 
-#define xfuncparam_def (xfuncparam){xexp_def,strc_def,strc_def,token_def,false}
+//#define xfuncparam_def (xfuncparam){xexp_def,strc_def,strc_def,token_def,false}
+#define xfuncparam_def (xfuncparam){xexp_def,strc_def,strc_def,false}
 
 typedef struct xfunc{
 	xexp super;
