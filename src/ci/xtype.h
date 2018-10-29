@@ -203,22 +203,6 @@ inline static void _xtype_free_(xexp*o){
 		if(e->free)
 			e->free(e);
 	}
-//
-//
-//	xtype*oo=(xtype*)o;
-//	const long n=oo->fields.count;
-//	for(long i=0;i<n;i++){
-//		xfield*e=(xfield*)ptrs_get(&oo->fields,i);
-//		if(e->super.free)
-//			e->super.free((xexp*)e);
-//	}
-//
-//	const long n2=oo->funcs.count;
-//	for(long i=0;i<n2;i++){
-//		xfunc*e=(xfunc*)ptrs_get(&oo->funcs,i);
-//		if(e->super.free)
-//			e->super.free((xexp*)e);
-//	}
 }
 
 inline static void _xtype_print_(xexp*o){//! TODO
