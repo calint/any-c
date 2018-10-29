@@ -235,16 +235,6 @@ inline static void ci_xcall_assert(const toc*tc,xcall*o){
 		longjmp(_jmp_buf,1);
 	}
 }
-//
-//inline static xtype*toc_get_type_in_context(const toc*tc,token tk){
-//	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-//		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
-//		if(s->type!='c')
-//			continue;
-//		xtype*tp=ci_get_type_by_name(tc,s->name);
-//		return tp;
-//	}
-//}
 
 inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	xfunc*fn=toc_get_func_in_context(tc,o->super.token);
@@ -560,7 +550,6 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 	}
 	return NULL;
 }
-
 
 inline static xexp*ci_read_next_statement(toc*tc){
 	token tk=toc_next_token(tc);

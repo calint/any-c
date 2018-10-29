@@ -54,14 +54,13 @@ typedef struct xtype{
 	ptrs fields;
 	ptrs funcs;
 	ptrs stmts;
-//	token token;
-	char bits; // 1: needs call to free   2: has _free
-	           // 3: needs call to init   4: has _init
+	char bits; // bit 1: needs call to free     bit 2: has _free
+	           // bit 3: needs call to init     bit 4: has _init
 }xtype;
 
-inline bool xtype_is_needs_call_to_free(const xtype*o){return o->bits&1;}
+inline bool xtype_is_needs_free(const xtype*o){return o->bits&1;}
 inline bool xtype_is_has_free(const xtype*o){return o->bits&2;}
-inline bool xtype_is_needs_call_to_init(const xtype*o){return o->bits&4;}
+inline bool xtype_is_needs_init(const xtype*o){return o->bits&4;}
 inline bool xtype_is_has_init(const xtype*o){return o->bits&8;}
 
 inline static void ci_print_right_aligned_comment(strc comment){
