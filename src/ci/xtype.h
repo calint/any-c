@@ -16,9 +16,16 @@ inline static void _xfield_free_(xexp*o){
 	_xexpls_free_((xexp*)&oo->initval);
 }
 
+inline static void _xfield_print_source_(xexp*e){
+	xfield*o=(xfield*)e;
+	token_print(&o->super.token);
+	printf("{");
+
+	printf("}");
+}
 
 #define xfield_def (xfield){\
-	{NULL,_xfield_free_,NULL,strc_def,token_def,0,false}\
+	{NULL,_xfield_free_,_xfield_print_source_,strc_def,token_def,0,false}\
 	,strc_def,strc_def,xexpls_def,false}
 
 typedef struct xfuncparam{
@@ -48,8 +55,16 @@ inline static void _xfunc_free_(xexp*e){
 	_xcode_free_((xexp*)&o->code);
 }
 
+inline static void _xfunc_print_source_(xexp*e){
+	xfunc*o=(xfunc*)e;
+	token_print(&o->super.token);
+	printf("{");
+
+	printf("}");
+}
+
 #define xfunc_def (xfunc){\
-	{NULL,_xfunc_free_,NULL,strc_def,token_def,0,false},\
+	{NULL,_xfunc_free_,_xfunc_print_source_,strc_def,token_def,0,false},\
 	strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
 
 #include"decouple.h"
@@ -206,27 +221,33 @@ inline static void _xtype_free_(xexp*o){
 	ptrs_free(&oo->stmts);
 }
 
-inline static void _xtype_print_(xexp*o){//! TODO
-	xtype*t=(xtype*)o;
-	token_print(&t->super.token);
+inline static void _xtype_print_source_(xexp*o){//! TODO
+	xtype*oo=(xtype*)o;
+	token_print(&oo->super.token);
 	printf("{");
-	const long n=t->fields.count;
+	const long n=oo->stmts.count;
 	for(long i=0;i<n;i++){
-		xfield*f=(xfield*)ptrs_get(&t->fields,i);
-		token_print(&f->super.token);
+		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
+		if(e->print_source)
+			e->print_source(e);
 	}
-	const long n2=t->funcs.count;
-	for(long i=0;i<n2;i++){
-		xfunc*f=(xfunc*)ptrs_get(&t->funcs,i);
-		token_print(&f->super.token);
-	}
-//	const long n=
 	printf("}");
+
+//	xtype*t=(xtype*)o;
+//	const long n=t->fields.count;
+//	for(long i=0;i<n;i++){
+//		xfield*f=(xfield*)ptrs_get(&t->fields,i);
+//		token_print(&f->super.token);
+//	}
+//	const long n2=t->funcs.count;
+//	for(long i=0;i<n2;i++){
+//		xfunc*f=(xfunc*)ptrs_get(&t->funcs,i);
+//		token_print(&f->super.token);
+//	}
 }
 
-//#define xtype_def (xtype){xexp_def,strc_def,ptrs_def,ptrs_def,token_def,0}
 #define xtype_def (xtype){\
-	{_xtype_compile_,_xtype_free_,_xtype_print_,strc_def,token_def,0,false},\
+	{_xtype_compile_,_xtype_free_,_xtype_print_source_,strc_def,token_def,0,false},\
 	strc_def,ptrs_def,ptrs_def,ptrs_def,0}
 
 inline static xfield*xtype_get_field_for_name(const xtype*o,strc field_name){
