@@ -29,11 +29,9 @@ typedef struct xfuncparam{
 	xexp super;
 	strc type;
 	strc name;
-//	token token;
 	bool is_ref;
 }xfuncparam;
 
-//#define xfuncparam_def (xfuncparam){xexp_def,strc_def,strc_def,token_def,false}
 #define xfuncparam_def (xfuncparam){xexp_def,strc_def,strc_def,false}
 
 typedef struct xfunc{
