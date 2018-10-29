@@ -15,9 +15,9 @@ simple language that compiles to c
 source size
 ```
 cat src/ci/* src/lib/* src/lib.h main.c | wc
-   3463    5685   82875
+   3439    5646   82403
 cat src/ci/* src/lib/* src/lib.h main.c | gzip | wc
-     54     334   15572
+     45     299   15502
 ```
 
 

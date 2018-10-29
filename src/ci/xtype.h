@@ -203,6 +203,7 @@ inline static void _xtype_free_(xexp*o){
 		if(e->free)
 			e->free(e);
 	}
+	ptrs_free(&oo->stmts);
 }
 
 inline static void _xtype_print_(xexp*o){//! TODO
@@ -227,31 +228,6 @@ inline static void _xtype_print_(xexp*o){//! TODO
 #define xtype_def (xtype){\
 	{_xtype_compile_,_xtype_free_,_xtype_print_,strc_def,token_def,0,false},\
 	strc_def,ptrs_def,ptrs_def,ptrs_def,0}
-
-inline static void xtype_free(xtype*o){
-//	for(unsigned i=0;i<o->fields.count;i++){
-//		xfield*f=(xfield*)ptrs_get(&o->fields,i);
-//		xfield_free(f);
-//		free(f);
-//	}
-//	ptrs_free(&o->fields);
-//
-//	for(unsigned i=0;i<o->funcs.count;i++){
-//		xfunc*f=(xfunc*)ptrs_get(&o->funcs,i);
-//		xfunc_free(f);
-//		free(f);
-//	}
-//	ptrs_free(&o->funcs);
-
-
-	for(unsigned i=0;i<o->stmts.count;i++){
-		xexp*e=(xexp*)ptrs_get(&o->stmts,i);
-		if(e->free)
-			e->free(e);
-		free(e);
-	}
-	ptrs_free(&o->stmts);
-}
 
 inline static xfield*xtype_get_field_for_name(const xtype*o,strc field_name){
 	for(unsigned i=0;i<o->fields.count;i++){
