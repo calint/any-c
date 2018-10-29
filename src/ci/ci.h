@@ -685,16 +685,6 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	return(xexp*)e;
 }
 
-inline static void ci_print_right_aligned_comment(strc comment){
-	strc line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
-	const size_t maxlen=strlen(line);
-	const size_t ln=strlen(comment);
-	long start_at=(long)(maxlen-ln)-4;
-	if(start_at<0)start_at=0;
-	printf("//");
-	printf("%.*s %s\n",(int)start_at,line,comment);
-}
-
 inline static void ci_compile_to_c(toc*tc){
 	ci_print_right_aligned_comment("tidy salami");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
@@ -712,118 +702,119 @@ inline static void ci_compile_to_c(toc*tc){
 	printf("#define null 0\n");
 	for(unsigned i=0;i<tc->types.count;i++){
 		xtype*c=ptrs_get(&tc->types,i);
-		toc_push_scope(tc,'c',c->name);
-		// type
-		ci_print_right_aligned_comment(c->name);
-		printf("typedef struct %s{",c->name);
-		// fields
-		if(c->fields.count)
-			printf("\n");
-		for(unsigned i=0;i<c->fields.count;i++){
-			xfield*f=(xfield*)ptrs_get(&c->fields,i);
-			toc_add_declaration(tc,f->type,f->is_ref,f->name);
-			if(!strcmp(f->type,"var")){
-				if(!f->initval.exps.count){
-//					toc_print_source_location(tc,);
-					printf("expected initializer for var '%s'",f->name);
-					printf("\n    %s %d",__FILE__,__LINE__);
-					longjmp(_jmp_buf,1);
-				}
-				f->initval.super.compile((xexp*)&f->initval,tc);
-				f->type=f->initval.super.type;
-			}
-			printf("    ");
-			if(!strcmp(f->type,c->name))
-				printf("struct ");
-			printf("%s",f->type);
-			if(f->is_ref)
-				printf("*");
-			else
-				printf(" ");
-			printf("%s;\n",f->name);
-		}
-		printf("}%s;\n",c->name);
-
-		// #define object_def {...}
-		printf("#define %s_def (%s){",c->name,c->name);
-		for(unsigned i=0;i<c->fields.count;i++){
-			xfield*f=(xfield*)ptrs_get(&c->fields,i);
-			if(f->initval.exps.count){
-				f->initval.super.compile((xexp*)&f->initval,tc);
-			}else{
-				if(f->is_ref)
-					printf("null");
-				else
-					printf("%s_def",f->type);
-			}
-			if(i!=c->fields.count-1)
-				printf(",");
-		}
-		printf("}\n");
-		// functions
-		if(c->funcs.count){
-			ci_print_right_aligned_comment("funcs");
-			for(unsigned i=0;i<c->funcs.count;i++){
-				xfunc*f=(xfunc*)ptrs_get(&c->funcs,i);
-				toc_push_scope(tc,'f',f->name);
-				printf("inline static %s",f->type);
-				if(f->is_ref)
-					printf("*");
-				else
-					printf(" ");
-				printf("%s_%s(%s*o",c->name,f->name,c->name);
-				for(unsigned j=0;j<f->params.count;j++){
-					xfuncparam*fp=ptrs_get(&f->params,j);
-					printf(",");
-					printf("%s",fp->type);
-					if(fp->is_ref)
-						printf("*");
-					else
-						printf(" ");
-					printf("%s",fp->name);
-					toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
-				}
-				printf(")");
-				f->code.super.compile((xexp*)&f->code,tc);
+		c->super.compile((xexp*)c,tc);
+//		toc_push_scope(tc,'c',c->name);
+//		// type
+//		ci_print_right_aligned_comment(c->name);
+//		printf("typedef struct %s{",c->name);
+//		// fields
+//		if(c->fields.count)
+//			printf("\n");
+//		for(unsigned i=0;i<c->fields.count;i++){
+//			xfield*f=(xfield*)ptrs_get(&c->fields,i);
+//			toc_add_declaration(tc,f->type,f->is_ref,f->name);
+//			if(!strcmp(f->type,"var")){
+//				if(!f->initval.exps.count){
+////					toc_print_source_location(tc,);
+//					printf("expected initializer for var '%s'",f->name);
+//					printf("\n    %s %d",__FILE__,__LINE__);
+//					longjmp(_jmp_buf,1);
+//				}
+//				f->initval.super.compile((xexp*)&f->initval,tc);
+//				f->type=f->initval.super.type;
+//			}
+//			printf("    ");
+//			if(!strcmp(f->type,c->name))
+//				printf("struct ");
+//			printf("%s",f->type);
+//			if(f->is_ref)
+//				printf("*");
+//			else
+//				printf(" ");
+//			printf("%s;\n",f->name);
+//		}
+//		printf("}%s;\n",c->name);
+//
+//		// #define object_def {...}
+//		printf("#define %s_def (%s){",c->name,c->name);
+//		for(unsigned i=0;i<c->fields.count;i++){
+//			xfield*f=(xfield*)ptrs_get(&c->fields,i);
+//			if(f->initval.exps.count){
+//				f->initval.super.compile((xexp*)&f->initval,tc);
+//			}else{
+//				if(f->is_ref)
+//					printf("null");
+//				else
+//					printf("%s_def",f->type);
+//			}
+//			if(i!=c->fields.count-1)
+//				printf(",");
+//		}
+//		printf("}\n");
+//		// functions
+//		if(c->funcs.count){
+//			ci_print_right_aligned_comment("funcs");
+//			for(unsigned i=0;i<c->funcs.count;i++){
+//				xfunc*f=(xfunc*)ptrs_get(&c->funcs,i);
+//				toc_push_scope(tc,'f',f->name);
+//				printf("inline static %s",f->type);
+//				if(f->is_ref)
+//					printf("*");
+//				else
+//					printf(" ");
+//				printf("%s_%s(%s*o",c->name,f->name,c->name);
+//				for(unsigned j=0;j<f->params.count;j++){
+//					xfuncparam*fp=ptrs_get(&f->params,j);
+//					printf(",");
+//					printf("%s",fp->type);
+//					if(fp->is_ref)
+//						printf("*");
+//					else
+//						printf(" ");
+//					printf("%s",fp->name);
+//					toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
+//				}
+//				printf(")");
+//				f->code.super.compile((xexp*)&f->code,tc);
+////				printf("\n");
+//				toc_pop_scope(tc);
+//			}
+//		}
+//		// cascading init
+//		if((c->bits&4) || !strcmp(c->name,"global")){// needs call to init
+//			printf("inline static void %s_init(%s*o){",c->name,c->name);
+//			if(c->fields.count)
 //				printf("\n");
-				toc_pop_scope(tc);
-			}
-		}
-		// cascading init
-		if((c->bits&4) || !strcmp(c->name,"global")){// needs call to init
-			printf("inline static void %s_init(%s*o){",c->name,c->name);
-			if(c->fields.count)
-				printf("\n");
-			for(unsigned i=0;i<c->fields.count;i++){
-				xfield*f=ptrs_get(&c->fields,i);
-				if(ci_is_builtin_type(f->type))
-					continue;
-				xtype*cc=ci_get_type_for_name_try(tc,f->type);
-				if(cc->bits&4)// has init
-					printf("    %s_init(&o->%s);\n",f->type,f->name);
-			}
-			if(c->bits&8) // has _init
-				printf("    %s__init(o);\n",c->name);
-			printf("}\n");
-		}
-		// cascading free
-		if((c->bits&1) || !strcmp(c->name,"global")){// needs call to free
-			printf("inline static void %s_free(%s*o){",c->name,c->name);
-			if(c->fields.count)
-				printf("\n");
-			if(c->bits&2) // has _free
-				printf("    %s__free(o);\n",c->name);
-			for(long i=c->fields.count-1;i>=0;i--){
-				xfield*f=(xfield*)ptrs_get(&c->fields,i);
-				if(ci_is_builtin_type(f->type))
-					continue;
-				xtype*cc=ci_get_type_for_name_try(tc,f->type);
-				if(cc->bits&1) // needs _free?
-					printf("    %s_free(&o->%s);\n",f->type,f->name);
-			}
-			printf("}\n");
-		}
-		toc_pop_scope(tc);
+//			for(unsigned i=0;i<c->fields.count;i++){
+//				xfield*f=ptrs_get(&c->fields,i);
+//				if(ci_is_builtin_type(f->type))
+//					continue;
+//				xtype*cc=ci_get_type_for_name_try(tc,f->type);
+//				if(cc->bits&4)// has init
+//					printf("    %s_init(&o->%s);\n",f->type,f->name);
+//			}
+//			if(c->bits&8) // has _init
+//				printf("    %s__init(o);\n",c->name);
+//			printf("}\n");
+//		}
+//		// cascading free
+//		if((c->bits&1) || !strcmp(c->name,"global")){// needs call to free
+//			printf("inline static void %s_free(%s*o){",c->name,c->name);
+//			if(c->fields.count)
+//				printf("\n");
+//			if(c->bits&2) // has _free
+//				printf("    %s__free(o);\n",c->name);
+//			for(long i=c->fields.count-1;i>=0;i--){
+//				xfield*f=(xfield*)ptrs_get(&c->fields,i);
+//				if(ci_is_builtin_type(f->type))
+//					continue;
+//				xtype*cc=ci_get_type_for_name_try(tc,f->type);
+//				if(cc->bits&1) // needs _free?
+//					printf("    %s_free(&o->%s);\n",f->type,f->name);
+//			}
+//			printf("}\n");
+//		}
+//		toc_pop_scope(tc);
 	}
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("int main(int c,char**a){\n");
@@ -844,18 +835,23 @@ inline static int ci_compile_file(strc path){
 	tc.filepth=path;
 	strb srcstr=strb_from_file(path);
 	tc.srcp=tc.src=srcstr.data;
-	while(1){
-		token tk=toc_next_token(&tc);
-		if(token_is_empty(&tk))
-			break;
-		xtype_read_next(&tc,tk);
-	}
+
+	xprg*prg=/*takes*/xprg_read_next(&tc);
+//	while(1){
+//		token tk=toc_next_token(&tc);
+//		if(token_is_empty(&tk))
+//			break;
+//		xtype_read_next(&tc,tk);
+//	}
+//	ci_print_source(&tc);
+//	prg->super.print_source((xexp*)prg);
 	ci_compile_to_c(&tc);
-	for(unsigned i=0;i<tc.types.count;i++){
-		xtype*t=(xtype*)ptrs_get(&tc.types,i);
-		xtype_free(t);
-		free(t);
-	}
+	prg->super.free((xexp*)prg);
+//	for(unsigned i=0;i<tc.types.count;i++){
+//		xtype*t=(xtype*)ptrs_get(&tc.types,i);
+//		xtype_free(t);
+//		free(t);
+//	}
 	ptrs_free(&tc.types);
 	ptrs_free(&tc.scopes);
 	token_free();

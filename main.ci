@@ -1,4 +1,4 @@
-global{
+	global	{
 	main{
 		var p=  - 1
 		p("%x\n",p)

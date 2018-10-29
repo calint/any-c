@@ -6,12 +6,12 @@ typedef struct xfield{
 	strc type;
 	strc name;
 	xexpls initval;
-	token token;
+//	token token;
 	bool is_ref;
 }xfield;
 
 #define xfield_def (xfield){\
-	xexp_def,strc_def,strc_def,xexpls_def,token_def,false}
+	xexp_def,strc_def,strc_def,xexpls_def,false}
 
 inline static void xfield_free(xfield*o){
 	_xexpls_free_((xexp*)&o->initval);
@@ -38,7 +38,8 @@ typedef struct xfunc{
 }xfunc;
 
 #define xfunc_def (xfunc){\
-	xexp_def,strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
+	{NULL,NULL,NULL,strc_def,token_def,0,false},\
+	strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
 
 inline static void xfunc_free(xfunc*o){
 	ptrs_free(&o->params);
@@ -47,40 +48,206 @@ inline static void xfunc_free(xfunc*o){
 
 #include"decouple.h"
 
-
-inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){}
-inline static void _xtype_free_(xexp*o){}
-inline static void _xtype_print_(xexp*o){}
-
 typedef struct xtype{
 	xexp super;
 	strc name;
 	ptrs fields;
 	ptrs funcs;
+	ptrs stmts;
 //	token token;
 	char bits; // 1: needs call to free   2: has _free
 	           // 3: needs call to init   4: has _init
 }xtype;
 
+inline static void ci_print_right_aligned_comment(strc comment){
+	strc line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
+	const size_t maxlen=strlen(line);
+	const size_t ln=strlen(comment);
+	long start_at=(long)(maxlen-ln)-4;
+	if(start_at<0)start_at=0;
+	printf("//");
+	printf("%.*s %s\n",(int)start_at,line,comment);
+}
+
+inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
+	xtype*c=(xtype*)e;
+	toc_push_scope(tc,'c',c->name);
+	// type
+	ci_print_right_aligned_comment(c->name);
+	printf("typedef struct %s{",c->name);
+	// fields
+	if(c->fields.count)
+		printf("\n");
+	for(unsigned i=0;i<c->fields.count;i++){
+		xfield*f=(xfield*)ptrs_get(&c->fields,i);
+		toc_add_declaration(tc,f->type,f->is_ref,f->name);
+		if(!strcmp(f->type,"var")){
+			if(!f->initval.exps.count){
+//					toc_print_source_location(tc,);
+				printf("expected initializer for var '%s'",f->name);
+				printf("\n    %s %d",__FILE__,__LINE__);
+				longjmp(_jmp_buf,1);
+			}
+			f->initval.super.compile((xexp*)&f->initval,tc);
+			f->type=f->initval.super.type;
+		}
+		printf("    ");
+		if(!strcmp(f->type,c->name))
+			printf("struct ");
+		printf("%s",f->type);
+		if(f->is_ref)
+			printf("*");
+		else
+			printf(" ");
+		printf("%s;\n",f->name);
+	}
+	printf("}%s;\n",c->name);
+
+	// #define object_def {...}
+	printf("#define %s_def (%s){",c->name,c->name);
+	for(unsigned i=0;i<c->fields.count;i++){
+		xfield*f=(xfield*)ptrs_get(&c->fields,i);
+		if(f->initval.exps.count){
+			f->initval.super.compile((xexp*)&f->initval,tc);
+		}else{
+			if(f->is_ref)
+				printf("null");
+			else
+				printf("%s_def",f->type);
+		}
+		if(i!=c->fields.count-1)
+			printf(",");
+	}
+	printf("}\n");
+	// functions
+	if(c->funcs.count){
+		ci_print_right_aligned_comment("funcs");
+		for(unsigned i=0;i<c->funcs.count;i++){
+			xfunc*f=(xfunc*)ptrs_get(&c->funcs,i);
+			toc_push_scope(tc,'f',f->name);
+			printf("inline static %s",f->type);
+			if(f->is_ref)
+				printf("*");
+			else
+				printf(" ");
+			printf("%s_%s(%s*o",c->name,f->name,c->name);
+			for(unsigned j=0;j<f->params.count;j++){
+				xfuncparam*fp=ptrs_get(&f->params,j);
+				printf(",");
+				printf("%s",fp->type);
+				if(fp->is_ref)
+					printf("*");
+				else
+					printf(" ");
+				printf("%s",fp->name);
+				toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
+			}
+			printf(")");
+			f->code.super.compile((xexp*)&f->code,tc);
+//				printf("\n");
+			toc_pop_scope(tc);
+		}
+	}
+	// cascading init
+	if((c->bits&4) || !strcmp(c->name,"global")){// needs call to init
+		printf("inline static void %s_init(%s*o){",c->name,c->name);
+		if(c->fields.count)
+			printf("\n");
+		for(unsigned i=0;i<c->fields.count;i++){
+			xfield*f=ptrs_get(&c->fields,i);
+			if(ci_is_builtin_type(f->type))
+				continue;
+			xtype*cc=ci_get_type_for_name_try(tc,f->type);
+			if(cc->bits&4)// has init
+				printf("    %s_init(&o->%s);\n",f->type,f->name);
+		}
+		if(c->bits&8) // has _init
+			printf("    %s__init(o);\n",c->name);
+		printf("}\n");
+	}
+	// cascading free
+	if((c->bits&1) || !strcmp(c->name,"global")){// needs call to free
+		printf("inline static void %s_free(%s*o){",c->name,c->name);
+		if(c->fields.count)
+			printf("\n");
+		if(c->bits&2) // has _free
+			printf("    %s__free(o);\n",c->name);
+		for(long i=c->fields.count-1;i>=0;i--){
+			xfield*f=(xfield*)ptrs_get(&c->fields,i);
+			if(ci_is_builtin_type(f->type))
+				continue;
+			xtype*cc=ci_get_type_for_name_try(tc,f->type);
+			if(cc->bits&1) // needs _free?
+				printf("    %s_free(&o->%s);\n",f->type,f->name);
+		}
+		printf("}\n");
+	}
+	toc_pop_scope(tc);
+}
+
+inline static void _xtype_free_(xexp*o){
+	xtype*oo=(xtype*)o;
+	const long n=oo->fields.count;
+	for(long i=0;i<n;i++){
+		xfield*e=(xfield*)ptrs_get(&oo->fields,i);
+		if(e->super.free)
+			e->super.free((xexp*)e);
+	}
+
+	const long n2=oo->funcs.count;
+	for(long i=0;i<n2;i++){
+		xfunc*e=(xfunc*)ptrs_get(&oo->funcs,i);
+		if(e->super.free)
+			e->super.free((xexp*)e);
+	}
+}
+
+inline static void _xtype_print_(xexp*o){//! TODO
+	xtype*t=(xtype*)o;
+	token_print(&t->super.token);
+	printf("{");
+	const long n=t->fields.count;
+	for(long i=0;i<n;i++){
+		xfield*f=(xfield*)ptrs_get(&t->fields,i);
+		token_print(&f->super.token);
+	}
+	const long n2=t->funcs.count;
+	for(long i=0;i<n2;i++){
+		xfunc*f=(xfunc*)ptrs_get(&t->funcs,i);
+		token_print(&f->super.token);
+	}
+//	const long n=
+	printf("}");
+}
+
 //#define xtype_def (xtype){xexp_def,strc_def,ptrs_def,ptrs_def,token_def,0}
 #define xtype_def (xtype){\
 	{_xtype_compile_,_xtype_free_,_xtype_print_,strc_def,token_def,0,false},\
-	strc_def,ptrs_def,ptrs_def,0}
+	strc_def,ptrs_def,ptrs_def,ptrs_def,0}
 
 inline static void xtype_free(xtype*o){
-	for(unsigned i=0;i<o->fields.count;i++){
-		xfield*f=(xfield*)ptrs_get(&o->fields,i);
-		xfield_free(f);
-		free(f);
-	}
-	ptrs_free(&o->fields);
+//	for(unsigned i=0;i<o->fields.count;i++){
+//		xfield*f=(xfield*)ptrs_get(&o->fields,i);
+//		xfield_free(f);
+//		free(f);
+//	}
+//	ptrs_free(&o->fields);
+//
+//	for(unsigned i=0;i<o->funcs.count;i++){
+//		xfunc*f=(xfunc*)ptrs_get(&o->funcs,i);
+//		xfunc_free(f);
+//		free(f);
+//	}
+//	ptrs_free(&o->funcs);
 
-	for(unsigned i=0;i<o->funcs.count;i++){
-		xfunc*f=(xfunc*)ptrs_get(&o->funcs,i);
-		xfunc_free(f);
-		free(f);
+
+	for(unsigned i=0;i<o->stmts.count;i++){
+		xexp*e=(xexp*)ptrs_get(&o->stmts,i);
+		if(e->free)
+			e->free(e);
+		free(e);
 	}
-	ptrs_free(&o->funcs);
+	ptrs_free(&o->stmts);
 }
 
 inline static xfield*xtype_get_field_for_name(const xtype*o,strc field_name){
@@ -101,7 +268,7 @@ inline static xfunc*xtype_get_func_for_name(const xtype*o,strc field_name){
 	return NULL;
 }
 
-inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
+inline static/*gives*/xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		token type,token name){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
@@ -111,9 +278,11 @@ inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		if(token_is_empty(&name)){ // global{main{}}
 			f->type="void";
 			f->name=token_content_to_new_strc(&type);
+			f->super.token=type;
 		}else{ // global{int main{}}
 			f->type=token_content_to_new_strc(&type);
 			f->name=token_content_to_new_strc(&name);
+			f->super.token=name;
 		}
 	}
 	if(toc_srcp_is_take(tc,'('))
@@ -147,14 +316,16 @@ inline static void xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 	ptrs_add(&c->funcs,f);
 	xcode_read_next(&f->code,tc);
 	toc_pop_scope(tc);
+	return f;
 }
 
-inline static void xfield_read_next(toc*tc,xtype*c,strc tktype,
-		token tkname,bool is_ref){
+inline static/*gives*/xfield*xfield_read_next(toc*tc,xtype*c,strc tktype,
+	token tkname,bool is_ref){
 
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
-	f->token=tkname; //? tktype
+	f->super.token=tkname;
+//	f->token=tkname; //? tktype
 	f->type=tktype;
 	f->is_ref=is_ref;
 	if(token_is_empty(&tkname))
@@ -178,9 +349,11 @@ inline static void xfield_read_next(toc*tc,xtype*c,strc tktype,
 		f->type=f->initval.super.type;
 	}
 	toc_srcp_is_take(tc,';');
+
+	return f;
 }
 
-inline static xtype*xtype_read_next(toc*tc,token tk){
+inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
 //	c->token=tk;
@@ -211,20 +384,22 @@ inline static xtype*xtype_read_next(toc*tc,token tk){
 
 		const bool is_ref=toc_srcp_is_take(tc,'&');
 
+		xexp*e=NULL;
 		if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-			xfunc_read_next(tc,c,is_ref,tptk,token_def);
+			e/*takes*/=(xexp*)xfunc_read_next(tc,c,is_ref,tptk,token_def);
 		}else if(toc_srcp_is(tc,'=')){// global{id=1}
-			xfield_read_next(tc,c,"var",tptk,is_ref);
+			e/*takes*/=(xexp*)xfield_read_next(tc,c,"var",tptk,is_ref);
 		}else if(toc_srcp_is(tc,';')){// global{tokens;}
-			xfield_read_next(tc,c,token_content_to_new_strc(&tptk),tptk,is_ref);
+			e/*takes*/=(xexp*)xfield_read_next(tc,c,token_content_to_new_strc(&tptk),tptk,is_ref);
 		}else{
 			token nm=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
-				xfunc_read_next(tc,c,is_ref,tptk,nm);
+				e/*takes*/=(xexp*)xfunc_read_next(tc,c,is_ref,tptk,nm);
 			}else{
-				xfield_read_next(tc,c,token_content_to_new_strc(&tptk),nm,is_ref);
+				e/*takes*/=(xexp*)xfield_read_next(tc,c,token_content_to_new_strc(&tptk),nm,is_ref);
 			}
 		}
+		ptrs_add(&c->stmts,e);
 	}
 	for(unsigned i=0;i<c->funcs.count;i++){
 		xfunc*f=(xfunc*)ptrs_get(&c->funcs,i);
@@ -249,3 +424,53 @@ inline static xtype*xtype_read_next(toc*tc,token tk){
 	return c;
 }
 
+typedef struct xprg{
+	xexp super;
+	ptrs stmts;
+}xprg;
+
+inline static void _xprg_print_source_(xexp*o){
+	xprg*oo=(xprg*)o;
+	const long n=oo->stmts.count;
+	for(long i=0;i<n;i++){
+		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
+		e->print_source(e);
+	}
+}
+
+inline static void _xprg_compile_(const struct xexp*o,struct toc*tc){
+	xprg*oo=(xprg*)o;
+	const long n=oo->stmts.count;
+	for(long i=0;i<n;i++){
+		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
+		if(e->compile)
+			e->compile(e,tc);
+	}
+}
+
+inline static void _xprg_free_(xexp*o){
+	xprg*oo=(xprg*)o;
+	const long n=oo->stmts.count;
+	for(long i=0;i<n;i++){
+		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
+		if(e->free)
+			e->free(e);
+	}
+}
+
+#define xprg_def (xprg){\
+	{_xprg_compile_,_xprg_free_,_xprg_print_source_,strc_def,token_def,0,false}\
+	 ,ptrs_def}
+
+inline static/*gives*/xprg*xprg_read_next(toc*tc){
+	xprg*o=malloc(sizeof(xprg));
+	*o=xprg_def;
+	while(1){
+		token tk=toc_next_token(tc);
+		if(token_is_empty(&tk))
+			break;
+		xtype*t/*takes*/=xtype_read_next(tc,tk);
+		ptrs_add(&o->stmts,t);
+	}
+	return o;
+}
