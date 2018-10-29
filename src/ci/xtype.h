@@ -40,7 +40,6 @@ typedef struct xfunc{
 	strc name;
 	ptrs params;
 	xcode code;
-	token token;
 	bool is_ref;
 }xfunc;
 
@@ -61,7 +60,7 @@ inline static void _xfunc_print_source_(xexp*e){
 
 #define xfunc_def (xfunc){\
 	{NULL,_xfunc_free_,_xfunc_print_source_,strc_def,token_def,0,false},\
-	strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
+	strc_def,strc_def,ptrs_def,xcode_def,false}
 
 #include"decouple.h"
 
