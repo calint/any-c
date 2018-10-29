@@ -689,11 +689,7 @@ inline static int ci_compile_file(strc path){
 	prg->super.compile((xexp*)prg,&tc);
 //	prg->super.print_source((xexp*)prg);
 	prg->super.free((xexp*)prg);
-//	for(unsigned i=0;i<tc.types.count;i++){
-//		xtype*t=(xtype*)ptrs_get(&tc.types,i);
-//		xtype_free(t);
-//		free(t);
-//	}
+
 	ptrs_free(&tc.types);
 	ptrs_free(&tc.scopes);
 	token_free();

@@ -10,12 +10,16 @@ typedef struct xfield{
 	bool is_ref;
 }xfield;
 
-#define xfield_def (xfield){\
-	xexp_def,strc_def,strc_def,xexpls_def,false}
 
-inline static void xfield_free(xfield*o){
-	_xexpls_free_((xexp*)&o->initval);
+inline static void _xfield_free_(xexp*o){
+	xfield*oo=(xfield*)o;
+	_xexpls_free_((xexp*)&oo->initval);
 }
+
+
+#define xfield_def (xfield){\
+	{NULL,_xfield_free_,NULL,strc_def,token_def,0,false}\
+	,strc_def,strc_def,xexpls_def,false}
 
 typedef struct xfuncparam{
 	xexp super;
@@ -37,14 +41,16 @@ typedef struct xfunc{
 	bool is_ref;
 }xfunc;
 
-#define xfunc_def (xfunc){\
-	{NULL,NULL,NULL,strc_def,token_def,0,false},\
-	strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
 
-inline static void xfunc_free(xfunc*o){
+inline static void _xfunc_free_(xexp*e){
+	xfunc*o=(xfunc*)e;
 	ptrs_free(&o->params);
 	_xcode_free_((xexp*)&o->code);
 }
+
+#define xfunc_def (xfunc){\
+	{NULL,_xfunc_free_,NULL,strc_def,token_def,0,false},\
+	strc_def,strc_def,ptrs_def,xcode_def,token_def,false}
 
 #include"decouple.h"
 
@@ -191,19 +197,28 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 
 inline static void _xtype_free_(xexp*o){
 	xtype*oo=(xtype*)o;
-	const long n=oo->fields.count;
+	const long n=oo->stmts.count;
 	for(long i=0;i<n;i++){
-		xfield*e=(xfield*)ptrs_get(&oo->fields,i);
-		if(e->super.free)
-			e->super.free((xexp*)e);
+		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
+		if(e->free)
+			e->free(e);
 	}
-
-	const long n2=oo->funcs.count;
-	for(long i=0;i<n2;i++){
-		xfunc*e=(xfunc*)ptrs_get(&oo->funcs,i);
-		if(e->super.free)
-			e->super.free((xexp*)e);
-	}
+//
+//
+//	xtype*oo=(xtype*)o;
+//	const long n=oo->fields.count;
+//	for(long i=0;i<n;i++){
+//		xfield*e=(xfield*)ptrs_get(&oo->fields,i);
+//		if(e->super.free)
+//			e->super.free((xexp*)e);
+//	}
+//
+//	const long n2=oo->funcs.count;
+//	for(long i=0;i<n2;i++){
+//		xfunc*e=(xfunc*)ptrs_get(&oo->funcs,i);
+//		if(e->super.free)
+//			e->super.free((xexp*)e);
+//	}
 }
 
 inline static void _xtype_print_(xexp*o){//! TODO
