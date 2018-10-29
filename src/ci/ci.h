@@ -262,6 +262,7 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 inline static bool ci_xvar_needs_init(const toc*tc,strc name){
 	xtype*t=ci_get_type_for_name_try(tc,name);
 	return (t->bits&4)==4;
+//	return xtype_is_needs_call_to_init(t);
 }
 
 inline static void ci_xcode_compile_free_current_scope(toc*tc){
@@ -272,6 +273,7 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 			continue;
 		const xtype*t=ci_get_type_for_name_try(tc,td->type);
 		if(t->bits&1){ // needs free
+//		if(xtype_is_needs_call_to_free(t)){// needs free
 			toc_print_indent_for_compile(tc);
 			printf("%s_free(&%s);",t->name,td->name);
 		}
@@ -837,6 +839,7 @@ inline static int ci_compile_file(strc path){
 	tc.srcp=tc.src=srcstr.data;
 
 	xprg*prg=/*takes*/xprg_read_next(&tc);
+	prg->super.compile((xexp*)prg,&tc);
 //	while(1){
 //		token tk=toc_next_token(&tc);
 //		if(token_is_empty(&tk))
@@ -845,7 +848,7 @@ inline static int ci_compile_file(strc path){
 //	}
 //	ci_print_source(&tc);
 //	prg->super.print_source((xexp*)prg);
-	ci_compile_to_c(&tc);
+//	ci_compile_to_c(&tc);
 	prg->super.free((xexp*)prg);
 //	for(unsigned i=0;i<tc.types.count;i++){
 //		xtype*t=(xtype*)ptrs_get(&tc.types,i);

@@ -59,6 +59,11 @@ typedef struct xtype{
 	           // 3: needs call to init   4: has _init
 }xtype;
 
+inline bool xtype_is_needs_call_to_free(const xtype*o){return o->bits&1;}
+inline bool xtype_is_has_free(const xtype*o){return o->bits&2;}
+inline bool xtype_is_needs_call_to_init(const xtype*o){return o->bits&4;}
+inline bool xtype_is_has_init(const xtype*o){return o->bits&8;}
+
 inline static void ci_print_right_aligned_comment(strc comment){
 	strc line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
 	const size_t maxlen=strlen(line);
@@ -440,12 +445,39 @@ inline static void _xprg_print_source_(xexp*o){
 
 inline static void _xprg_compile_(const struct xexp*o,struct toc*tc){
 	xprg*oo=(xprg*)o;
+
+	ci_print_right_aligned_comment("tidy salami");
+	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+	printf("#include<stdlib.h>\n");
+	printf("#include<stdio.h>\n");
+	printf("typedef const char*strc;\n");
+	printf("typedef char bool;\n");
+	printf("#define true 1\n");
+	printf("#define false 0\n");
+	printf("#define strc_def \"\"\n");
+	printf("#define bool_def false\n");
+	printf("#define char_def 0\n");
+	printf("#define int_def 0\n");
+	printf("#define float_def 0.0f\n");
+	printf("#define null 0\n");
+
 	const long n=oo->stmts.count;
 	for(long i=0;i<n;i++){
 		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
 		if(e->compile)
 			e->compile(e,tc);
 	}
+
+	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+	printf("int main(int c,char**a){\n");
+	printf("    global g=global_def;\n");
+	printf("    global_init(&g);\n");
+	printf("    global_main(&g);\n");
+	printf("    global_free(&g);\n");
+	printf("    return 0;\n");
+	printf("}\n");
+	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
+
 }
 
 inline static void _xprg_free_(xexp*o){
