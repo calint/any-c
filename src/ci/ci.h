@@ -137,12 +137,12 @@ inline static xtyperef ci_get_typeref_for_accessor(
 
 
 inline static bool ci_is_builtin_func(strc funcnamne){
-	if(!strcmp("p",funcnamne) ||
-		!strcmp("printf",funcnamne)||
-		!strcmp("malloc",funcnamne)||
-		!strcmp("sizeof",funcnamne)||
-		!strcmp("calloc",funcnamne)||
-		!strcmp("free",funcnamne))
+	if(!strcmp("p",funcnamne))
+//		!strcmp("printf",funcnamne))
+//		!strcmp("malloc",funcnamne)||
+//		!strcmp("sizeof",funcnamne)||
+//		!strcmp("calloc",funcnamne)||
+//		!strcmp("free",funcnamne))
 		return true;
 	return false;
 }
