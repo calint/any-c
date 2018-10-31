@@ -408,10 +408,14 @@ inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 		xfield*f=(xfield*)ptrs_get(&c->fields,i);
 		if(ci_is_builtin_type(f->type))
 			continue;
-		xtype*mc=ci_get_type_for_name_try(tc,f->type);
-		if(mc->bits&1) // needs free?
+		xtype*t=ci_get_type_for_name_try(tc,f->type);
+
+//		if(xtype_is_needs_free(mc))
+		if(t->bits&1) // needs free?
 			c->bits|=1;
-		if(mc->bits&4) // needs init?
+
+//		if(xtype_is_needs_init(mc))
+		if(t->bits&4) // needs init?
 			c->bits|=4;
 	}
 	toc_pop_scope(tc);
