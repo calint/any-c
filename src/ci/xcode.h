@@ -22,6 +22,7 @@ inline static void _xcode_free_(xexp*oo){
 		free(e);
 	}
 	ptrs_free(&o->exps);
+//	free(oo);
 }
 
 inline static void _xcode_compile_(const xexp*oo,toc*tc){

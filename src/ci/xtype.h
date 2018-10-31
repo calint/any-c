@@ -12,7 +12,11 @@ typedef struct xfield{
 
 inline static void _xfield_free_(xexp*o){
 	xfield*oo=(xfield*)o;
-	_xexpls_free_((xexp*)&oo->initval);
+//	if(oo->initval)
+	if(oo->initval.super.free)
+		oo->initval.super.free((xexp*)&oo->initval);
+//	_xexpls_free_((xexp*)&oo->initval);
+//	free(oo);
 }
 
 inline static void _xfield_print_source_(xexp*e){
@@ -48,6 +52,8 @@ inline static void _xfunc_free_(xexp*e){
 	xfunc*o=(xfunc*)e;
 	ptrs_free(&o->params);
 	_xcode_free_((xexp*)&o->code);
+	ptrs_free(&o->params);
+//	free(o);
 }
 
 inline static void _xfunc_print_source_(xexp*e){
@@ -212,8 +218,13 @@ inline static void _xtype_free_(xexp*o){
 		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
 		if(e->free)
 			e->free(e);
+		free(e);
 	}
 	ptrs_free(&oo->stmts);
+	ptrs_free(&oo->funcs);
+	ptrs_free(&oo->fields);
+
+//	free(oo);
 }
 
 inline static void _xtype_print_source_(xexp*o){//! TODO
@@ -477,7 +488,10 @@ inline static void _xprg_free_(xexp*o){
 		xexp*e=(xexp*)ptrs_get(&oo->stmts,i);
 		if(e->free)
 			e->free(e);
+		free(e);
 	}
+	ptrs_free(&oo->stmts);
+//	free(o);
 }
 
 #define xprg_def (xprg){\

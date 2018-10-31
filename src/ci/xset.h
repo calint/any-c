@@ -22,7 +22,13 @@ inline static void _xset_compile_(const xexp*oo,toc*tc){
 	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
-#define xset_def (xset){{_xset_compile_,NULL,NULL,strc_def,token_def,0,false},\
+inline static void _xset_free_(xexp*oo){
+	xset*o=(xset*)oo;
+	o->expls.super.free((xexp*)&o->expls);
+}
+
+#define xset_def (xset){\
+	{_xset_compile_,_xset_free_,NULL,strc_def,token_def,0,false},\
 	strc_def,xexpls_def\
 }
 

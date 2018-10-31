@@ -28,6 +28,7 @@ inline static void _xexpls_free_(xexp*oo){
 	}
 	ptrs_free(&o->exps);
 	strb_free(&o->ops);
+//	free(oo);
 }
 
 inline static void _xexpls_compile_(const xexp*oo,toc*tc){

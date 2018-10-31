@@ -689,6 +689,7 @@ inline static int ci_compile_file(strc path){
 	prg->super.compile((xexp*)prg,&tc);
 //	prg->super.print_source((xexp*)prg);
 	prg->super.free((xexp*)prg);
+	free(prg);
 
 	ptrs_free(&tc.types);
 	ptrs_free(&tc.scopes);
