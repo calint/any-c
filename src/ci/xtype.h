@@ -22,7 +22,9 @@ inline static void _xfield_free_(xexp*o){
 inline static void _xfield_print_source_(xexp*e){
 	xfield*o=(xfield*)e;
 	token_print(&o->super.token);
-	printf("=\n");
+	printf("=");
+	o->initval.super.print_source((xexp*)&o->initval);
+	fflush(0);
 }
 
 #define xfield_def (xfield){\
@@ -223,8 +225,6 @@ inline static void _xtype_free_(xexp*o){
 	ptrs_free(&oo->stmts);
 	ptrs_free(&oo->funcs);
 	ptrs_free(&oo->fields);
-
-//	free(oo);
 }
 
 inline static void _xtype_print_source_(xexp*o){//! TODO
@@ -238,18 +238,6 @@ inline static void _xtype_print_source_(xexp*o){//! TODO
 			e->print_source(e);
 	}
 	printf("}");
-
-//	xtype*t=(xtype*)o;
-//	const long n=t->fields.count;
-//	for(long i=0;i<n;i++){
-//		xfield*f=(xfield*)ptrs_get(&t->fields,i);
-//		token_print(&f->super.token);
-//	}
-//	const long n2=t->funcs.count;
-//	for(long i=0;i<n2;i++){
-//		xfunc*f=(xfunc*)ptrs_get(&t->funcs,i);
-//		token_print(&f->super.token);
-//	}
 }
 
 #define xtype_def (xtype){\
