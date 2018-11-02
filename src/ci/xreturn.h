@@ -17,8 +17,13 @@ inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 	o->expls.super.compile((xexp*)&o->expls,tc);
 }
 
+inline static void _xreturn_free_(xexp*oo){
+	xreturn*o=(xreturn*)oo;
+	o->expls.super.free((xexp*)&o->expls);
+}
+
 #define xreturn_def (xreturn){\
-	{_xreturn_compile_,NULL,NULL,strc_def,token_def,0,false},\
+	{_xreturn_compile_,_xreturn_free_,NULL,strc_def,token_def,0,false},\
 	xexpls_def\
 }
 

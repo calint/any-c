@@ -6,10 +6,10 @@ typedef struct xbool{
 
 	// leaf
 	bool lh_negate;
-	struct xexpls lh;
+	xexpls lh;
 	char op;
 	bool rh_negate;
-	struct xexpls rh;
+	xexpls rh;
 
 	// list
 	strb bool_op_list;
@@ -17,6 +17,20 @@ typedef struct xbool{
 	bool is_encapsulated;
 	bool is_negated;
 }xbool;
+
+inline static void _xbool_free_(xexp*oo){
+	xbool*o=(xbool*)oo;
+	for(unsigned i=0;i<o->bool_list.count;i++){
+		xbool*b=(xbool*)ptrs_get(&o->bool_list,i);
+		b->super.free((xexp*)b);
+		free(b);
+	}
+	o->lh.super.free((xexp*)&o->lh);
+	o->lh.super.free((xexp*)&o->rh);
+
+	ptrs_free(&o->bool_list);
+	strb_free(&o->bool_op_list);
+}
 
 inline static void _xbool_compile_(const xexp*oo,toc*tc){
 	xbool*o=(xbool*)oo;
@@ -89,7 +103,8 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 	}
 }
 
-#define xbool_def (xbool){{_xbool_compile_,NULL,NULL,strc_def,token_def,0,false},\
+#define xbool_def (xbool){\
+	{_xbool_compile_,_xbool_free_,NULL,strc_def,token_def,0,false},\
 	false,xexpls_def,0,false,xexpls_def,\
 	strb_def,\
 	ptrs_def,\
@@ -99,18 +114,11 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 	o->super.type="bool";
 	token_skip_empty_space(&tc->srcp);
 	bool neg=false;
-//	if(*tc->srcp=='!'){// if(!ok){}
-//		tc->srcp++;
-//		neg=true;
-//	}
 	if(toc_srcp_is_take(tc,'!'))
 		neg=true;
 
 	if(*tc->srcp!='('){//   keybits==1 && ok || (a&b!=0)
 		o->is_encapsulated=false;
-//		if(!neg && *tc->srcp=='!'){// if(!ok){}
-//			tc->srcp++;
-//			o->lh_negate=true;
 		if(!neg && toc_srcp_is_take(tc,'!')){// if(!ok){}
 			o->lh_negate=true;
 		}else if(neg && toc_srcp_is(tc,'!')){// if(!!ok){} //? delete
@@ -120,10 +128,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			o->lh_negate=neg;
 		}
 
-
 		xexpls_parse_next(&o->lh,tc,tk,false);
-
-//		o->lh=toc_read_next_xexpr(tc);
 
 		if(*tc->srcp=='='){
 			tc->srcp++;
@@ -205,7 +210,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 	// example (a==b && c==d)
 	o->is_encapsulated=true;
 	o->is_negated=neg;
-	tc->srcp++;
+	tc->srcp++;//? toc_skip(1)
 	strb_add(&o->bool_op_list,0);
 	while(1){
 		xbool*e=malloc(sizeof(xbool));

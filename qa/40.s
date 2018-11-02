@@ -1,154 +1,358 @@
 	.file	"40.c"
 	.text
-	.section	.rodata.str1.1,"aMS",@progbits,1
+	.type	materials__init, @function
+materials__init:
+.LFB7:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movq	%rdi, -8(%rbp)
+	movq	-8(%rbp), %rax
+	movl	$1, (%rax)
+	movq	-8(%rbp), %rax
+	movl	$2, 4(%rax)
+	nop
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE7:
+	.size	materials__init, .-materials__init
+	.section	.rodata
 .LC0:
-	.string	"glob %d {material "
+	.string	"mat1"
 .LC1:
-	.string	"%d"
+	.string	"mat2"
+	.text
+	.type	materials_get, @function
+materials_get:
+.LFB8:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movq	%rdi, -8(%rbp)
+	movq	%rsi, -16(%rbp)
+	leaq	.LC0(%rip), %rax
+	cmpq	%rax, -16(%rbp)
+	jne	.L3
+	movq	-8(%rbp), %rax
+	jmp	.L2
+.L3:
+	leaq	.LC1(%rip), %rax
+	cmpq	%rax, -16(%rbp)
+	jne	.L5
+	movq	-8(%rbp), %rax
+	addq	$4, %rax
+	jmp	.L2
+.L5:
+.L2:
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE8:
+	.size	materials_get, .-materials_get
+	.type	materials_init, @function
+materials_init:
+.LFB9:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$8, %rsp
+	movq	%rdi, -8(%rbp)
+	movq	-8(%rbp), %rax
+	movq	%rax, %rdi
+	call	materials__init
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE9:
+	.size	materials_init, .-materials_init
+	.section	.rodata
 .LC2:
-	.string	"n/a"
+	.string	"glob %d {material "
 .LC3:
+	.string	"%d"
+.LC4:
+	.string	"n/a"
+.LC5:
 	.string	"}"
 	.text
-	.p2align 4,,15
-	.type	glob_print.isra.3, @function
-glob_print.isra.3:
-.LFB35:
+	.type	glob_print, @function
+glob_print:
+.LFB10:
 	.cfi_startproc
-	pushq	%rbx
+	pushq	%rbp
 	.cfi_def_cfa_offset 16
-	.cfi_offset 3, -16
-	xorl	%eax, %eax
-	movq	%rdi, %rbx
-	leaq	.LC0(%rip), %rdi
-	call	printf@PLT
-	movq	(%rbx), %rax
-	testq	%rax, %rax
-	je	.L2
-	movl	(%rax), %esi
-	leaq	.LC1(%rip), %rdi
-	xorl	%eax, %eax
-	call	printf@PLT
-.L3:
-	leaq	.LC3(%rip), %rdi
-	popq	%rbx
-	.cfi_remember_state
-	.cfi_def_cfa_offset 8
-	jmp	puts@PLT
-.L2:
-	.cfi_restore_state
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movq	%rdi, -8(%rbp)
+	movq	-8(%rbp), %rax
+	movl	16(%rax), %eax
+	movl	%eax, %esi
 	leaq	.LC2(%rip), %rdi
-	xorl	%eax, %eax
+	movl	$0, %eax
 	call	printf@PLT
-	jmp	.L3
+	movq	-8(%rbp), %rax
+	movq	8(%rax), %rax
+	testq	%rax, %rax
+	je	.L8
+	movq	-8(%rbp), %rax
+	movq	8(%rax), %rax
+	movl	(%rax), %eax
+	movl	%eax, %esi
+	leaq	.LC3(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	jmp	.L9
+.L8:
+	leaq	.LC4(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+.L9:
+	leaq	.LC5(%rip), %rdi
+	call	puts@PLT
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
 	.cfi_endproc
-.LFE35:
-	.size	glob_print.isra.3, .-glob_print.isra.3
-	.section	.rodata.str1.1
-.LC4:
-	.string	"copy of"
-.LC5:
-	.string	"mat2"
+.LFE10:
+	.size	glob_print, .-glob_print
+	.type	globs_get, @function
+globs_get:
+.LFB11:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movq	%rdi, -8(%rbp)
+	movq	%rsi, -16(%rbp)
+	movq	-8(%rbp), %rax
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE11:
+	.size	globs_get, .-globs_get
+	.section	.rodata
 .LC6:
-	.string	"mat1"
+	.string	"copy of"
 .LC7:
+	.string	"a"
+.LC8:
 	.string	"reference to"
-	.section	.text.startup,"ax",@progbits
-	.p2align 4,,15
+	.text
+	.type	global_main, @function
+global_main:
+.LFB12:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	addq	$-128, %rsp
+	movq	%rdi, -120(%rbp)
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorl	%eax, %eax
+	leaq	.LC6(%rip), %rdi
+	call	puts@PLT
+	movq	-120(%rbp), %rax
+	leaq	.LC7(%rip), %rsi
+	movq	%rax, %rdi
+	call	globs_get
+	movq	%rax, %rcx
+	movq	(%rcx), %rax
+	movq	8(%rcx), %rdx
+	movq	%rax, -96(%rbp)
+	movq	%rdx, -88(%rbp)
+	movq	16(%rcx), %rax
+	movq	%rax, -80(%rbp)
+	leaq	-96(%rbp), %rax
+	movq	%rax, %rdi
+	call	glob_print
+	movq	-120(%rbp), %rax
+	addq	$48, %rax
+	leaq	.LC1(%rip), %rsi
+	movq	%rax, %rdi
+	call	materials_get
+	movq	%rax, -88(%rbp)
+	leaq	-96(%rbp), %rax
+	movq	%rax, %rdi
+	call	glob_print
+	movq	-120(%rbp), %rax
+	leaq	.LC7(%rip), %rsi
+	movq	%rax, %rdi
+	call	globs_get
+	movq	%rax, %rcx
+	movq	(%rcx), %rax
+	movq	8(%rcx), %rdx
+	movq	%rax, -64(%rbp)
+	movq	%rdx, -56(%rbp)
+	movq	16(%rcx), %rax
+	movq	%rax, -48(%rbp)
+	leaq	-64(%rbp), %rax
+	movq	%rax, %rdi
+	call	glob_print
+	leaq	.LC8(%rip), %rdi
+	call	puts@PLT
+	movq	-120(%rbp), %rax
+	leaq	.LC7(%rip), %rsi
+	movq	%rax, %rdi
+	call	globs_get
+	movq	%rax, -112(%rbp)
+	movq	-112(%rbp), %rax
+	movq	%rax, %rdi
+	call	glob_print
+	movq	-120(%rbp), %rax
+	addq	$48, %rax
+	leaq	.LC1(%rip), %rsi
+	movq	%rax, %rdi
+	call	materials_get
+	movq	%rax, %rdx
+	movq	-112(%rbp), %rax
+	movq	%rdx, 8(%rax)
+	movq	-112(%rbp), %rax
+	movq	%rax, %rdi
+	call	glob_print
+	leaq	.LC8(%rip), %rdi
+	call	puts@PLT
+	movq	-120(%rbp), %rax
+	leaq	.LC7(%rip), %rsi
+	movq	%rax, %rdi
+	call	globs_get
+	movq	%rax, -104(%rbp)
+	movq	-104(%rbp), %rax
+	movq	%rax, %rdi
+	call	glob_print
+	leaq	.LC6(%rip), %rdi
+	call	puts@PLT
+	movq	-120(%rbp), %rax
+	leaq	.LC7(%rip), %rsi
+	movq	%rax, %rdi
+	call	globs_get
+	movq	%rax, %rcx
+	movq	(%rcx), %rax
+	movq	8(%rcx), %rdx
+	movq	%rax, -32(%rbp)
+	movq	%rdx, -24(%rbp)
+	movq	16(%rcx), %rax
+	movq	%rax, -16(%rbp)
+	movq	-104(%rbp), %rax
+	movq	%rax, %rdi
+	call	glob_print
+	nop
+	movq	-8(%rbp), %rax
+	xorq	%fs:40, %rax
+	je	.L13
+	call	__stack_chk_fail@PLT
+.L13:
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE12:
+	.size	global_main, .-global_main
+	.type	global_init, @function
+global_init:
+.LFB13:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$8, %rsp
+	movq	%rdi, -8(%rbp)
+	movq	-8(%rbp), %rax
+	addq	$48, %rax
+	movq	%rax, %rdi
+	call	materials_init
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE13:
+	.size	global_init, .-global_init
+	.type	global_free, @function
+global_free:
+.LFB14:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movq	%rdi, -8(%rbp)
+	nop
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE14:
+	.size	global_free, .-global_free
 	.globl	main
 	.type	main, @function
 main:
-.LFB31:
+.LFB15:
 	.cfi_startproc
-	pushq	%r12
-	.cfi_def_cfa_offset 16
-	.cfi_offset 12, -16
-	pxor	%xmm0, %xmm0
-	leaq	.LC4(%rip), %rdi
 	pushq	%rbp
-	.cfi_def_cfa_offset 24
-	.cfi_offset 6, -24
-	pushq	%rbx
-	.cfi_def_cfa_offset 32
-	.cfi_offset 3, -32
-	addq	$-128, %rsp
-	.cfi_def_cfa_offset 160
-	movq	%fs:40, %rax
-	movq	%rax, 120(%rsp)
-	xorl	%eax, %eax
-	movq	%rsp, %rbp
-	movaps	%xmm0, 64(%rsp)
-	leaq	64(%rsp), %rbx
-	movabsq	$8589934593, %rax
-	movups	%xmm0, 88(%rsp)
-	movl	$1, 80(%rsp)
-	movl	$1, 104(%rsp)
-	movq	%rax, 112(%rsp)
-	call	puts@PLT
-	movdqa	64(%rsp), %xmm1
-	movq	80(%rsp), %rsi
-	leaq	8(%rbp), %rdi
-	movaps	%xmm1, (%rsp)
-	movq	%rsi, 16(%rsp)
-	call	glob_print.isra.3
-	leaq	.LC5(%rip), %rdx
-	leaq	.LC6(%rip), %rax
-	cmpq	%rax, %rdx
-	je	.L9
-	leaq	52(%rbx), %r12
-.L7:
-	movl	16(%rsp), %esi
-	leaq	8(%rbp), %rdi
-	movq	%r12, 8(%rsp)
-	addq	$8, %rbx
-	call	glob_print.isra.3
-	movdqa	64(%rsp), %xmm2
-	movq	80(%rsp), %rsi
-	leaq	40(%rsp), %rdi
-	movaps	%xmm2, 32(%rsp)
-	movq	%rsi, 48(%rsp)
-	call	glob_print.isra.3
-	leaq	.LC7(%rip), %rdi
-	call	puts@PLT
-	movl	80(%rsp), %esi
-	movq	%rbx, %rdi
-	call	glob_print.isra.3
-	movl	80(%rsp), %esi
-	movq	%rbx, %rdi
-	movq	%r12, 72(%rsp)
-	call	glob_print.isra.3
-	leaq	.LC7(%rip), %rdi
-	call	puts@PLT
-	movl	80(%rsp), %esi
-	movq	%rbx, %rdi
-	call	glob_print.isra.3
-	leaq	.LC4(%rip), %rdi
-	call	puts@PLT
-	movl	80(%rsp), %esi
-	movq	%rbx, %rdi
-	call	glob_print.isra.3
-	xorl	%eax, %eax
-	movq	120(%rsp), %rcx
-	xorq	%fs:40, %rcx
-	jne	.L11
-	subq	$-128, %rsp
-	.cfi_remember_state
-	.cfi_def_cfa_offset 32
-	popq	%rbx
-	.cfi_def_cfa_offset 24
-	popq	%rbp
 	.cfi_def_cfa_offset 16
-	popq	%r12
-	.cfi_def_cfa_offset 8
-	ret
-.L9:
-	.cfi_restore_state
-	leaq	112(%rsp), %r12
-	jmp	.L7
-.L11:
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$80, %rsp
+	movl	%edi, -68(%rbp)
+	movq	%rsi, -80(%rbp)
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorl	%eax, %eax
+	movq	$0, -64(%rbp)
+	movq	$0, -56(%rbp)
+	movl	$1, -48(%rbp)
+	movq	$0, -40(%rbp)
+	movq	$0, -32(%rbp)
+	movl	$1, -24(%rbp)
+	movl	$1, -16(%rbp)
+	movl	$1, -12(%rbp)
+	leaq	-64(%rbp), %rax
+	movq	%rax, %rdi
+	call	global_init
+	leaq	-64(%rbp), %rax
+	movq	%rax, %rdi
+	call	global_main
+	leaq	-64(%rbp), %rax
+	movq	%rax, %rdi
+	call	global_free
+	movl	$0, %eax
+	movq	-8(%rbp), %rdx
+	xorq	%fs:40, %rdx
+	je	.L18
 	call	__stack_chk_fail@PLT
+.L18:
+	leave
+	.cfi_def_cfa 7, 8
+	ret
 	.cfi_endproc
-.LFE31:
+.LFE15:
 	.size	main, .-main
 	.ident	"GCC: (GNU) 8.2.1 20180831"
 	.section	.note.GNU-stack,"",@progbits

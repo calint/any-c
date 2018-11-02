@@ -19,8 +19,8 @@ inline static void _xident_print_source_(xexp*oo){
 inline static void _xident_compile_(const xexp*oo,toc*tc){
 	const xident*o=(xident*)oo;
 
-	// identifier ie  p.member  vs  localvar;
 	strc p=strpbrk(o->name,".");
+	// identifier ie  p.member  vs  localvar;
 	if(p){//       p.member
 		strb s=strb_def;
 		strb_add_list(&s,o->name,p-o->name);
@@ -43,9 +43,11 @@ inline static void _xident_compile_(const xexp*oo,toc*tc){
 			}
 			if(o->incdecbits&1)printf("++");
 			if(o->incdecbits&2)printf("--");
+			strb_free(&s);
 			return;
 		}
-		ptrs_add(&_token_to_new_strc_,s.data);// adhock
+		ptrs_add(&_token_to_new_strc_,s.data);//? adhock
+//		strb_free(&s);
 	}else{// localvar or member
 		const char idtype=toc_get_declaration_scope_type(tc,o->name);
 		if(idtype=='c'){// class member

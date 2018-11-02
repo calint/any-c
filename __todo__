@@ -1,4 +1,4 @@
-[ ] valgrind
+[x] valgrind
 [o] binary arthimatic ops
 [ ] unary ops
 [ ] assert call args

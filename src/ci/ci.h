@@ -186,14 +186,17 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 				}
 				return fn;
 			}
-			strc lookup=cur_accessor;
+//			strc lookup=cur_accessor;
+			xfield*fld;
 			if(p){
 				strb s=strb_def;
 				strb_add_list(&s,cur_accessor,(unsigned)(p-cur_accessor));
 				strb_add(&s,0);
-				lookup=s.data;//? leak
+				fld=xtype_get_field_for_name(cur_type,s.data);
+				strb_free(&s);
+			}else{
+				fld=xtype_get_field_for_name(cur_type,cur_accessor);
 			}
-			const xfield*fld=xtype_get_field_for_name(cur_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
@@ -388,13 +391,17 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 			current_accessor=p+1; // anim.frame
 			p=strpbrk(current_accessor,".");
 			strc lookup=current_accessor;
+			xfield*fld;
 			if(p){
 				strb s=strb_def;
 				strb_add_list(&s,current_accessor,p-current_accessor);
 				strb_add(&s,0);
-				lookup=s.data;//? leak
+//				lookup=s.data;//? leak
+				fld=xtype_get_field_for_name(current_type,s.data);
+				strb_free(&s);
+			}else{
+				fld=xtype_get_field_for_name(current_type,lookup);
 			}
-			const xfield*fld=xtype_get_field_for_name(current_type,lookup);
 			if(!fld){
 				toc_print_source_location(tc,tk,4);
 				printf("cannot find field '%s' in '%s', using '%s'",
@@ -730,8 +737,10 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 				printf("%s",idstr.data);
 			}
 			printf("=");
+			strb_free(&idstr);
 			return;
 		}
+		strb_free(&idstr);
 	}
 
 	const char scopetype=toc_get_declaration_scope_type(tc,id);
@@ -750,7 +759,7 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 	longjmp(_jmp_buf,1);
 }
 
-inline static/*gives*/strc ci_get_c_accessor_for_accessor(
+inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 		const toc*tc,token tk,strc accessor){
 	strb cacc=strb_def;
 	strc ap=accessor;
@@ -775,7 +784,8 @@ inline static/*gives*/strc ci_get_c_accessor_for_accessor(
 		p=strchr(ap,'.');
 	}
 	strb_add(&cacc,0);
-	return cacc.data;
+//	return cacc.data;
+	return cacc;
 }
 
 inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
@@ -786,10 +796,10 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		printf("printf(");
 		return;
 	}
-	if(!strcmp("malloc",c->name) || !strcmp("calloc",c->name)){
-		printf("%s(",c->name);
-		return;
-	}
+//	if(!strcmp("malloc",c->name) || !strcmp("calloc",c->name)){
+//		printf("%s(",c->name);
+//		return;
+//	}
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,c->name);
 	const char*pathnm=cb;
@@ -807,13 +817,15 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		if(!pathtr.is_ref)
 			printf("&");
 
-		strc cacc=ci_get_c_accessor_for_accessor(tc,tk,pathnm);
+		strb/*takes*/cacc=ci_get_c_accessor_for_accessor(tc,tk,pathnm);
 
 		if(scope=='c')
 			printf("o->");
-		printf("%s",cacc);
+		printf("%s",cacc.data);
 		if(c->args.count)
 			printf(",");
+
+		strb_free(&cacc);
 		return;
 	}
 	funcnm=cb;

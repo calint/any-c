@@ -8,8 +8,8 @@ WARNINGS='-Wall -Wextra -Wpedantic -Wfatal-errors -Wno-unused-parameter'
 
 LIBS=
 
-#OPTIMIZATION='-O0 -g'
-OPTIMIZATION=-Os
+OPTIMIZATION='-O0 -g'
+#OPTIMIZATION=-Os
 #OPTIMIZATION=-O3
 #OPTIMIZATION=-Ofast
 

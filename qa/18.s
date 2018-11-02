@@ -1,43 +1,146 @@
 	.file	"18.c"
 	.text
-	.section	.rodata.str1.1,"aMS",@progbits,1
-.LC1:
+	.section	.rodata
+.LC0:
 	.string	"entity: %d %f\n"
-	.section	.text.startup,"ax",@progbits
-	.p2align 4,,15
+	.text
+	.type	entity_print, @function
+entity_print:
+.LFB6:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movq	%rdi, -8(%rbp)
+	movq	-8(%rbp), %rax
+	movss	4(%rax), %xmm0
+	cvtss2sd	%xmm0, %xmm0
+	movq	-8(%rbp), %rax
+	movl	(%rax), %eax
+	movl	%eax, %esi
+	leaq	.LC0(%rip), %rdi
+	movl	$1, %eax
+	call	printf@PLT
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE6:
+	.size	entity_print, .-entity_print
+	.type	global_main, @function
+global_main:
+.LFB7:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$16, %rsp
+	movq	%rdi, -8(%rbp)
+	movq	-8(%rbp), %rax
+	movq	%rax, %rdi
+	call	entity_print
+	movq	-8(%rbp), %rax
+	addq	$8, %rax
+	movq	%rax, %rdi
+	call	entity_print
+	movq	-8(%rbp), %rax
+	movl	$2, (%rax)
+	movq	-8(%rbp), %rax
+	movq	%rax, %rdi
+	call	entity_print
+	nop
+	leave
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE7:
+	.size	global_main, .-global_main
+	.type	global_init, @function
+global_init:
+.LFB8:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movq	%rdi, -8(%rbp)
+	nop
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE8:
+	.size	global_init, .-global_init
+	.type	global_free, @function
+global_free:
+.LFB9:
+	.cfi_startproc
+	pushq	%rbp
+	.cfi_def_cfa_offset 16
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	movq	%rdi, -8(%rbp)
+	nop
+	popq	%rbp
+	.cfi_def_cfa 7, 8
+	ret
+	.cfi_endproc
+.LFE9:
+	.size	global_free, .-global_free
 	.globl	main
 	.type	main, @function
 main:
-.LFB26:
+.LFB10:
 	.cfi_startproc
-	subq	$8, %rsp
+	pushq	%rbp
 	.cfi_def_cfa_offset 16
-	movl	$1, %esi
-	movl	$1, %eax
-	movsd	.LC0(%rip), %xmm0
-	leaq	.LC1(%rip), %rdi
-	call	printf@PLT
-	movl	$1, %esi
-	movl	$1, %eax
-	movsd	.LC0(%rip), %xmm0
-	leaq	.LC1(%rip), %rdi
-	call	printf@PLT
-	movl	$2, %esi
-	movl	$1, %eax
-	movsd	.LC0(%rip), %xmm0
-	leaq	.LC1(%rip), %rdi
-	call	printf@PLT
+	.cfi_offset 6, -16
+	movq	%rsp, %rbp
+	.cfi_def_cfa_register 6
+	subq	$48, %rsp
+	movl	%edi, -36(%rbp)
+	movq	%rsi, -48(%rbp)
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
 	xorl	%eax, %eax
-	addq	$8, %rsp
-	.cfi_def_cfa_offset 8
+	movl	$1, -32(%rbp)
+	movss	.LC1(%rip), %xmm0
+	movss	%xmm0, -28(%rbp)
+	movl	$1, -24(%rbp)
+	movss	.LC1(%rip), %xmm0
+	movss	%xmm0, -20(%rbp)
+	leaq	-32(%rbp), %rax
+	movq	%rax, %rdi
+	call	global_init
+	leaq	-32(%rbp), %rax
+	movq	%rax, %rdi
+	call	global_main
+	leaq	-32(%rbp), %rax
+	movq	%rax, %rdi
+	call	global_free
+	movl	$0, %eax
+	movq	-8(%rbp), %rdx
+	xorq	%fs:40, %rdx
+	je	.L7
+	call	__stack_chk_fail@PLT
+.L7:
+	leave
+	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE26:
+.LFE10:
 	.size	main, .-main
-	.section	.rodata.cst8,"aM",@progbits,8
-	.align 8
-.LC0:
-	.long	2684354560
-	.long	1073846681
+	.section	.rodata
+	.align 4
+.LC1:
+	.long	1074580685
 	.ident	"GCC: (GNU) 8.2.1 20180831"
 	.section	.note.GNU-stack,"",@progbits

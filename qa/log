@@ -1,52 +1,99 @@
-Wed Oct 31 21:48:05 +07 2018
-optimization -Os
--rwxr-xr-x 1 c c 50296 Oct 31 21:48 [0m[01;32many-c[0m
-0 : ok
-1 : ok
-2 : ok
-3 : ok
-4 : ok
-5 : ok
-6 : ok
-7 : ok
-8 : ok
-9 : ok
-10 : ok
-11 : ok
-12 : ok
-13 : ok
-14 : ok
-15 : ok
-16 : ok
-17 : ok
-17 : ok
-18 : ok
-19 : ok
-20 : ok
-21 : ok
-22 : ok
-23 : ok
-24 : ok
-25 : ok
-26 : ok
-27 : ok
-28 : ok
-29 : ok
-30 : ok
-31 : ok
-32 : ok
-33 : ok
-34 : ok
-35 : ok
-36 : ok
-37 : ok
-38 : ok
-39 : ok
-40 : ok
-41 : ok
-42 : ok
-43 : ok
-44 : ok
-45 : ok
-Wed Oct 31 21:48:10 +07 2018
+Fri Nov  2 21:30:39 +07 2018
+optimization -O0 -g
+-rwxr-xr-x 1 c c 107984 Nov  2 21:30 [0m[01;32many-c[0m
+0 :   output ok
+0 : valgrind ok
+1 :   output ok
+1 : valgrind ok
+2 :   output ok
+2 : valgrind ok
+3 :   output ok
+3 : valgrind ok
+4 :   output ok
+4 : valgrind ok
+5 :   output ok
+5 : valgrind ok
+6 :   output ok
+6 : valgrind ok
+7 :   output ok
+7 : valgrind ok
+8 :   output ok
+8 : valgrind ok
+9 :   output ok
+9 : valgrind ok
+10 :   output ok
+10 : valgrind ok
+11 :   output ok
+11 : valgrind ok
+12 :   output ok
+12 : valgrind ok
+13 :   output ok
+13 : valgrind ok
+14 :   output ok
+14 : valgrind ok
+15 :   output ok
+15 : valgrind ok
+16 :   output ok
+16 : valgrind ok
+17 :   output ok
+17 : valgrind ok
+17 :   output ok
+17 : valgrind ok
+18 :   output ok
+18 : valgrind ok
+19 :   output ok
+19 : valgrind ok
+20 :   output ok
+20 : valgrind ok
+21 :   output ok
+21 : valgrind ok
+22 :   output ok
+22 : valgrind ok
+23 :   output ok
+23 : valgrind ok
+24 :   output ok
+24 : valgrind ok
+25 :   output ok
+25 : valgrind ok
+26 :   output ok
+26 : valgrind ok
+27 :   output ok
+27 : valgrind ok
+28 :   output ok
+28 : valgrind ok
+29 :   output ok
+29 : valgrind ok
+30 :   output ok
+30 : valgrind ok
+31 :   output ok
+31 : valgrind ok
+32 :   output ok
+32 : valgrind ok
+33 :   output ok
+33 : valgrind ok
+34 :   output ok
+34 : valgrind ok
+35 :   output ok
+35 : valgrind ok
+36 :   output ok
+36 : valgrind ok
+37 :   output ok
+37 : valgrind ok
+38 :   output ok
+38 : valgrind ok
+39 :   output ok
+39 : valgrind ok
+40 :   output ok
+40 : valgrind ok
+41 :   output ok
+41 : valgrind ok
+42 :   output ok
+42 : valgrind ok
+43 :   output ok
+43 : valgrind ok
+44 :   output ok
+44 : valgrind ok
+45 :   output ok
+45 : valgrind ok
+Fri Nov  2 21:31:08 +07 2018
 ok

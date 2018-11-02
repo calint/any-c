@@ -1,8 +1,24 @@
-global{
-	x=1
+entity{
+	id=1
+	
+	p(entity e){
+		p("p entity %d\n",e.id)
+	}
 
+	f(entity e){
+		p("f entity %d\n",e.id)
+		e.id++
+		p("  entity %d\n",e.id)
+	}
+}
+
+global{
 	main{
-		var p=  - 1
-		p("%x\n",p)
+		entity e1
+		entity e2
+		e2.id=2
+		e1.p(e2)
+		e2.p(e1)
+		e1.f(e2)
 	}
 }

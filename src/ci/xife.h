@@ -18,8 +18,14 @@ inline static void _xif_compile_(const xexp*oo,toc*tc){
 	_xcode_compile_((xexp*)&o->code,tc);
 }
 
+inline static void _xif_free_(xexp*oo){
+	xif*o=(xif*)oo;
+	o->cond.super.free((xexp*)&o->cond);
+	o->code.super.free((xexp*)&o->code);
+}
+
 #define xif_def (xif){\
-	{_xif_compile_,NULL,NULL,strc_def,token_def,0,false},\
+	{_xif_compile_,_xif_free_,NULL,strc_def,token_def,0,false},\
 	xbool_def,xcode_def\
 }
 
@@ -72,8 +78,20 @@ inline static void _xife_compile_(const xexp*oo,toc*tc){
 	}
 }
 
+inline static void _xife_free_(xexp*oo){
+	xife*o=(xife*)oo;
+	const long n=o->ifs.count;
+	for(long i=0;i<n;i++){
+		xif*x=(xif*)ptrs_get(&o->ifs,i);
+		x->super.free((xexp*)x);
+		free(x);
+	}
+	ptrs_free(&o->ifs);
+	o->elsecode.super.free((xexp*)&o->elsecode);
+}
+
 #define xife_def (xife){\
-	{_xife_compile_,NULL,NULL,strc_def,token_def,2,false},\
+	{_xife_compile_,_xife_free_,NULL,strc_def,token_def,2,false},\
 		ptrs_def,xcode_def\
 }
 

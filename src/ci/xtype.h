@@ -52,10 +52,14 @@ typedef struct xfunc{
 
 inline static void _xfunc_free_(xexp*e){
 	xfunc*o=(xfunc*)e;
+	o->code.super.free((xexp*)&o->code);
+	const long n=o->params.count;
+	for(long i=0;i<n;i++){
+		xfuncparam*fp=(xfuncparam*)ptrs_get(&o->params,i);
+//		fp->super.free((xexp*)fp);
+		free(fp);
+	}
 	ptrs_free(&o->params);
-	_xcode_free_((xexp*)&o->code);
-	ptrs_free(&o->params);
-//	free(o);
 }
 
 inline static void _xfunc_print_source_(xexp*e){
@@ -263,7 +267,7 @@ inline static xfunc*xtype_get_func_for_name(const xtype*o,strc field_name){
 }
 
 inline static/*gives*/xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
-		token type,token name){
+	token type,token name){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
 	f->is_ref=is_ref;

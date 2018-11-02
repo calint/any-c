@@ -1,2 +1,11 @@
 #/bin/sh
-../any-c $1.ci > $1.c && gcc -O3 $1.c && gcc -O3 -S $1.c && ./a.out > cmp && diff -q cmp $1.cmp && rm -f a.out && echo $1 : ok
+../any-c $1.ci > $1.c && gcc -O0 $1.c && gcc -O0 -S $1.c && ./a.out > cmp && diff -q cmp $1.cmp && rm -f a.out && echo "$1 :   output ok" &&
+valgrind ../any-c $1.ci 1>/dev/null 2> valgrnd &&
+cat valgrnd | grep "in use at exit: 0 bytes in 0 blocks" > valgrnd2 &&
+if [ -s valgrnd2 ] ; then
+	rm valgrnd && rm valgrnd2 &&
+	echo $1 : valgrind ok
+else
+	exit 1
+fi
+

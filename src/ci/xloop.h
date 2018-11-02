@@ -14,8 +14,13 @@ inline static void _xloop_compile_(const xexp*oo,toc*tc){
 	toc_pop_scope(tc);
 }
 
+inline static void _xloop_free_(xexp*oo){
+	xloop*o=(xloop*)oo;
+	o->code.super.free((xexp*)&o->code);
+}
+
 #define xloop_def (xloop){\
-	{_xloop_compile_,NULL,NULL,strc_def,token_def,1,false},\
+	{_xloop_compile_,_xloop_free_,NULL,strc_def,token_def,1,false},\
 		xcode_def\
 }
 
