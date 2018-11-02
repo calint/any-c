@@ -186,7 +186,6 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 				}
 				return fn;
 			}
-//			strc lookup=cur_accessor;
 			xfield*fld;
 			if(p){
 				strb s=strb_def;
@@ -254,8 +253,8 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 }
 inline static bool ci_xvar_needs_init(const toc*tc,strc name){
 	xtype*t=ci_get_type_for_name_try(tc,name);
-	return (t->bits&4)==4;
-//	return xtype_is_needs_call_to_init(t);
+	return xtype_is_needs_init(t);
+//	return xtype_is_needs_init(t);
 }
 
 inline static void ci_xcode_compile_free_current_scope(toc*tc){
@@ -265,8 +264,8 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 		if(ci_is_builtin_type(td->type))
 			continue;
 		const xtype*t=ci_get_type_for_name_try(tc,td->type);
-		if(t->bits&1){ // needs free
-//		if(xtype_is_needs_call_to_free(t)){// needs free
+//		if(t->bits&1){ // needs free
+		if(xtype_is_needs_free(t)){
 			toc_print_indent_for_compile(tc);
 			printf("%s_free(&%s);",t->name,td->name);
 		}
@@ -283,7 +282,7 @@ inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 			if(ci_is_builtin_type(td->type))
 				continue;
 			const xtype*t=ci_get_type_for_name_try(tc,td->type);
-			if(!(t->bits&1)) // needs free
+			if(!xtype_is_needs_free(t))
 				continue;
 			toc_print_indent_for_compile(tc);
 			printf("%s_free(&%s);\n",t->name,td->name);
@@ -305,7 +304,7 @@ inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 			if(ci_is_builtin_type(td->type))
 				continue;
 			const xtype*t=ci_get_type_for_name_try(tc,td->type);
-			if(!(t->bits&1)) // needs free?
+			if(!xtype_is_needs_free(t)) // needs free?
 				continue;
 			return true;
 		}

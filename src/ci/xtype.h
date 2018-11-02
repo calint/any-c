@@ -86,10 +86,18 @@ typedef struct xtype{
 	           // bit 3: needs call to init     bit 4: has _init
 }xtype;
 
-inline bool xtype_is_needs_free(const xtype*o){return o->bits&1;}
-inline bool xtype_is_has_free(const xtype*o){return o->bits&2;}
-inline bool xtype_is_needs_init(const xtype*o){return o->bits&4;}
-inline bool xtype_is_has_init(const xtype*o){return o->bits&8;}
+//? inlined does not compile
+bool xtype_is_needs_free(const xtype*o){return (o->bits&1)==1;}
+void xtype_set_needs_free(xtype*o){o->bits|=1;}
+
+bool xtype_is_has_free(const xtype*o){return (o->bits&2)==2;}
+void xtype_set_has_free(xtype*o){o->bits|=2;}
+
+bool xtype_is_needs_init(const xtype*o){return (o->bits&4)==4;}
+void xtype_set_needs_init(xtype*o){o->bits|=4;}
+
+bool xtype_is_has_init(const xtype*o){return (o->bits&8)==8;}
+void xtype_set_has_init(xtype*o){o->bits|=8;}
 
 inline static void ci_print_right_aligned_comment(strc comment){
 	strc line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
@@ -181,7 +189,7 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 		}
 	}
 	// cascading init
-	if((c->bits&4) || !strcmp(c->name,"global")){// needs call to init
+	if(xtype_is_needs_init(c) || !strcmp(c->name,"global")){// needs call to init
 		printf("inline static void %s_init(%s*o){",c->name,c->name);
 		if(c->fields.count)
 			printf("\n");
@@ -190,26 +198,27 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 			if(ci_is_builtin_type(f->type))
 				continue;
 			xtype*cc=ci_get_type_for_name_try(tc,f->type);
-			if(cc->bits&4)// has init
+			if(xtype_is_needs_init(cc))
 				printf("    %s_init(&o->%s);\n",f->type,f->name);
 		}
-		if(c->bits&8) // has _init
+		if(xtype_is_has_init(c))
 			printf("    %s__init(o);\n",c->name);
 		printf("}\n");
 	}
 	// cascading free
-	if((c->bits&1) || !strcmp(c->name,"global")){// needs call to free
+	if(xtype_is_needs_free(c) || !strcmp(c->name,"global")){// needs call to free
 		printf("inline static void %s_free(%s*o){",c->name,c->name);
 		if(c->fields.count)
 			printf("\n");
-		if(c->bits&2) // has _free
+		if(xtype_is_has_free(c))
 			printf("    %s__free(o);\n",c->name);
 		for(long i=c->fields.count-1;i>=0;i--){
 			xfield*f=(xfield*)ptrs_get(&c->fields,i);
 			if(ci_is_builtin_type(f->type))
 				continue;
 			xtype*cc=ci_get_type_for_name_try(tc,f->type);
-			if(cc->bits&1) // needs _free?
+			if(xtype_is_needs_free(cc))
+//			if(cc->bits&1) // needs _free?
 				printf("    %s_free(&o->%s);\n",f->type,f->name);
 		}
 		printf("}\n");
@@ -402,11 +411,16 @@ inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 	for(unsigned i=0;i<c->funcs.count;i++){
 		xfunc*f=(xfunc*)ptrs_get(&c->funcs,i);
 		if(!strcmp(f->name,"_free")){
-			c->bits|=3; // needs free and has _free
+			xtype_set_has_free(c);
+			xtype_set_needs_free(c);
+//			c->bits|=3; // needs free and has _free
 			continue;
 		}
-		if(!strcmp(f->name,"_init"))
-			c->bits|=4+8; // needs init and has _init
+		if(!strcmp(f->name,"_init")){
+			xtype_set_has_init(c);
+			xtype_set_needs_init(c);
+//			c->bits|=4+8; // needs init and has _init
+		}
 	}
 	for(unsigned i=0;i<c->fields.count;i++){
 		xfield*f=(xfield*)ptrs_get(&c->fields,i);
@@ -414,13 +428,12 @@ inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 			continue;
 		xtype*t=ci_get_type_for_name_try(tc,f->type);
 
-//		if(xtype_is_needs_free(mc))
-		if(t->bits&1) // needs free?
-			c->bits|=1;
+		if(xtype_is_needs_free(t))
+			xtype_set_needs_free(c);
 
-//		if(xtype_is_needs_init(mc))
-		if(t->bits&4) // needs init?
-			c->bits|=4;
+		if(xtype_is_needs_init(t))
+			xtype_set_needs_init(c);
+//			c->bits|=4;
 	}
 	toc_pop_scope(tc);
 	return c;
