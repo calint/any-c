@@ -190,8 +190,8 @@ inline static const tocdecl*toc_get_declaration_for_accessor(
 		variable_name=name;
 	}
 
-	for(int j=(signed)o->scopes.count-1;j>=0;j--){
-		tocscope*s=ptrs_get(&o->scopes,(unsigned)j);
+	for(long j=o->scopes.count-1;j>=0;j--){
+		tocscope*s=ptrs_get(&o->scopes,j);
 		for(unsigned i=0;i<s->tocdecls.count;i++){
 			const tocdecl*td=(const tocdecl*)ptrs_get(&s->tocdecls,i);
 			if(!strcmp(td->name,variable_name))
@@ -204,7 +204,7 @@ inline static const tocdecl*toc_get_declaration_for_accessor(
 //	printf("\n    %s %d",__FILE__,__LINE__);
 //	longjmp(_jmp_buf,1);
 
-	return 0;
+	return NULL;
 }
 
 inline static void toc_set_declaration_type(toc*o,strc name,strc type){

@@ -1,24 +1,29 @@
-entity{
-	id=1
-	
-	p(entity e){
-		p("p entity %d\n",e.id)
-	}
-
-	f(entity e){
-		p("f entity %d\n",e.id)
-		e.id++
-		p("  entity %d\n",e.id)
-	}
+location{
+	id=0
+	name=""
 }
 
+entity{
+	id=0
+	name=""
+	location&;
+	p(){
+		p("%s is at %s",name,location.name);
+	}
+}
 global{
 	main{
-		entity e1
-		entity e2
-		e2.id=2
-		e1.p(e2)
-		e2.p(e1)
-		e1.f(e2)
+		location hall
+		hall.id=1
+		hall.name="hall"
+		
+		location roome
+		roome.id=2
+		roome.name="roome"
+
+		entity e
+		e.location=hall
+
+		e.p()
 	}
 }

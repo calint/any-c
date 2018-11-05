@@ -152,7 +152,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 
 	strc cur_accessor=accessor;
 	const tocdecl*decl=toc_get_declaration_for_accessor(tc,cur_accessor);
-	if(!decl){// no declaration found, func call to member or builtin or error
+	if(!decl){// no declaration found thusfunc call to member or builtin or error
 		strc tpnm=toc_get_typenm_in_context(tc,tk);
 		xtype*tp=ci_get_type_for_name_try(tc,tpnm);
 		xfunc*fn=xtype_get_func_for_name(tp,cur_accessor);

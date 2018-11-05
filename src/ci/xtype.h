@@ -266,10 +266,10 @@ inline static xfield*xtype_get_field_for_name(const xtype*o,strc field_name){
 	return NULL;
 }
 
-inline static xfunc*xtype_get_func_for_name(const xtype*o,strc field_name){
+inline static xfunc*xtype_get_func_for_name(const xtype*o,strc name){
 	for(unsigned i=0;i<o->funcs.count;i++){
 		xfunc*f=ptrs_get(&o->funcs,i);
-		if(!strcmp(f->name,field_name))
+		if(!strcmp(f->name,name))
 				return f;
 	}
 	return NULL;
@@ -455,6 +455,21 @@ inline static void _xprg_print_source_(xexp*o){
 
 inline static void _xprg_compile_(const struct xexp*o,struct toc*tc){
 	xprg*oo=(xprg*)o;
+	xtype*globl=ci_get_type_for_name_try(tc,"global");
+	if(!globl){
+//		toc_print_source_location(tc,tk,4);
+		printf("expected to find type 'global' containing function 'main' to start the program");
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
+	}
+	xfunc*mainfn=xtype_get_func_for_name(globl,"main");
+	if(!mainfn){
+//		toc_print_source_location(tc,tk,4);
+		printf("expected to find function 'main' in type 'global' to start the program");
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
+	}
+
 
 	ci_print_right_aligned_comment("tidy salami");
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
