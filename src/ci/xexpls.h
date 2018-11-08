@@ -15,9 +15,8 @@ inline static void _xexpls_compile_(const xexp*oo,toc*tc){
 	for(unsigned i=0;i<o->exps.count;i++){
 		const xexp*e=ptrs_get(&o->exps,i);
 		const char op=strb_get(&o->ops,i);
-		if(i!=0){
+		if(i!=0)
 			printf("%c",op);
-		}
 		if(xexp_is_negated(e))
 			printf("-");
 		if(xexp_is_parenthesis(e))
@@ -102,9 +101,7 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 		else if(toc_srcp_is_take(tc,'|')){strb_add(&o->ops,'|');}
 		else if(toc_srcp_is_take(tc,'&')){strb_add(&o->ops,'&');}
 		else if(toc_srcp_is_take(tc,'^')){strb_add(&o->ops,'^');}
-		else{
-			break;
-		}
+		else break;
 	}
 	//? xexpls_deduce_typeref(&o->exps)
 	xexp*first=ptrs_get(&o->exps,0);

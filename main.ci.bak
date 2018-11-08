@@ -1,6 +1,5 @@
 location{
 	name=""
-	strc get_name(){return name}
 }
 
 entity{

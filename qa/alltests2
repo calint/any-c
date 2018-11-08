@@ -1,0 +1,3 @@
+ls *.ci | while read F; do
+echo $F
+done

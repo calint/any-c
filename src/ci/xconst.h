@@ -7,14 +7,14 @@ typedef struct xconst{
 }xconst;
 
 inline static void _xconst_compile_(const xexp*oo,toc*tc){
-	const xident*o=(xident*)oo;
+	const xconst*o=(xconst*)oo;
 	printf("%s",o->name);
 	if(!strcmp(o->super.type,"float"))
 		printf("f");
 }
 
 inline static void _xconst_print_(xexp*oo){
-	const xident*o=(xident*)oo;
+	const xconst*o=(xconst*)oo;
 	printf("%s",o->name);
 }
 

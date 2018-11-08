@@ -590,6 +590,11 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			token_equals(&tk,"var")||token_equals(&tk,"strc"))
 		return(xexp*)xvar_read_next(tc,name);
 
+
+	// assignment
+	if(toc_srcp_is_take(tc,'='))
+		return(xexp*)xset_read_next(tc,name,tk);
+
 	//  class instance
 	xtype*c=ci_get_type_for_name_try(tc,name);
 	if(c) // instantiate
@@ -598,10 +603,6 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	// function call
 	if(toc_srcp_is(tc,'('))
 		return(xexp*)xcall_read_next(tc,tk,name);
-
-	// assignment
-	if(toc_srcp_is_take(tc,'='))
-		return(xexp*)xset_read_next(tc,name,tk);
 
 	// incdecs
 	char incdecbits=0;
@@ -626,10 +627,10 @@ inline static xexp*ci_read_next_statement(toc*tc){
 
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
-	e->name=name;
+	e->ident=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
-	e->super.type=ci_get_field_type_for_accessor(tc,e->name,tk);
+	e->super.type=ci_get_field_type_for_accessor(tc,e->ident,tk);
 	return(xexp*)e;
 }
 
@@ -674,7 +675,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
-	e->name=name;
+	e->ident=name;
 	e->super.token=tk;
 	e->incdecbits=incdecbits;
 	e->super.type=tr.type;
@@ -766,10 +767,10 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 	while(1){
 		if(p)
 			strb_add_list(&cacc,ap,p-ap);
-		else
+		else{
 			strb_add_string(&cacc,ap);
-		if(!p)
 			break;
+		}
 		strb temp=strb_def;
 		strb_add_list(&temp,ap,p-ap);
 		strb_add(&temp,0);
@@ -845,8 +846,8 @@ inline static bool ci_is_func_param_ref(
 	if(!strcmp("p",accessor) || !strcmp("printf",accessor))
 		return false;
 
-	if(!strcmp("free",accessor) && param_index==0)
-		return true;
+//	if(!strcmp("free",accessor) && param_index==0)
+//		return true;
 
 
 	char cb[ci_identifier_maxlen];

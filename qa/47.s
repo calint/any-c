@@ -1,4 +1,4 @@
-	.file	"main.c"
+	.file	"47.c"
 	.text
 	.type	entity_set_location, @function
 entity_set_location:
