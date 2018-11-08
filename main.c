@@ -21,6 +21,9 @@ typedef struct location{
 inline static strc location_get_name(location*o){
     return o->name;
 }
+inline static void location_set_name(location*o,strc nm){
+    o->name=nm;
+}
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - --  entity
 typedef struct entity{
     location*location;
@@ -36,7 +39,7 @@ typedef struct global{}global;
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void global_main(global*o){
     location loc=location_def;
-    loc.name="roome";
+    location_set_name(&loc,"roome");
     entity e=entity_def;
     entity_set_location(&e,&loc);
     printf("%s",location_get_name(e.location));

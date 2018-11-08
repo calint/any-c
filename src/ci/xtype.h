@@ -333,7 +333,6 @@ inline static/*gives*/xfield*xfield_read_next(toc*tc,xtype*c,strc tktype,
 	xfield*f=malloc(sizeof(xfield));
 	*f=xfield_def;
 	f->super.token=tkname;
-//	f->token=tkname; //? tktype
 	f->type=tktype;
 	f->is_ref=is_ref;
 	if(token_is_empty(&tkname))
@@ -341,9 +340,7 @@ inline static/*gives*/xfield*xfield_read_next(toc*tc,xtype*c,strc tktype,
 	else
 		f->name=token_content_to_new_strc(&tkname);
 
-
 	ptrs_add(&c->fields,f);
-//	toc_add_declaration(tc,f->type,f->is_ref,f->name);
 
 	if(toc_srcp_is_take(tc,'=')){
 		xexpls_parse_next(&f->initval,tc,tkname,false);
