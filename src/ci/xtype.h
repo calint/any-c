@@ -343,20 +343,21 @@ inline static/*gives*/xfield*xfield_read_next(toc*tc,xtype*c,strc tktype,
 
 
 	ptrs_add(&c->fields,f);
-	toc_add_declaration(tc,f->type,f->is_ref,f->name);
+//	toc_add_declaration(tc,f->type,f->is_ref,f->name);
 
 	if(toc_srcp_is_take(tc,'=')){
 		xexpls_parse_next(&f->initval,tc,tkname,false);
 		if(strcmp(f->type,"var")){
-				xset tmp=xset_def;
-				tmp.name=f->name;
-				tmp.super.type=f->initval.super.type;
-				tmp.super.token=f->initval.super.token;
-				ci_xset_assert(tc,&tmp);
+			xset tmp=xset_def;
+			tmp.name=f->name;
+			tmp.super.type=f->initval.super.type;
+			tmp.super.token=f->initval.super.token;
+			ci_xset_assert(tc,&tmp);
 		}
 		f->type=f->initval.super.type;
 	}
 	toc_srcp_is_take(tc,';');
+	toc_add_declaration(tc,f->type,f->is_ref,f->name);
 
 	return f;
 }

@@ -1,5 +1,5 @@
 player{
-	int c=2
+	c=2
 	print{
 		p(" player: %d\n",c);
 	}

@@ -1,23 +1,17 @@
-location{
-	name=""
-	strc get_name(){return name}
-}
-
-entity{
-	location&;
-	set_location(location&loc){
-		location=loc
+player{
+	c=2
+	print{
+		p(" player: %d\n",c);
 	}
 }
 
 global{
 	main{
-		location loc
-		loc.name="roome"
-		
-		entity e
-		e.set_location(loc)
-		
-		p("%s",e.location.name);
+		player p1
+		player p2
+		p1.c=1
+		p1.print()
+		p2.c=p1.c
+		p2.print()
 	}
 }

@@ -1,4 +1,4 @@
-	.file	"main.c"
+	.file	"48.c"
 	.text
 	.type	location_get_name, @function
 location_get_name:

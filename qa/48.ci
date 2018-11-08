@@ -1,0 +1,23 @@
+location{
+	name=""
+	strc get_name(){return name}
+}
+
+entity{
+	location&;
+	set_location(location&loc){
+		location=loc
+	}
+}
+
+global{
+	main{
+		location loc
+		loc.name="roome"
+		
+		entity e
+		e.set_location(loc)
+		
+		p("%s",e.location.get_name());
+	}
+}
