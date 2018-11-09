@@ -7,6 +7,14 @@
 	.string	"roome"
 .LC2:
 	.string	"north"
+.LC3:
+	.string	"hall"
+.LC4:
+	.string	"south"
+.LC5:
+	.string	"me"
+.LC6:
+	.string	"%d\n"
 	.text
 	.type	global_main, @function
 global_main:
@@ -17,11 +25,38 @@ global_main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	addq	$-128, %rsp
-	movq	%rdi, -120(%rbp)
+	subq	$240, %rsp
+	movq	%rdi, -232(%rbp)
 	movq	%fs:40, %rax
 	movq	%rax, -8(%rbp)
 	xorl	%eax, %eax
+	movl	$3, -220(%rbp)
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -216(%rbp)
+	leaq	.LC1(%rip), %rax
+	movq	%rax, -216(%rbp)
+	movl	$0, -176(%rbp)
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -168(%rbp)
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -160(%rbp)
+	movl	$0, -152(%rbp)
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -144(%rbp)
+	movl	$0, -136(%rbp)
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -128(%rbp)
+	movl	$0, -120(%rbp)
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -112(%rbp)
+	movl	$0, -104(%rbp)
+	movl	-220(%rbp), %eax
+	movl	%eax, -176(%rbp)
+	movq	-216(%rbp), %rax
+	movq	%rax, -168(%rbp)
+	leaq	.LC2(%rip), %rax
+	movq	%rax, -160(%rbp)
+	movl	$2, -152(%rbp)
 	movl	$0, -96(%rbp)
 	leaq	.LC0(%rip), %rax
 	movq	%rax, -88(%rbp)
@@ -37,19 +72,47 @@ global_main:
 	leaq	.LC0(%rip), %rax
 	movq	%rax, -32(%rbp)
 	movl	$0, -24(%rbp)
-	leaq	.LC1(%rip), %rax
+	movl	$2, -96(%rbp)
+	leaq	.LC3(%rip), %rax
 	movq	%rax, -88(%rbp)
-	leaq	.LC2(%rip), %rax
-	movq	%rax, -80(%rbp)
-	movl	$0, -112(%rbp)
-	movq	$0, -104(%rbp)
-	leaq	-96(%rbp), %rax
-	movq	%rax, -104(%rbp)
-	movq	-104(%rbp), %rax
+	leaq	.LC4(%rip), %rax
+	movq	%rax, -48(%rbp)
+	movl	$1, -40(%rbp)
+	movl	$0, -208(%rbp)
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -200(%rbp)
+	movq	$0, -192(%rbp)
+	leaq	.LC5(%rip), %rax
+	movq	%rax, -200(%rbp)
+	leaq	-176(%rbp), %rax
+	movq	%rax, -192(%rbp)
+	movq	-192(%rbp), %rax
+	movl	(%rax), %eax
+	movl	%eax, %esi
+	leaq	.LC6(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movq	-192(%rbp), %rax
 	movq	8(%rax), %rax
 	movq	%rax, %rdi
 	call	puts@PLT
-	movq	-104(%rbp), %rax
+	movq	-192(%rbp), %rax
+	movq	16(%rax), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	leaq	-96(%rbp), %rax
+	movq	%rax, -192(%rbp)
+	movq	-192(%rbp), %rax
+	movl	(%rax), %eax
+	movl	%eax, %esi
+	leaq	.LC6(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	movq	-192(%rbp), %rax
+	movq	8(%rax), %rax
+	movq	%rax, %rdi
+	call	puts@PLT
+	movq	-192(%rbp), %rax
 	movq	16(%rax), %rax
 	movq	%rax, %rdi
 	call	puts@PLT

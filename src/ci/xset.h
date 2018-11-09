@@ -5,8 +5,7 @@
 typedef struct xset{
 	xexp super;
 	strc name;
-	xexpls setexpls;//? xexpls
-//	bool is_set_ref;
+	xexpls setexpls;
 }xset;
 
 inline static void _xset_compile_(const xexp*oo,toc*tc){
@@ -52,15 +51,6 @@ inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){
 
 	if(!strcmp(o->super.type,"var"))
 		o->super.type=o->setexpls.super.type;
-
-//	if(o->super.is_ref==o->super.is_ref)//? alwaystrue
-//		return;
-//
-//	toc_print_source_location(tc,o->super.token,4);
-//	printf("cannot set reference to non reference");
-//	printf("\n    %s %d",__FILE__,__LINE__);
-//	longjmp(_jmp_buf,1);
-	return;
 }
 
 inline static/*gives*/xset*xset_read_next(toc*tc,strc name,token tk){

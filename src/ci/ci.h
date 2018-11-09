@@ -253,6 +253,8 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 }
 inline static bool ci_xvar_needs_init(const toc*tc,strc name){
 	xtype*t=ci_get_type_for_name_try(tc,name);
+	if(!t)
+		return false;
 	return xtype_is_needs_init(t);
 //	return xtype_is_needs_init(t);
 }
@@ -427,9 +429,8 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 		return;
 
 	toc_print_source_location(tc,tk,4);
-	printf("cannot set '%s' to '%s', %s is %s",
-			settype,current_class_name,
-			accessor,current_class_name
+	printf("cannot set '%s' to '%s' because '%s' is '%s'",
+			settype,accessor,accessor,current_class_name
 	);
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
@@ -518,17 +519,6 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 		return(xexp*)e;
 	}
 
-	// float
-	strtof(tks,&endptr);
-	if(!*endptr){
-		xconst*e=malloc(sizeof(xconst));
-		*e=xconst_def;
-		e->super.token=tk;
-		e->name=tks;
-		e->super.type="float";
-		return(xexp*)e;
-	}
-
 	// hex
 	if(tkslen>1){
 		if(tks[0]=='0' && tks[1]=='x'){
@@ -554,6 +544,18 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 			}
 		}
 	}
+
+	// float
+	strtof(tks,&endptr);
+	if(!*endptr){
+		xconst*e=malloc(sizeof(xconst));
+		*e=xconst_def;
+		e->super.token=tk;
+		e->name=tks;
+		e->super.type="float";
+		return(xexp*)e;
+	}
+
 	return NULL;
 }
 

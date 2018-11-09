@@ -14,21 +14,41 @@ location{
 
 entity{
 	id=0
+	name=""
 	location&;
 }
 
 global{
 	main{
+		int id=0b11
+		strc descr
+		descr="roome"
+		
 		location roome
-		roome.id=1
-		roome.name="roome"
+		roome.id=id
+		roome.name=descr
 		roome.xn.name="north"
-		roome.xn.locid=1
+		roome.xn.locid=2
+
 		
-		entity e
-		e.location=roome
+		location hall
+		hall.id=2
+		hall.name="hall"
+		hall.xs.name="south"
+		hall.xs.locid=1
 		
-		p("%s\n",e.location.name);
-		p("%s\n",e.location.xn.name);
+		entity me
+		me.name="me"
+		me.location=roome
+		
+		p("%d\n",me.location.id);
+		p("%s\n",me.location.name);
+		p("%s\n",me.location.xn.name);
+
+		me.location=hall
+		
+		p("%d\n",me.location.id);
+		p("%s\n",me.location.name);
+		p("%s\n",me.location.xn.name);
 	}
 }
