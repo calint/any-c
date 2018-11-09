@@ -54,5 +54,6 @@ cd qa &&
 ./do-test 46 &&
 ./do-test 47 &&
 ./do-test 48 &&
+./do-test 49 &&
 date &&
 echo ok

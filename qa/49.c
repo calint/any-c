@@ -74,7 +74,7 @@ inline static void global_main(global*o){
     entity_move_to(&me,&hall);
     printf("%d\n",me.location->id);
     printf("%s\n",me.location->name);
-    printf("%s\n",ext_get_name(&me.location->xn));
+    printf("%s\n",ext_get_name(&me.location->xs));
 }
 inline static void global_init(global*o){}
 inline static void global_free(global*o){}

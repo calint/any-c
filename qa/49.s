@@ -1,4 +1,4 @@
-	.file	"main.c"
+	.file	"49.c"
 	.text
 	.type	ext_get_name, @function
 ext_get_name:
@@ -192,7 +192,7 @@ global_main:
 	movq	%rax, %rdi
 	call	puts@PLT
 	movq	-192(%rbp), %rax
-	addq	$16, %rax
+	addq	$48, %rax
 	movq	%rax, %rdi
 	call	ext_get_name
 	movq	%rax, %rdi
