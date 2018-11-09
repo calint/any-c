@@ -1,6 +1,6 @@
 # any-c
 ```
-simple language that compiles to c
+experimental simple language that compiles to c
 
   has
     : structs with functions
@@ -15,9 +15,9 @@ simple language that compiles to c
 source size
 ```
 cat src/ci/* src/lib/* src/lib.h main.c | wc
-   3586    5843   85920
+   3588    5848   86041
 cat src/ci/* src/lib/* src/lib.h main.c | gzip | wc
-     60     347   16205
+     60     350   16234
 ```
 
 

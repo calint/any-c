@@ -1,19 +1,34 @@
-location{
+ext{
 	name=""
+	locid=0
+}
+
+location{
+	id=0
+	name=""
+	ext xn
+	ext xe
+	ext xs
+	ext xw
 }
 
 entity{
+	id=0
 	location&;
 }
 
 global{
 	main{
-		location loc
-		loc.name="roome"
+		location roome
+		roome.id=1
+		roome.name="roome"
+		roome.xn.name="north"
+		roome.xn.locid=1
 		
 		entity e
-		e.location=loc
+		e.location=roome
 		
-		p("%s",e.location.name);
+		p("%s\n",e.location.name);
+		p("%s\n",e.location.xn.name);
 	}
 }

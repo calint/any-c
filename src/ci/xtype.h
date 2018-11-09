@@ -426,7 +426,12 @@ inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 		if(ci_is_builtin_type(f->type))
 			continue;
 		xtype*t=ci_get_type_for_name_try(tc,f->type);
-
+		if(!t){
+			toc_print_source_location(tc,f->super.token,4);
+			printf("type '%s' not found",f->type);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
+		}
 		if(xtype_is_needs_free(t))
 			xtype_set_needs_free(c);
 

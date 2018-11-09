@@ -5,26 +5,26 @@
 typedef struct xset{
 	xexp super;
 	strc name;
-	xexpls expls;//? xexpls
+	xexpls setexpls;//? xexpls
 //	bool is_set_ref;
 }xset;
 
 inline static void _xset_compile_(const xexp*oo,toc*tc){
 	xset*o=(xset*)oo;
 	ci_xset_compile(tc,o);
-	xexp*e=ptrs_get(&o->expls.exps,0);
+	xexp*e=ptrs_get(&o->setexpls.exps,0);
 	if(o->super.is_ref && !e->is_ref){
 		printf("&");
 	}else if(!o->super.is_ref && e->is_ref){
 		printf("*");
 	}
 
-	o->expls.super.compile((xexp*)&o->expls,tc);
+	o->setexpls.super.compile((xexp*)&o->setexpls,tc);
 }
 
 inline static void _xset_free_(xexp*oo){
 	xset*o=(xset*)oo;
-	o->expls.super.free((xexp*)&o->expls);
+	o->setexpls.super.free((xexp*)&o->setexpls);
 }
 
 #define xset_def (xset){\
@@ -47,11 +47,11 @@ inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){
 	o->super.type=tr.type;
 	o->super.is_ref=tr.is_ref;
 
-	xexpls_parse_next(&o->expls,tc,tk,false);
+	xexpls_parse_next(&o->setexpls,tc,tk,false);
 	ci_xset_assert(tc,o);
 
 	if(!strcmp(o->super.type,"var"))
-		o->super.type=o->expls.super.type;
+		o->super.type=o->setexpls.super.type;
 
 //	if(o->super.is_ref==o->super.is_ref)//? alwaystrue
 //		return;

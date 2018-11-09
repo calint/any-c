@@ -1,6 +1,6 @@
 # any-c
 ```
-simple language that compiles to c
+experimental simple language that compiles to c
 
   has
     : structs with functions
