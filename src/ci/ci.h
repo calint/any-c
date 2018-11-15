@@ -48,16 +48,16 @@ inline static xtype*ci_get_type_for_name_try(const toc*o,strc name){
 
 inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 	strc funcname=null;
-	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
+	for(long j=tc->scopes.count-1;j>=0;j--){
+		tocscope*s=ptrs_get(&tc->scopes,j);
 		if(s->type!='f')
 			continue;
 		funcname=s->name;
 		break;
 	}
 	strc typenm=null;
-	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
-		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);
+	for(long j=tc->scopes.count-1;j>=0;j--){
+		tocscope*s=ptrs_get(&tc->scopes,j);
 		if(s->type!='c')
 			continue;
 		typenm=s->name;
@@ -386,7 +386,6 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 				strb s=strb_def;
 				strb_add_list(&s,current_accessor,p-current_accessor);
 				strb_add(&s,0);
-//				lookup=s.data;//? leak
 				fld=xtype_get_field_for_name(current_type,s.data);
 				strb_free(&s);
 			}else{
@@ -435,14 +434,12 @@ inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
 	if(token_is_empty(&tk)){
 		if(toc_srcp_is_take(tc,'"')){ // string
 			while(1){
-//				const char c=*tc->srcp;
 				if(toc_srcp_is_take(tc,0) || toc_srcp_is_take(tc,'\n')){
 					toc_print_source_location(tc,tk,4);
 					printf("did not find the end of string on the same line");
 					printf("\n    %s %d",__FILE__,__LINE__);
 					longjmp(_jmp_buf,1);
 				}
-//				tc->srcp++;
 				if(toc_srcp_is_take(tc,'\\')){
 					toc_srcp_inc(tc);// skip next character
 					continue;
@@ -597,12 +594,11 @@ inline static xexp*ci_read_next_statement(toc*tc){
 
 	// incdecs
 	char incdecbits=0;
-//	if(toc_srcp_peek_is(tk,"++")) //?
 	if(toc_srcp_is_take(tc,'+')){
 		if(toc_srcp_is_take(tc,'+')){
 			incdecbits|=1;
 		}else{
-//			toc_srcp_back(2);//?
+//			toc_srcp_back(1);//?
 			tc->srcp--;
 			tc->srcp--;
 		}
@@ -610,7 +606,7 @@ inline static xexp*ci_read_next_statement(toc*tc){
 		if(toc_srcp_is_take(tc,'-')){
 			incdecbits|=2;
 		}else{
-//			toc_srcp_back(2);//?
+//			toc_srcp_back(1);//?
 			tc->srcp--;
 			tc->srcp--;
 		}
@@ -786,10 +782,7 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		printf("printf(");
 		return;
 	}
-//	if(!strcmp("malloc",c->name) || !strcmp("calloc",c->name)){
-//		printf("%s(",c->name);
-//		return;
-//	}
+
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,c->name);
 	const char*pathnm=cb;
@@ -801,9 +794,7 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		const xtyperef vartr=ci_get_typeref_for_accessor(tc,tk,varnm);
 		const char scope=toc_get_declaration_scope_type(tc,varnm);
 		const xtyperef pathtr=ci_get_typeref_for_accessor(tc,tk,pathnm);
-//		printf("%s_%s((%s*)",vartr.type,funcnm,vartr.type);
 		printf("%s_%s(",vartr.type,funcnm);
-//		printf("(%s*)",vartr.type);
 		if(!pathtr.is_ref)
 			printf("&");
 
@@ -835,10 +826,6 @@ inline static bool ci_is_func_param_ref(
 	//? builtins
 	if(!strcmp("p",accessor) || !strcmp("printf",accessor))
 		return false;
-
-//	if(!strcmp("free",accessor) && param_index==0)
-//		return true;
-
 
 	char cb[ci_identifier_maxlen];
 	strcpy(cb,accessor);
