@@ -760,7 +760,7 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 	ptrs split/*takes*/=strc_split(id,'.');
 	strb*first_id=ptrs_get(&split,0);
 	const char scopetype=toc_get_declaration_scope_type(tc,first_id->data);
-	strc_split_free(&split);
+	strc_split_free(/*gives*/&split);
 	if(scopetype=='c'){// class member
 		printf("o->%s=",acc_c.data);
 		strb_free(&acc_c);
