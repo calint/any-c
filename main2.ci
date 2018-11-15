@@ -1,0 +1,59 @@
+ext{
+	name=""
+	locid=0
+	strc get_name(){return name}
+	set_name(strc nm){name=nm}
+}
+
+location{
+	id=0
+	name=""
+	ext xn
+	ext xe
+	ext xs
+	ext xw
+}
+
+entity{
+	id=0
+	name=""
+	location&;
+	move_to(location&loc){
+		location=loc
+		p("%s leaves to %s\n",name,loc.name)
+	}
+}
+
+global{
+	main{
+		int id=0b11
+		strc descr
+		descr="roome"
+		
+		location roome
+		roome.id=id
+		roome.name=descr
+		roome.xn.name="north"
+		roome.xn.locid=2
+
+		location hall
+		hall.id=2
+		hall.name="hall"
+		hall.xs.set_name("south")
+		hall.xs.locid=1
+		
+		entity me
+		me.name="me"
+		me.location=roome
+		
+		p("%d\n",me.location.id);
+		p("%s\n",me.location.name);
+		p("%s\n",me.location.xn.name);
+
+		me.move_to(hall)
+		
+		p("%d\n",me.location.id);
+		p("%s\n",me.location.name);
+		p("%s\n",me.location.xs.get_name());
+	}
+}

@@ -68,10 +68,50 @@ inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 	return fn;
 }
 
+inline static/*gives*/strb*strb_new(){
+	strb*s=malloc(sizeof(strb));
+	*s=strb_def;
+	return s;
+}
+
+inline static void strb_free_alloc(/*takes*/strb*s){
+	strb_free(s);
+	free(s);
+}
+
+inline static/*gives*/ptrs/*<strb*>*/strc_split(strc s,char split_at_char){
+	ptrs strings=ptrs_def;
+	strc ptr=s;
+	strb*buf=strb_new();
+	while(1){ // "p.anim.frame\0"
+		if(*ptr==split_at_char||*ptr==0){
+			strb_add(buf,0);
+			ptrs_add(&strings,buf);
+			if(*ptr==0)
+				return strings;
+			buf=strb_new();
+			ptr++;
+			continue;
+		}
+		strb_add(buf,*ptr);
+		ptr++;
+	}
+}
+
+inline static void strc_split_free(/*takes*/ptrs*/*<strb*>*/p){
+	for(long i=0;i<p->count;i++){
+		strb*sb=(strb*)ptrs_get(p,i);
+		strb_free_alloc(sb);
+	}
+	ptrs_free(p);
+}
+
 inline static xtyperef ci_get_typeref_for_accessor(
 		const toc*tc,token tk,strc accessor){
 
-	const tocdecl*td=toc_get_declaration_for_accessor(tc,accessor);
+	ptrs strbs=strc_split(accessor,'.');
+	strb*acc=ptrs_get(&strbs,0);
+	const tocdecl*td=toc_get_declaration_for_accessor(tc,acc->data);
 	if(!td){
 		toc_print_source_location(tc,tk,4);
 		xfunc*fn=toc_get_func_in_context(tc,tk);
@@ -82,23 +122,14 @@ inline static xtyperef ci_get_typeref_for_accessor(
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
+
 	xtype*tp=ci_get_type_for_name_try(tc,td->type);
 	strc tpnm=tp?tp->name:td->type;
 	bool isref=td->is_ref;
 
-	strc dotixptr=strchr(accessor,'.');
-	while(1){ // e2.id
-		if(!dotixptr)
-			break;
-		accessor=dotixptr+1; // id
-		dotixptr=strchr(accessor,'.');
-		strb s=strb_def;
-		if(dotixptr)
-			strb_add_list(&s,accessor,(unsigned)(dotixptr-accessor));
-		else
-			strb_add_string(&s,accessor);
-		strb_add(&s,0);
-		xfield*fld=xtype_get_field_for_name(tp,s.data);
+	for(long i=1;i<strbs.count;i++){
+		strb*sb=ptrs_get(&strbs,i);
+		xfield*fld=xtype_get_field_for_name(tp,sb->data);
 		if(fld){
 			isref=fld->is_ref;
 			tp=ci_get_type_for_name_try(tc,fld->type);
@@ -107,7 +138,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 			else
 				tpnm=fld->type;
 		}else{
-			xfunc*fn=xtype_get_func_for_name(tp,s.data);
+			xfunc*fn=xtype_get_func_for_name(tp,sb->data);
 			if(!fn){
 				toc_print_source_location(tc,tk,4);
 				printf("'%s' not found in '%s'",accessor,tpnm);
@@ -121,10 +152,8 @@ inline static xtyperef ci_get_typeref_for_accessor(
 			else
 				tpnm=fn->type;
 		}
-		strb_free(&s);
-		if(!tp)
-			break;
 	}
+	strc_split_free(&strbs);
 	if(!tp && !ci_is_builtin_type(tpnm)){
 		toc_print_source_location(tc,tk,4);
 		printf("cannot find type '%s'",tpnm);
@@ -150,74 +179,52 @@ inline static bool ci_is_builtin_func(strc funcnamne){
 inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 						strc accessor,token tk){
 
-	strc cur_accessor=accessor;
-	const tocdecl*decl=toc_get_declaration_for_accessor(tc,cur_accessor);
-	if(!decl){// no declaration found thusfunc call to member or builtin or error
+	ptrs strbs=strc_split(accessor,'.');
+	strb*acc=ptrs_get(&strbs,0);
+	const tocdecl*td=toc_get_declaration_for_accessor(tc,acc->data);
+	if(!td){// no declaration found thus func call to member or builtin or error
 		strc tpnm=toc_get_typenm_in_context(tc,tk);
 		xtype*tp=ci_get_type_for_name_try(tc,tpnm);
-		xfunc*fn=xtype_get_func_for_name(tp,cur_accessor);
-		if(fn)
+		xfunc*fn=xtype_get_func_for_name(tp,acc->data);
+		if(fn){
+			strc_split_free(&strbs);
 			return fn;
+		}
 		toc_print_source_location(tc,tk,4);
-		printf("'%s' not found",cur_accessor);
+		printf("function '%s' not found in type '%s'",acc->data,tp->name);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	strc cur_typenm=decl->type;
-	const xtype*cur_type=ci_get_type_for_name_try(tc,cur_typenm);
-	if(cur_type){
-		while(1){
-			strc p=strpbrk(cur_accessor,".");
-			if(!p)
-				break;
-			cur_accessor=p+1;
-			p=strpbrk(cur_accessor,".");
-			if(!p){
-				xfunc*fn=xtype_get_func_for_name(cur_type,cur_accessor);
-				if(!fn){
-					toc_print_source_location(tc,tk,4);
-					printf("cannot find function '%s' in '%s', using '%s'",
-							cur_accessor,
-							cur_type->name,
-							accessor
-					);
-					printf("\n    %s %d",__FILE__,__LINE__);
-					longjmp(_jmp_buf,1);
-				}
-				return fn;
-			}
-			xfield*fld;
-			if(p){
-				strb s=strb_def;
-				strb_add_list(&s,cur_accessor,(unsigned)(p-cur_accessor));
-				strb_add(&s,0);
-				fld=xtype_get_field_for_name(cur_type,s.data);
-				strb_free(&s);
-			}else{
-				fld=xtype_get_field_for_name(cur_type,cur_accessor);
-			}
-			if(!fld){
-				toc_print_source_location(tc,tk,4);
-				printf("cannot find field '%s' in '%s', using '%s'",
-						cur_accessor,
-						cur_type->name,
-						accessor
-				);
-				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmp_buf,1);
-			}
-			cur_typenm=fld->type;
-			cur_type=ci_get_type_for_name_try(tc,cur_typenm);
-			if(!cur_type)
-				break;
+
+	xtype*tp=ci_get_type_for_name_try(tc,td->type);
+	for(long i=1;i<strbs.count-1;i++){
+		strb*sb=ptrs_get(&strbs,i);
+		xfield*fld=xtype_get_field_for_name(tp,sb->data);
+		if(!fld){
+			toc_print_source_location(tc,tk,4);
+			printf("'%s' not found in '%s'",sb->data,accessor);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
 		}
+		tp=ci_get_type_for_name_try(tc,fld->type);
 	}
-	printf("cannot find function '%s' in '%s', using '%s'",
-			cur_accessor,
-			cur_type->name,
-			accessor
+
+	strb*funcnm=ptrs_get_last(&strbs);
+	xfunc*fn=xtype_get_func_for_name(tp,funcnm->data);
+
+	if(fn){
+		strc_split_free(&strbs);
+		return fn;
+	}
+
+	toc_print_source_location(tc,tk,4);
+	printf("cannot find function '%s' in type '%s', using accessor '%s'",
+		funcnm->data,
+		tp->name,
+		accessor
 	);
 	printf("\n    %s %d",__FILE__,__LINE__);
+	strc_split_free(&strbs);
 	longjmp(_jmp_buf,1);
 }
 
@@ -251,12 +258,12 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
+
 inline static bool ci_xvar_needs_init(const toc*tc,strc name){
 	xtype*t=ci_get_type_for_name_try(tc,name);
 	if(!t)
 		return false;
 	return xtype_is_needs_init(t);
-//	return xtype_is_needs_init(t);
 }
 
 inline static void ci_xcode_compile_free_current_scope(toc*tc){
@@ -266,7 +273,6 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 		if(ci_is_builtin_type(td->type))
 			continue;
 		const xtype*t=ci_get_type_for_name_try(tc,td->type);
-//		if(t->bits&1){ // needs free
 		if(xtype_is_needs_free(t)){
 			toc_print_indent_for_compile(tc);
 			printf("%s_free(&%s);",t->name,td->name);
@@ -276,7 +282,6 @@ inline static void ci_xcode_compile_free_current_scope(toc*tc){
 
 inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 		token tk){
-//	bool nl=false;
 	for(long j=tc->scopes.count-1;j>=0;j--){
 		const tocscope*ts=(const tocscope*)ptrs_get(&tc->scopes,j);
 		for(long i=ts->tocdecls.count-1;i>=0;i--){
@@ -288,13 +293,10 @@ inline static void ci_xcode_compile_free_current_loop_scope(const toc*tc,
 				continue;
 			toc_print_indent_for_compile(tc);
 			printf("%s_free(&%s);\n",t->name,td->name);
-//			nl=true;
 		}
 		if(ts->type=='l') // clear including loop scope
 			break;
 	}
-//	if(nl)
-//		printf("\n");
 }
 
 inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
@@ -319,49 +321,35 @@ inline static bool ci_xcode_needs_compile_free_current_loop_scope(toc*tc,
 inline static strc ci_get_field_type_for_accessor(const toc*tc,
 						strc accessor,token tk){
 
-	strc current_accessor=accessor;
-	const tocdecl*decl=toc_get_declaration_for_accessor(tc,current_accessor);
-	if(!decl){
+	ptrs strbs=strc_split(accessor,'.');
+	strb*acc=ptrs_get(&strbs,0);
+	const tocdecl*td=toc_get_declaration_for_accessor(tc,acc->data);
+	if(!td){
 		toc_print_source_location(tc,tk,4);
-		printf("'%s' not found",current_accessor);
+		printf("'%s' not found",acc->data);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	strc current_class_name=decl->type;
-	const xtype*current_type=ci_get_type_for_name_try(tc,current_class_name);
-	if(current_type){
-		while(1){
-			strc p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
-			if(!p){// a=2
-				break;
-			}
-			current_accessor=p+1; // anim.frame
-			p=strpbrk(current_accessor,".");
-			strc lookup=current_accessor;
-			if(p){
-				strb s=strb_def;
-				strb_add_list(&s,current_accessor,p-current_accessor);
-				strb_add(&s,0);
-				lookup=s.data;//? leak
-			}
-			const xfield*fld=xtype_get_field_for_name(current_type,lookup);
-			if(!fld){
-				toc_print_source_location(tc,tk,4);
-				printf("cannot find field '%s' in '%s', using '%s'",
-						current_accessor,
-						current_type->name,
-						accessor
-				);
-				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmp_buf,1);
-			}
-			current_class_name=fld->type;
-			current_type=ci_get_type_for_name_try(tc,current_class_name);
-			if(!current_type)
-				break;
+
+	strc typenm=td->type;
+	xtype*tp=ci_get_type_for_name_try(tc,td->type);
+	for(long i=1;i<strbs.count;i++){
+		strb*sb=ptrs_get(&strbs,i);
+		xfield*fld=xtype_get_field_for_name(tp,sb->data);
+		if(!fld){
+			toc_print_source_location(tc,tk,4);
+			printf("field '%s' not found in type '%s' using accessor '%s'",
+					sb->data,tp->name,accessor);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
 		}
+		typenm=fld->type;
+		tp=ci_get_type_for_name_try(tc,fld->type);
 	}
-	return current_class_name;
+
+	strc_split_free(&strbs);
+
+	return typenm;
 }
 
 inline static void ci_xset_assert(const toc*tc,const xset*o){
@@ -707,6 +695,113 @@ inline static int ci_compile_file(strc path){
 	ci_free();
 	return 0;
 }
+inline static/*gives*/strb ci_get_c_accessor_for_accessor(
+		const toc*tc,token tk,strc accessor){//? rewrite
+
+	strb acc_c=strb_def;
+	ptrs strbs=strc_split(accessor,'.');
+	strb*acc=ptrs_get(&strbs,0);
+
+	const tocdecl*td=toc_get_declaration_for_accessor(tc,acc->data);
+	if(!td){
+		toc_print_source_location(tc,tk,4);
+		xfunc*fn=toc_get_func_in_context(tc,tk);
+		printf("'%s' not found in '%s' and is not declared in '%s'",accessor,
+				toc_get_typenm_in_context(tc,tk),
+				fn->name
+				);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
+	}
+
+	xtype*tp=ci_get_type_for_name_try(tc,td->type);
+	if(!tp){
+		toc_print_source_location(tc,tk,4);
+		printf("type '%s' not found",td->type);
+		printf("\n    %s %d",__FILE__,__LINE__);
+		longjmp(_jmp_buf,1);
+	}
+
+	bool isref=td->is_ref;
+
+	strb_add_string(&acc_c,acc->data);
+
+	for(long i=1;i<strbs.count;i++){
+		if(isref){
+			strb_add_string(&acc_c,"->");
+		}else{
+			strb_add(&acc_c,'.');
+		}
+		strb*sb=ptrs_get(&strbs,i);
+		xfield*fld=xtype_get_field_for_name(tp,sb->data);
+		if(!fld){
+			toc_print_source_location(tc,tk,4);
+			printf("field '%s' not found in '%s'",sb->data,tp->name);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
+		}
+		strb_add_string(&acc_c,fld->name);
+		isref=fld->is_ref;
+		tp=ci_get_type_for_name_try(tc,fld->type);
+	}
+	strb_add(&acc_c,0);
+
+	strc_split_free(&strbs);
+	return acc_c;
+
+//	strb cacc=strb_def;
+//	strc ap=accessor; // me.hall.ext
+//	strc p=strchr(ap,'.');
+//	if(!p){// me
+//		strb_add_string(&cacc,ap);
+//		strb_add(&cacc,0);
+//		return cacc;
+//	}
+//	strb varnm=strb_def;
+//	strb_add_list(&varnm,ap,p-ap);
+//	strb_add(&varnm,0);
+//	const tocdecl*td=toc_get_declaration_for_accessor(tc,varnm.data);
+//	strb_add_string(&cacc,varnm.data);
+//	strb_free(&varnm);
+//	if(td->is_ref)
+//		strb_add_string(&cacc,"->");
+//	else
+//		strb_add_string(&cacc,".");
+//
+//	strc current_type_name=td->type;
+//	xtype*current_type=ci_get_type_for_name_try(tc,current_type_name);
+//	while(1){
+//		ap=p+1;
+//		p=strchr(ap,'.');
+//		if(p)
+//			strb_add_list(&cacc,ap,p-ap);
+//		else{
+//			strb_add_string(&cacc,ap);
+//			break;
+//		}
+//		strb temp=strb_def;
+//		strb_add_list(&temp,ap,p-ap);
+//		strb_add(&temp,0);
+//		xfield*fld=xtype_get_field_for_name(current_type,temp.data);
+//		if(!fld){
+//			toc_print_source_location(tc,tk,4);
+//			printf("could not find field '%s' in type '%s' using identifier '%s'",
+//					temp.data,current_type->name,accessor);
+//			printf("\n    %s %d",__FILE__,__LINE__);
+//			longjmp(_jmp_buf,1);
+//		}
+//		strb_free(&temp);
+//		current_type=ci_get_type_for_name_try(tc,fld->type);
+//		if(fld->is_ref)
+//			strb_add_string(&cacc,"->");
+//		else
+//			strb_add_string(&cacc,".");
+//	}
+//	strb_add(&cacc,0);
+////	return cacc.data;
+//	return cacc;
+}
+
 
 inline static void ci_xset_compile(const toc*tc,const xset*o){
 	token tk=o->super.token;
@@ -761,56 +856,6 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 	longjmp(_jmp_buf,1);
 }
 
-inline static/*gives*/strb ci_get_c_accessor_for_accessor(
-		const toc*tc,token tk,strc accessor){//? rewrite
-	strb cacc=strb_def;
-	strc ap=accessor; // me.hall.ext
-	strc p=strchr(ap,'.');
-	if(!p){// me
-		strb_add_string(&cacc,ap);
-		strb_add(&cacc,0);
-		return cacc;
-	}
-	strb varnm=strb_def;
-	strb_add_list(&varnm,ap,p-ap);
-	strb_add(&varnm,0);
-	const tocdecl*td=toc_get_declaration_for_accessor(tc,varnm.data);
-	strb_add_string(&cacc,varnm.data);
-	strb_free(&varnm);
-	if(td->is_ref)
-		strb_add_string(&cacc,"->");
-	else
-		strb_add_string(&cacc,".");
-
-	strc current_type_name=td->type;
-	xtype*current_type=ci_get_type_for_name_try(tc,current_type_name);
-	while(1){
-		ap=p+1;
-		p=strchr(ap,'.');
-		if(p)
-			strb_add_list(&cacc,ap,p-ap);
-		else{
-			strb_add_string(&cacc,ap);
-			break;
-		}
-		strb temp=strb_def;
-		strb_add_list(&temp,ap,p-ap);
-		strb_add(&temp,0);
-		xfield*fld=xtype_get_field_for_name(current_type,temp.data);
-		strb_free(&temp);
-		if(!fld){
-			exit(1);//? type error
-		}
-		current_type=ci_get_type_for_name_try(tc,fld->type);
-		if(fld->is_ref)
-			strb_add_string(&cacc,"->");
-		else
-			strb_add_string(&cacc,".");
-	}
-	strb_add(&cacc,0);
-//	return cacc.data;
-	return cacc;
-}
 
 inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 	token tk=c->super.token;

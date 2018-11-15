@@ -17,7 +17,7 @@ typedef struct strb{
 	long count;
 	long cap;
 }strb;
-#define strb_def {0,0,0}
+#define strb_def (strb){0,0,0}
 
 //--------------------------------------------------------------------- private
 
