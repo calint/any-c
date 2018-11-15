@@ -141,7 +141,8 @@ inline static xtyperef ci_get_typeref_for_accessor(
 			xfunc*fn=xtype_get_func_for_name(tp,sb->data);
 			if(!fn){
 				toc_print_source_location(tc,tk,4);
-				printf("'%s' not found in '%s'",accessor,tpnm);
+				printf("field or function '%s' not found in type '%s'",
+						sb->data,tpnm);
 				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
@@ -754,9 +755,9 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 inline static void ci_xset_compile(const toc*tc,const xset*o){
 	token tk=o->super.token;
 	strc id=o->name;
-	strb acc_c=ci_get_c_accessor_for_accessor(tc,tk,id);
+	strb acc_c/*takes*/=ci_get_c_accessor_for_accessor(tc,tk,id);
 
-	ptrs split=strc_split(id,'.');
+	ptrs split/*takes*/=strc_split(id,'.');
 	strb*first_id=ptrs_get(&split,0);
 	const char scopetype=toc_get_declaration_scope_type(tc,first_id->data);
 	strc_split_free(&split);
@@ -774,56 +775,6 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 	toc_print_source_location(tc,tk,4);
 	printf("could not find var '%s'\n",id);
 	longjmp(_jmp_buf,1);
-//
-//
-//	strc p=strpbrk(id,".");
-//	if(p){
-//		strb idstr=strb_def;
-//		strb_add_list(&idstr,id,p-id);
-//		strb_add(&idstr,0);
-//
-//		const tocdecl*i=toc_get_declaration_for_accessor(tc,idstr.data);
-//		if(!i){
-//			printf("<file> <line:col> identifier '%s' not found\n",id);
-//			longjmp(_jmp_buf,1);
-//		}
-//		ci_xset_assert(tc,o);
-//		const char scopetype=toc_get_declaration_scope_type(tc,idstr.data);
-//		idstr.count--;//? adhock
-//		if(i->is_ref){
-//			strb_add_list(&idstr,"->",2);
-//			strb_add_string(&idstr,p+1);
-//		}else{
-//			strb_add_string(&idstr,p);
-//		}
-//		strb_add(&idstr,0);
-//		if(scopetype){
-//			if(scopetype=='c'){// class member
-//				printf("o->%s",idstr.data);
-//			}else{// local identifier
-//				printf("%s",idstr.data);
-//			}
-//			printf("=");
-//			strb_free(&idstr);
-//			return;
-//		}
-//		strb_free(&idstr);
-//	}
-//
-//	const char scope=toc_get_declaration_scope_type(tc,id);
-//	if(scope=='c'){// class member
-//		printf("o->%s=",id);
-//		return;
-//	}
-//
-//	if(scope){// local identifier
-//		printf("%s=",id);
-//		return;
-//	}
-//
-//	toc_print_source_location(tc,tk,4);
-//	printf("could not find var '%s'\n",id);
-//	longjmp(_jmp_buf,1);
 }
 
 
