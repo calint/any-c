@@ -144,9 +144,9 @@ inline static void toc_add_declaration(toc*o,strc type,bool is_ref,strc name){
 }
 
 inline static char toc_get_declaration_scope_type(const toc*oo,strc name){
-	for(int j=(signed)oo->scopes.count-1;j>=0;j--){
-		tocscope*s=ptrs_get(&oo->scopes,(unsigned)j);
-		for(unsigned i=0;i<s->tocdecls.count;i++){
+	for(long j=oo->scopes.count-1;j>=0;j--){
+		tocscope*s=ptrs_get(&oo->scopes,j);
+		for(long i=0;i<s->tocdecls.count;i++){
 			tocdecl*id=(tocdecl*)ptrs_get(&s->tocdecls,i);
 			if(!strcmp(id->name,name))
 				return s->type;

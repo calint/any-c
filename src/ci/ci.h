@@ -715,7 +715,7 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 	}
 
 	xtype*tp=ci_get_type_for_name_try(tc,td->type);
-	if(!tp){
+	if(!tp && !ci_is_builtin_type(td->type)){
 		toc_print_source_location(tc,tk,4);
 		printf("type '%s' not found",td->type);
 		printf("\n    %s %d",__FILE__,__LINE__);
@@ -748,112 +748,82 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 
 	strc_split_free(&strbs);
 	return acc_c;
-
-//	strb cacc=strb_def;
-//	strc ap=accessor; // me.hall.ext
-//	strc p=strchr(ap,'.');
-//	if(!p){// me
-//		strb_add_string(&cacc,ap);
-//		strb_add(&cacc,0);
-//		return cacc;
-//	}
-//	strb varnm=strb_def;
-//	strb_add_list(&varnm,ap,p-ap);
-//	strb_add(&varnm,0);
-//	const tocdecl*td=toc_get_declaration_for_accessor(tc,varnm.data);
-//	strb_add_string(&cacc,varnm.data);
-//	strb_free(&varnm);
-//	if(td->is_ref)
-//		strb_add_string(&cacc,"->");
-//	else
-//		strb_add_string(&cacc,".");
-//
-//	strc current_type_name=td->type;
-//	xtype*current_type=ci_get_type_for_name_try(tc,current_type_name);
-//	while(1){
-//		ap=p+1;
-//		p=strchr(ap,'.');
-//		if(p)
-//			strb_add_list(&cacc,ap,p-ap);
-//		else{
-//			strb_add_string(&cacc,ap);
-//			break;
-//		}
-//		strb temp=strb_def;
-//		strb_add_list(&temp,ap,p-ap);
-//		strb_add(&temp,0);
-//		xfield*fld=xtype_get_field_for_name(current_type,temp.data);
-//		if(!fld){
-//			toc_print_source_location(tc,tk,4);
-//			printf("could not find field '%s' in type '%s' using identifier '%s'",
-//					temp.data,current_type->name,accessor);
-//			printf("\n    %s %d",__FILE__,__LINE__);
-//			longjmp(_jmp_buf,1);
-//		}
-//		strb_free(&temp);
-//		current_type=ci_get_type_for_name_try(tc,fld->type);
-//		if(fld->is_ref)
-//			strb_add_string(&cacc,"->");
-//		else
-//			strb_add_string(&cacc,".");
-//	}
-//	strb_add(&cacc,0);
-////	return cacc.data;
-//	return cacc;
 }
 
 
 inline static void ci_xset_compile(const toc*tc,const xset*o){
 	token tk=o->super.token;
 	strc id=o->name;
-	strc p=strpbrk(id,".");
-	if(p){
-		strb idstr=strb_def;
-		strb_add_list(&idstr,id,p-id);
-		strb_add(&idstr,0);
+	strb acc_c=ci_get_c_accessor_for_accessor(tc,tk,id);
 
-		const tocdecl*i=toc_get_declaration_for_accessor(tc,idstr.data);
-		if(!i){
-			printf("<file> <line:col> identifier '%s' not found\n",id);
-			longjmp(_jmp_buf,1);
-		}
-		ci_xset_assert(tc,o);
-		const char scopetype=toc_get_declaration_scope_type(tc,idstr.data);
-		idstr.count--;//? adhock
-		if(i->is_ref){
-			strb_add_list(&idstr,"->",2);
-			strb_add_string(&idstr,p+1);
-		}else{
-			strb_add_string(&idstr,p);
-		}
-		strb_add(&idstr,0);
-		if(scopetype){
-			if(scopetype=='c'){// class member
-				printf("o->%s",idstr.data);
-			}else{// local identifier
-				printf("%s",idstr.data);
-			}
-			printf("=");
-			strb_free(&idstr);
-			return;
-		}
-		strb_free(&idstr);
-	}
-
-	const char scopetype=toc_get_declaration_scope_type(tc,id);
+	ptrs split=strc_split(id,'.');
+	strb*first_id=ptrs_get(&split,0);
+	const char scopetype=toc_get_declaration_scope_type(tc,first_id->data);
+	strc_split_free(&split);
 	if(scopetype=='c'){// class member
-		printf("o->%s=",id);
+		printf("o->%s=",acc_c.data);
+		strb_free(&acc_c);
 		return;
 	}
-
-	if(scopetype){// local identifier
-		printf("%s=",id);
+	if(scopetype){
+		printf("%s=",acc_c.data);
+		strb_free(&acc_c);
 		return;
 	}
-
+	strb_free(&acc_c);
 	toc_print_source_location(tc,tk,4);
 	printf("could not find var '%s'\n",id);
 	longjmp(_jmp_buf,1);
+//
+//
+//	strc p=strpbrk(id,".");
+//	if(p){
+//		strb idstr=strb_def;
+//		strb_add_list(&idstr,id,p-id);
+//		strb_add(&idstr,0);
+//
+//		const tocdecl*i=toc_get_declaration_for_accessor(tc,idstr.data);
+//		if(!i){
+//			printf("<file> <line:col> identifier '%s' not found\n",id);
+//			longjmp(_jmp_buf,1);
+//		}
+//		ci_xset_assert(tc,o);
+//		const char scopetype=toc_get_declaration_scope_type(tc,idstr.data);
+//		idstr.count--;//? adhock
+//		if(i->is_ref){
+//			strb_add_list(&idstr,"->",2);
+//			strb_add_string(&idstr,p+1);
+//		}else{
+//			strb_add_string(&idstr,p);
+//		}
+//		strb_add(&idstr,0);
+//		if(scopetype){
+//			if(scopetype=='c'){// class member
+//				printf("o->%s",idstr.data);
+//			}else{// local identifier
+//				printf("%s",idstr.data);
+//			}
+//			printf("=");
+//			strb_free(&idstr);
+//			return;
+//		}
+//		strb_free(&idstr);
+//	}
+//
+//	const char scope=toc_get_declaration_scope_type(tc,id);
+//	if(scope=='c'){// class member
+//		printf("o->%s=",id);
+//		return;
+//	}
+//
+//	if(scope){// local identifier
+//		printf("%s=",id);
+//		return;
+//	}
+//
+//	toc_print_source_location(tc,tk,4);
+//	printf("could not find var '%s'\n",id);
+//	longjmp(_jmp_buf,1);
 }
 
 
