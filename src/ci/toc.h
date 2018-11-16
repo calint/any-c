@@ -143,7 +143,7 @@ inline static void toc_add_declaration(toc*o,strc type,bool is_ref,strc name){
 //	printf(" %s  %s  %s\n",s->name,i->type.data,i->name.data);
 }
 
-inline static char toc_get_declaration_scope_type(const toc*oo,strc name){
+inline static char toc_get_declaration_scope_type(const toc*oo,token tk,strc name){
 	for(long j=oo->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&oo->scopes,j);
 		for(long i=0;i<s->tocdecls.count;i++){
@@ -152,11 +152,22 @@ inline static char toc_get_declaration_scope_type(const toc*oo,strc name){
 				return s->type;
 		}
 	}
-//	toc_print_source_location(oo,tk,4);
-//	printf("\ncompiler error: declaration '%s' not found in scope",name);
-//	printf("\n    %s %d",__FILE__,__LINE__);
-//	longjmp(_jmp_buf,1);
-	return 0;
+	toc_print_source_location(oo,tk,4);
+	printf("\ndeclaration '%s' not found in scope",name);
+	printf("\n    %s %d",__FILE__,__LINE__);
+	longjmp(_jmp_buf,1);
+}
+
+inline static bool toc_is_declared(const toc*oo,strc name){
+	for(long j=oo->scopes.count-1;j>=0;j--){
+		tocscope*s=ptrs_get(&oo->scopes,j);
+		for(long i=0;i<s->tocdecls.count;i++){
+			tocdecl*id=(tocdecl*)ptrs_get(&s->tocdecls,i);
+			if(!strcmp(id->name,name))
+				return true;
+		}
+	}
+	return false;
 }
 
 inline static bool toc_is_declaration_ref(const toc*oo,strc name){

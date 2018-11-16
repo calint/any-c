@@ -11,14 +11,6 @@ typedef struct xvar{
 
 inline static void _xvar_compile_(const xexp*oo,toc*tc){
 	xvar*o=(xvar*)oo;
-	const char idtype=toc_get_declaration_scope_type(tc,o->name);
-	if(idtype){
-		toc_print_source_location(tc,o->super.token,4);
-		printf("'%s' is already declared at ...",o->name);
-		longjmp(_jmp_buf,1);
-		return;
-	}
-
 	printf("%s",o->super.type);
 	if(o->is_ref)
 		printf("*");
@@ -59,6 +51,12 @@ inline static xvar*xvar_read_next(toc*tc,strc type){
 	if(!strcmp("o",o->name)){
 		toc_print_source_location(tc,o->super.token,4);
 		printf("identifier 'o' is reserved, equivalent of 'this'");
+		longjmp(_jmp_buf,1);
+	}
+
+	if(toc_is_declared(tc,o->name)){
+		toc_print_source_location(tc,o->super.token,4);
+		printf("'%s' is already declared",o->name);
 		longjmp(_jmp_buf,1);
 	}
 
