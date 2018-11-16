@@ -75,6 +75,15 @@ inline static void _xfunc_print_source_(xexp*e){
 	{NULL,_xfunc_free_,_xfunc_print_source_,strc_def,token_def,0,false},\
 	strc_def,strc_def,ptrs_def,xcode_def,false}
 
+typedef struct xtable{
+	xexp super;
+}xtable;
+
+
+#define xtable_def (xtable){\
+	{NULL,NULL,NULL,strc_def,token_def,0,false},\
+}
+
 #include"decouple.h"
 
 typedef struct xtype{
@@ -82,23 +91,23 @@ typedef struct xtype{
 	strc name;
 	ptrs fields;
 	ptrs funcs;
+	ptrs tables;
 	ptrs stmts;
 	char bits; // bit 1: needs call to free     bit 2: has _free
 	           // bit 3: needs call to init     bit 4: has _init
 }xtype;
 
-//? inlined does not compile
-bool xtype_is_needs_free(const xtype*o){return (o->bits&1)==1;}
-void xtype_set_needs_free(xtype*o){o->bits|=1;}
+inline static bool xtype_is_needs_free(const xtype*o){return (o->bits&1)==1;}
+inline static void xtype_set_needs_free(xtype*o){o->bits|=1;}
 
-bool xtype_is_has_free(const xtype*o){return (o->bits&2)==2;}
-void xtype_set_has_free(xtype*o){o->bits|=2;}
+inline static bool xtype_is_has_free(const xtype*o){return (o->bits&2)==2;}
+inline static void xtype_set_has_free(xtype*o){o->bits|=2;}
 
-bool xtype_is_needs_init(const xtype*o){return (o->bits&4)==4;}
-void xtype_set_needs_init(xtype*o){o->bits|=4;}
+inline static bool xtype_is_needs_init(const xtype*o){return (o->bits&4)==4;}
+inline static void xtype_set_needs_init(xtype*o){o->bits|=4;}
 
-bool xtype_is_has_init(const xtype*o){return (o->bits&8)==8;}
-void xtype_set_has_init(xtype*o){o->bits|=8;}
+inline static bool xtype_is_has_init(const xtype*o){return (o->bits&8)==8;}
+inline static void xtype_set_has_init(xtype*o){o->bits|=8;}
 
 inline static void ci_print_right_aligned_comment(strc comment){
 	strc line="--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - - -- ---";
@@ -160,6 +169,38 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 			printf(",");
 	}
 	printf("}\n");
+
+	if(c->tables.count){\
+		ci_print_right_aligned_comment("tables");
+		for(unsigned i=0;i<c->tables.count;i++){
+			ci_print_right_aligned_comment("");
+			xtable*d=(xtable*)ptrs_get(&c->tables,i);
+			// table
+			printf("static %s %s_",d->super.type,c->name);
+			token_print_content(&d->super.token);
+			printf("[%d];\n",1024);//! size
+			// free bits
+			printf("static long long %s_",c->name);
+			token_print_content(&d->super.token);
+			printf("_bits[%d];\n",1024/64);
+			// cursor table
+			printf("static %s*%s_",d->super.type,c->name);
+			token_print_content(&d->super.token);
+			printf("_ptr=%s_",c->name);
+			token_print_content(&d->super.token);
+			printf(";\n");
+			// cursor free bits
+			printf("static long long*%s_",c->name);
+			token_print_content(&d->super.token);
+			printf("_bits_ptr=%s_",c->name);
+			token_print_content(&d->super.token);
+			printf("_bits;\n");
+
+		}
+		ci_print_right_aligned_comment("");
+	}
+
+
 	// functions
 	if(c->funcs.count){
 		ci_print_right_aligned_comment("funcs");
@@ -239,6 +280,7 @@ inline static void _xtype_free_(xexp*o){
 	ptrs_free(&oo->stmts);
 	ptrs_free(&oo->funcs);
 	ptrs_free(&oo->fields);
+	ptrs_free(&oo->tables);
 }
 
 inline static void _xtype_print_source_(xexp*o){//! TODO
@@ -256,7 +298,7 @@ inline static void _xtype_print_source_(xexp*o){//! TODO
 
 #define xtype_def (xtype){\
 	{_xtype_compile_,_xtype_free_,_xtype_print_source_,strc_def,token_def,0,false},\
-	strc_def,ptrs_def,ptrs_def,ptrs_def,0}
+	strc_def,ptrs_def,ptrs_def,ptrs_def,ptrs_def,0}
 
 inline static xfield*xtype_get_field_for_name(const xtype*o,strc field_name){
 	for(unsigned i=0;i<o->fields.count;i++){
@@ -359,25 +401,52 @@ inline static/*gives*/xfield*xfield_read_next(toc*tc,xtype*c,strc tktype,
 	return f;
 }
 
+inline static/*gives*/xtable*xtable_read_next(toc*tc,xtype*c,token tk){
+	xtable*o=malloc(sizeof(xtable));
+	*o=xtable_def;
+	o->super.token=tk;
+	token typetk=toc_next_token(tc);
+	o->super.type=token_content_to_new_strc(&typetk);
+
+	if(!ci_get_type_for_name_try(tc,o->super.type)){
+		toc_print_source_location(tc,typetk,4);
+		printf("type '%s' not found\n",o->super.type);
+		longjmp(_jmp_buf,1);
+	}
+
+	if(!toc_srcp_is_take(tc,']')){
+		toc_print_source_location(tc,o->super.token,4);
+		printf("expected ']' after table declaration\n");
+		longjmp(_jmp_buf,1);
+	}
+
+	ptrs_add(&c->tables,o);
+
+	return o;
+}
+
 inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 	xtype*c=malloc(sizeof(xtype));
 	*c=xtype_def;
-//	c->token=tk;
 	c->super.token=tk;
 	c->name=token_content_to_new_strc(&c->super.token);
 
 	ptrs_add(&tc->types,c);
 	toc_push_scope(tc,'c',c->name);
 
-	if(!toc_srcp_is(tc,'{')){
+	if(!toc_srcp_is_take(tc,'{')){
 		toc_print_source_location(tc,c->super.token,4);
 		printf("expected '{' to open class body\n");
 		longjmp(_jmp_buf,1);
 	}
-	toc_srcp_inc(tc);
+
 	while(1){
 		token tptk=toc_next_token(tc);
 		if(token_is_empty(&tptk)){
+			if(toc_srcp_is_take(tc,'#')){
+				toc_read_to_end_of_line(tc);
+				continue;
+			}
 			if(!toc_srcp_is(tc,'}')){
 				toc_print_source_location(tc,tptk,4);
 				printf("expected '}' to close '%s' declared at %d",c->name,0);
@@ -397,6 +466,8 @@ inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 			e/*takes*/=(xexp*)xfield_read_next(tc,c,"var",tptk,is_ref);
 		}else if(toc_srcp_is(tc,';')){// global{tokens;}
 			e/*takes*/=(xexp*)xfield_read_next(tc,c,token_content_to_new_strc(&tptk),tptk,is_ref);
+		}else if(toc_srcp_is_take(tc,'[')){// global{table[location]}
+			e/*takes*/=(xexp*)xtable_read_next(tc,c,tptk);
 		}else{
 			token nm=toc_next_token(tc);
 			if(toc_srcp_is(tc,'(') || toc_srcp_is(tc,'{')){
@@ -479,7 +550,7 @@ inline static void _xprg_compile_(const struct xexp*o,struct toc*tc){
 	printf("//--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -\n");
 	printf("#include<stdlib.h>\n");
 	printf("#include<stdio.h>\n");
-	printf("typedef const char*strc;\n");
+	printf("typedef const char* strc;\n");
 	printf("typedef char bool;\n");
 	printf("#define true 1\n");
 	printf("#define false 0\n");
@@ -531,8 +602,13 @@ inline static/*gives*/xprg*xprg_read_next(toc*tc){
 	*o=xprg_def;
 	while(1){
 		token tk=toc_next_token(tc);
-		if(token_is_empty(&tk))
-			break;
+		if(token_is_empty(&tk)){
+			if(toc_srcp_is_take(tc,'#')){
+				toc_read_to_end_of_line(tc);
+				continue;
+			}else
+				break;
+		}
 		xtype*t/*takes*/=xtype_read_next(tc,tk);
 		ptrs_add(&o->stmts,t);
 	}

@@ -15,9 +15,9 @@ experimental simple language that compiles to c
 source size
 ```
 cat src/ci/* src/lib/* src/lib.h main.c | wc
-   3526    5702   84563
+   3613    5826   86916
 cat src/ci/* src/lib/* src/lib.h main.c | gzip | wc
-     55     344   15839
+     65     381   16209
 ```
 
 
@@ -51,7 +51,7 @@ compiles to
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
-typedef const char*strc;
+typedef const char* strc;
 typedef char bool;
 #define true 1
 #define false 0

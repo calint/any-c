@@ -1,4 +1,4 @@
-	.file	"main.c"
+	.file	"51.c"
 	.text
 	.type	ext_get_name, @function
 ext_get_name:

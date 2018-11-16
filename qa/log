@@ -1,6 +1,6 @@
-Fri Nov 16 21:02:47 +07 2018
+Fri Nov 16 22:12:01 +07 2018
 optimization -O0 -g
--rwxr-xr-x 1 c c 109472 Nov 16 21:02 [0m[01;32many-c[0m
+-rwxr-xr-x 1 c c 110424 Nov 16 22:12 [0m[01;32many-c[0m
 0 :   output ok
 0 : valgrind ok
 1 :   output ok
@@ -103,5 +103,7 @@ optimization -O0 -g
 49 : valgrind ok
 50 :   output ok
 50 : valgrind ok
-Fri Nov 16 21:03:19 +07 2018
+51 :   output ok
+51 : valgrind ok
+Fri Nov 16 22:12:34 +07 2018
 ok

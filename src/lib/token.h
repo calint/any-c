@@ -31,6 +31,11 @@ inline static unsigned token_size(token*t){
 	return (unsigned)(t->content_end-t->content);
 }
 
+inline static void token_print_content(token*t){
+//	write(1,t->content,(unsigned)(t->content_end-t->content));
+	printf("%.*s",(int)token_size(t),t->content);
+}
+
 inline static int token_starts_with(token*t,const char*str){
 	return strncmp(str,t->content,strlen(str))==0;
 }
@@ -138,6 +143,9 @@ inline static token token_next(const char**s){
 		if(*p=='*')break;
 		if(*p=='/')break;
 		if(*p=='%')break;
+		if(*p=='#')break;
+		if(*p=='[')break;
+		if(*p==']')break;
 		p++;
 	}
 	t.content_end=p;

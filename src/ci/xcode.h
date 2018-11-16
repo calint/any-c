@@ -49,23 +49,22 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 inline static void xcode_read_next(xcode*o,toc*tc){
 	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
-//	if(*tc->srcp=='{'){
-//		tc->srcp++;
 	if(toc_srcp_is_take(tc,'{')){
 		xexp_set_is_encapsulated(&o->super,true);
 		while(1){
 			xexp*e=ci_read_next_statement(tc);
-			if(!e)
+			if(!e){
+				if(toc_srcp_is_take(tc,'#')){
+					toc_read_to_end_of_line(tc);
+					continue;
+				}
 				break;
+			}
 			ptrs_add(&o->exps,e);
-//			if(*tc->srcp==';'){
-//				tc->srcp++;
-//				continue;
-//			}
 			if(toc_srcp_is_take(tc,';'))
 				continue;
 		}
-		if(*tc->srcp!='}'){
+		if(!toc_srcp_is(tc,'}')){
 //			toc_print_source_location(tc,tk,4);//! fix
 			printf("expected '}' to end block");
 			printf("\n    %s %d",__FILE__,__LINE__);

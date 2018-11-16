@@ -2,7 +2,7 @@
 //--- - - ---------------------  - -- - - - - - - -- - - - -- - - - -- - - -
 #include<stdlib.h>
 #include<stdio.h>
-typedef const char*strc;
+typedef const char* strc;
 typedef char bool;
 #define true 1
 #define false 0

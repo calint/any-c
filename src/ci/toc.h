@@ -263,5 +263,9 @@ inline static void toc_srcp_skip_if(toc*o,const char ch){
 		toc_srcp_inc(o);
 }
 
-
+inline static void toc_read_to_end_of_line(toc*o){
+	while(*o->srcp!='\n'){
+		o->srcp++;
+	}
+}
 
