@@ -33,3 +33,7 @@ inline static bool ci_xvar_needs_init(const struct toc*,strc);
 inline static void ci_xcall_assert(const struct toc*,struct xcall*);
 inline static void ci_xreturn_assert(const struct toc*tc,struct xreturn*);
 
+inline static/*gives*/strb ci_get_c_accessor_for_accessor(
+		const struct toc*,token,strc);
+inline static/*gives*/ptrs/*<strb*>*/strc_split(strc,char);
+inline static void strc_split_free(/*takes*/ptrs*/*<strb*>*/);

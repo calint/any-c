@@ -354,71 +354,67 @@ inline static strc ci_get_field_type_for_accessor(const toc*tc,
 }
 
 inline static void ci_xset_assert(const toc*tc,const xset*o){
-	strc accessor=o->name;
 	strc settype=o->setexpls.super.type;
 	token tk=o->super.token;
 
-	strc current_accessor=accessor;
-	const tocdecl*decl=toc_get_declaration_for_accessor(tc,current_accessor);
-	if(!decl){
+	ptrs strbs=strc_split(o->name,'.');
+	strb*acc=ptrs_get(&strbs,0);
+
+	const tocdecl*td=toc_get_declaration_for_accessor(tc,acc->data);
+	if(!td){
 		toc_print_source_location(tc,tk,4);
-		printf("'%s' not found",current_accessor);
+		printf("'%s' not found",o->name);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
-	if(!strcmp(decl->type,"var"))// if dest is var
-		return;
-
-	strc current_class_name=decl->type;
-	const xtype*current_type=ci_get_type_for_name_try(tc,current_class_name);
-	if(current_type){
-		while(1){
-			strc p=strpbrk(current_accessor,".");// p.anim.frame=2   vs  a=2
-			if(!p){// a=2
-				break;
-			}
-			current_accessor=p+1; // anim.frame
-			p=strpbrk(current_accessor,".");
-			strc lookup=current_accessor;
-			xfield*fld;
-			if(p){
-				strb s=strb_def;
-				strb_add_list(&s,current_accessor,p-current_accessor);
-				strb_add(&s,0);
-				fld=xtype_get_field_for_name(current_type,s.data);
-				strb_free(&s);
-			}else{
-				fld=xtype_get_field_for_name(current_type,lookup);
-			}
-			if(!fld){
-				toc_print_source_location(tc,tk,4);
-				printf("cannot find field '%s' in '%s', using '%s'",
-						current_accessor,
-						current_type->name,
-						accessor
-				);
-				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmp_buf,1);
-			}
-			current_class_name=fld->type;
-			current_type=ci_get_type_for_name_try(tc,current_class_name);
-			if(!current_type)
-				break;
-		}
+	strc typenm=strc_def;
+	xtype*tp=NULL;
+	if(ci_is_builtin_type(td->type)){
+		typenm=td->type;
+	}else{
+		tp=ci_get_type_for_name_try(tc,td->type);
+		typenm=tp->name;
 	}
 
-	if(!current_type)// builtin
-		if(ci_is_builtin_type(current_class_name))
-			if(!strcmp(current_class_name,settype))
-				return;
+	if(!strcmp(td->type,"var")){// if dest is var
+		strc_split_free(&strbs);
+		return;
+	}
 
-	if(!strcmp(settype,current_class_name))
+	for(long i=1;i<strbs.count;i++){
+		strb*el=(strb*)ptrs_get(&strbs,i);
+		xfield*fld=xtype_get_field_for_name(tp,el->data);
+		if(!fld){
+			toc_print_source_location(tc,tk,4);
+			printf("field '%s' not found in type '%s'",el->data,tp->name);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
+		}
+
+		if(ci_is_builtin_type(fld->type)){
+			typenm=fld->type;
+			continue;
+		}
+
+		tp=ci_get_type_for_name_try(tc,fld->type);
+		if(!tp){
+			toc_print_source_location(tc,tk,4);
+			printf("type '%s' not found",el->data);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
+		}
+		typenm=tp->name;
+	}
+
+	strc_split_free(&strbs);
+
+	if(!strcmp(settype,typenm))
 		return;
 
 	toc_print_source_location(tc,tk,4);
 	printf("cannot set '%s' to '%s' because '%s' is '%s'",
-			settype,accessor,accessor,current_class_name
+			settype,o->name,o->name,typenm
 	);
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
@@ -430,7 +426,7 @@ inline static void ci_free(){}
 
 
 // returns NULL if not constant
-inline static xexp*ci_read_next_constant_try(toc*tc,token tk){
+inline static/*gives*/xexp*ci_read_next_constant_try(toc*tc,token tk){
 	if(token_is_empty(&tk)){
 		if(toc_srcp_is_take(tc,'"')){ // string
 			while(1){
