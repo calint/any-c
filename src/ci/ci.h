@@ -739,7 +739,8 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 	}
 	strb_add(&acc_c,0);
 
-	strc_split_free(&strbs);
+	strc_split_free(/*gives*/&strbs);
+
 	return acc_c;
 }
 

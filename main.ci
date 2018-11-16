@@ -32,7 +32,7 @@ global{
 		
 		location roome
 		roome.id=id
-		roome.name=descr
+		roome.nme=descr
 		roome.xn.name="north"
 		roome.xn.locid=2
 
