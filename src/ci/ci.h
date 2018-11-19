@@ -48,7 +48,8 @@ inline static xtype*ci_get_type_for_name_try(const toc*o,strc name){
 
 inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 	strc funcname=null;
-	for(long j=tc->scopes.count-1;j>=0;j--){
+	long j=j=tc->scopes.count-1;
+	for(;j>=0;j--){
 		tocscope*s=ptrs_get(&tc->scopes,j);
 		if(s->type!='f')
 			continue;
@@ -56,7 +57,8 @@ inline static xfunc*toc_get_func_in_context(const toc*tc,token tk){
 		break;
 	}
 	strc typenm=null;
-	for(long j=tc->scopes.count-1;j>=0;j--){
+	j--;
+	for(;j>=0;j--){
 		tocscope*s=ptrs_get(&tc->scopes,j);
 		if(s->type!='c')
 			continue;
@@ -137,22 +139,25 @@ inline static xtyperef ci_get_typeref_for_accessor(
 				tpnm=tp->name;
 			else
 				tpnm=fld->type;
-		}else{
-			xfunc*fn=xtype_get_func_for_name(tp,sb->data);
-			if(!fn){
-				toc_print_source_location(tc,tk,4);
-				printf("field or function '%s' not found in type '%s' using accessor '%s'",
-						sb->data,tpnm,accessor);
-				printf("\n    %s %d",__FILE__,__LINE__);
-				longjmp(_jmp_buf,1);
-			}
-			isref=fn->is_ref;
-			tp=ci_get_type_for_name_try(tc,fn->type);
-			if(tp)
-				tpnm=tp->name;
-			else
-				tpnm=fn->type;
+			continue;
 		}
+		if(i<strbs.count-1)
+			continue;
+		// if last element then maybe function
+		xfunc*fn=xtype_get_func_for_name(tp,sb->data);
+		if(!fn){
+			toc_print_source_location(tc,tk,4);
+			printf("field or function '%s' not found in type '%s' using accessor '%s'",
+					sb->data,tpnm,accessor);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
+		}
+		isref=fn->is_ref;
+		tp=ci_get_type_for_name_try(tc,fn->type);
+		if(tp)
+			tpnm=tp->name;
+		else
+			tpnm=fn->type;
 	}
 	strc_split_free(&strbs);
 	if(!tp && !ci_is_builtin_type(tpnm)){
@@ -689,7 +694,7 @@ inline static int ci_compile_file(strc path){
 	return 0;
 }
 inline static/*gives*/strb ci_get_c_accessor_for_accessor(
-		const toc*tc,token tk,strc accessor){//? rewrite
+		const toc*tc,token tk,strc accessor){
 
 	strb acc_c=strb_def;
 	ptrs strbs=strc_split(accessor,'.');
@@ -764,7 +769,7 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 		strb_free(&acc_c);
 		return;
 	}
-	strb_free(&acc_c);
+	strb_free(/*gives*/&acc_c);
 	toc_print_source_location(tc,tk,4);
 	printf("could not find var '%s'\n",id);
 	longjmp(_jmp_buf,1);
@@ -774,38 +779,28 @@ inline static void ci_xset_compile(const toc*tc,const xset*o){
 inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 	token tk=c->super.token;
 
-	//? builtins
 	if(!strcmp("p",c->name) || !strcmp("printf",c->name)){
 		printf("printf(");
 		return;
 	}
 
-//	ptrs split=/*takes*/strc_split(c->name,'.');
-//	strb*first=(strb*)ptrs_get(&split,0);
-//	strb*funcname=(strb*)ptrs_get_last(&split);
-//
-//	const xtyperef vartr=ci_get_typeref_for_accessor(tc,tk,first->data);
-//
-//	const char scope=toc_get_declaration_scope_type(tc,first->data);
-
 	char cb[ci_identifier_maxlen];
-	strcpy(cb,c->name);
+	strncpy(cb,c->name,ci_identifier_maxlen);
 	const char*pathnm=cb;
 	const char*varnm=cb;
 	const char*funcnm=strrchr(cb,'.');
 	if(funcnm){
 		cb[funcnm-cb]=0;
 		funcnm++;
-		const xtyperef vartr=ci_get_typeref_for_accessor(tc,tk,varnm);
 
 		ptrs split=/*takes*/strc_split(varnm,'.');
 		strb*first=(strb*)ptrs_get(&split,0);
 		const char scope=toc_get_declaration_scope_type(tc,tk,first->data);
 		strc_split_free(/*gives*/&split);
 
-		const xtyperef pathtr=ci_get_typeref_for_accessor(tc,tk,pathnm);
+		const xtyperef vartr=ci_get_typeref_for_accessor(tc,tk,varnm);
 		printf("%s_%s(",vartr.type,funcnm);
-		if(!pathtr.is_ref)
+		if(!vartr.is_ref)
 			printf("&");
 
 		strb/*takes*/cacc=ci_get_c_accessor_for_accessor(tc,tk,pathnm);
@@ -816,7 +811,7 @@ inline static void ci_xcall_compile(const toc*tc,const struct xcall*c){
 		if(c->args.count)
 			printf(",");
 
-		strb_free(&cacc);
+		strb_free(/*gives*/&cacc);
 		return;
 	}
 	funcnm=cb;

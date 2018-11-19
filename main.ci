@@ -8,6 +8,7 @@ ext{
 location{
 	id=0
 	name=""
+#	exits[ext]
 	ext xn
 	ext xe
 	ext xs
@@ -26,14 +27,22 @@ entity{
 
 # comment
 global{
-	locations[location]
-	entities[entity]
+#	locations[location]
+#	entities[entity]
 	
 	# comment
 	location roome 
 	location hall
 	entity me
 	main{
+	
+#		location&loc=locations[].new
+#		loc.id=1
+#		loc.name="yard"
+#		locations[].filter(.id=1 || .name="yard").any()
+#		                         .sort(.name)
+#		                                     .page(1,20)
+
 		# comment
 		int id=0b11
 		strc descr			# comment
