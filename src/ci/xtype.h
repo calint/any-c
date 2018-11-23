@@ -185,10 +185,10 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 			// free bits
 			printf("static long long %s_",c->name);
 			token_print_content(&d->super.token);
-			int nb=size/64;
+			long long nb=size/64;
 			if(size%64)
 				nb++;
-			printf("_bits[%d];\n",nb);
+			printf("_bits[%lld];\n",nb);
 			// cursor table
 			printf("static %s*%s_",d->super.type,c->name);
 			token_print_content(&d->super.token);
