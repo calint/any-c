@@ -175,11 +175,20 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 			// table
 			printf("static %s %s_",d->super.type,c->name);
 			token_print_content(&d->super.token);
-			printf("[%d];\n",1024);//! size
+			int size=0;
+			if(d->sizetkn.content){
+				size=atoi(d->sizetkn.content);
+			}else{
+				size=1024;
+			}
+			printf("[%d];\n",size);//! size
 			// free bits
 			printf("static long long %s_",c->name);
 			token_print_content(&d->super.token);
-			printf("_bits[%d];\n",1024/64);
+			int nb=size/64;
+			if(size%64)
+				nb++;
+			printf("_bits[%d];\n",nb);
 			// cursor table
 			printf("static %s*%s_",d->super.type,c->name);
 			token_print_content(&d->super.token);
@@ -412,7 +421,7 @@ inline static/*gives*/xtable*xtable_read_next(toc*tc,xtype*c,token tk){
 		longjmp(_jmp_buf,1);
 	}
 
-	if(!toc_srcp_is_take(tc,',')){
+	if(toc_srcp_is_take(tc,',')){
 		token sizetkn=toc_next_token(tc);
 		o->sizetkn=sizetkn;
 	}

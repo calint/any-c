@@ -8,7 +8,7 @@ ext{
 location{
 	id=0
 	name=""
-#	exits[ext]
+	exits[ext,8]
 	ext xn
 	ext xe
 	ext xs
@@ -27,7 +27,7 @@ entity{
 
 # comment
 global{
-#	locations[location]
+	locations[location,256]
 #	entities[entity]
 	
 	# comment

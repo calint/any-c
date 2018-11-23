@@ -88,7 +88,7 @@
 [ ]    looped functions
 [ ]    free functions
 [o] parse negative numbers
-[ ] containers
+[o] containers
 [ ]   in ram
 [ ]   log file
 [ ]   storage services
@@ -97,6 +97,6 @@
 [ ]   queryable
 [ ]   combinable
 [ ]   thread safe
-[ ]   fixed size
+[o]   fixed size
 [ ]   resizable
 [ ] print source after compile
