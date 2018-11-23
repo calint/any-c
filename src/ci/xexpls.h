@@ -71,6 +71,7 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 	while(1){
 		if(!o->exps.count)
 			strb_add(&o->ops,'\0');
+
 		xexp*e;
 
 		token_skip_empty_space(&tc->srcp); //? lost info
