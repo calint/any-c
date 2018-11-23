@@ -1,26 +1,8 @@
-Fri Nov 23 13:41:46 +07 2018
+Fri Nov 23 14:16:14 +07 2018
 optimization -O0 -g
--rwxr-xr-x 1 c c 110560 Nov 23 13:41 [0m[01;32many-c[0m
+-rwxr-xr-x 1 c c 110640 Nov 23 14:16 [0m[01;32many-c[0m
 0 :   output ok
 0 : valgrind ok
-1 :   output ok
-1 : valgrind ok
-2 :   output ok
-2 : valgrind ok
-3 :   output ok
-3 : valgrind ok
-4 :   output ok
-4 : valgrind ok
-5 :   output ok
-5 : valgrind ok
-6 :   output ok
-6 : valgrind ok
-7 :   output ok
-7 : valgrind ok
-8 :   output ok
-8 : valgrind ok
-9 :   output ok
-9 : valgrind ok
 10 :   output ok
 10 : valgrind ok
 11 :   output ok
@@ -41,6 +23,8 @@ optimization -O0 -g
 18 : valgrind ok
 19 :   output ok
 19 : valgrind ok
+1 :   output ok
+1 : valgrind ok
 20 :   output ok
 20 : valgrind ok
 21 :   output ok
@@ -61,6 +45,8 @@ optimization -O0 -g
 28 : valgrind ok
 29 :   output ok
 29 : valgrind ok
+2 :   output ok
+2 : valgrind ok
 30 :   output ok
 30 : valgrind ok
 31 :   output ok
@@ -81,6 +67,8 @@ optimization -O0 -g
 38 : valgrind ok
 39 :   output ok
 39 : valgrind ok
+3 :   output ok
+3 : valgrind ok
 40 :   output ok
 40 : valgrind ok
 41 :   output ok
@@ -101,9 +89,19 @@ optimization -O0 -g
 48 : valgrind ok
 49 :   output ok
 49 : valgrind ok
+4 :   output ok
+4 : valgrind ok
 50 :   output ok
 50 : valgrind ok
 51 :   output ok
 51 : valgrind ok
-Fri Nov 23 13:42:22 +07 2018
-ok
+5 :   output ok
+5 : valgrind ok
+6 :   output ok
+6 : valgrind ok
+7 :   output ok
+7 : valgrind ok
+8 :   output ok
+8 : valgrind ok
+9 :   output ok
+9 : valgrind ok

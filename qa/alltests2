@@ -1,8 +1,0 @@
-#/bin/sh
-rm -f a.out &&
-date &&
-cd .. &&
-./make.sh &&
-ls *.ci | while read F; do
-	echo $F
-done

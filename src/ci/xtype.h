@@ -13,11 +13,8 @@ typedef struct xfield{
 
 inline static void _xfield_free_(xexp*o){
 	xfield*oo=(xfield*)o;
-//	if(oo->initval)
 	if(oo->initval.super.free)
 		oo->initval.super.free((xexp*)&oo->initval);
-//	_xexpls_free_((xexp*)&oo->initval);
-//	free(oo);
 }
 
 inline static void _xfield_print_source_(xexp*e){
@@ -74,11 +71,14 @@ inline static void _xfunc_print_source_(xexp*e){
 
 typedef struct xtable{
 	xexp super;
+	token sizetkn;
+	long long size;
 }xtable;
 
 
 #define xtable_def (xtable){\
 	{NULL,NULL,NULL,strc_def,token_def,0,false},\
+	token_def,0\
 }
 
 #include"decouple.h"
@@ -410,6 +410,11 @@ inline static/*gives*/xtable*xtable_read_next(toc*tc,xtype*c,token tk){
 		toc_print_source_location(tc,typetk,4);
 		printf("type '%s' not found\n",o->super.type);
 		longjmp(_jmp_buf,1);
+	}
+
+	if(!toc_srcp_is_take(tc,',')){
+		token sizetkn=toc_next_token(tc);
+		o->sizetkn=sizetkn;
 	}
 
 	if(!toc_srcp_is_take(tc,']')){

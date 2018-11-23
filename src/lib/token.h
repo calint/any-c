@@ -33,12 +33,12 @@ inline static unsigned token_size(token*t){
 
 inline static void token_print_content(token*t){
 //	write(1,t->content,(unsigned)(t->content_end-t->content));
-	printf("%.*s",(int)token_size(t),t->content);
+	printf("%.*s",(signed)token_size(t),t->content);
 }
-
-inline static int token_starts_with(token*t,const char*str){
-	return strncmp(str,t->content,strlen(str))==0;
-}
+//
+//inline static int token_starts_with(token*t,const char*str){
+//	return strncmp(str,t->content,strlen(str))==0;
+//}
 
 inline static bool token_equals(token*t,const char*str){
 	const char*p=t->content;//? stdlib
@@ -65,25 +65,25 @@ inline static bool token_equals(token*t,const char*str){
 //		str++;
 //	}
 //}
+//
+//inline static float token_get_float(token*t){
+//	float f=(float)atof(t->content);//? assuming file ends with whitespace
+//	return f;
+//}
 
-inline static float token_get_float(token*t){
-	float f=(float)atof(t->content);//? assuming file ends with whitespace
-	return f;
-}
-
-inline static int token_get_int(token*t){
-	int i=atoi(t->content);//?  assuming file ends with whitespace
-	return i;
-}
-
-inline static unsigned token_get_uint(token*t){
-	int i=atoi(t->content);//?  assuming file ends with whitespace, error?
-	if(i<0){
-		//? break
-		exit(-100);
-	}
-	return(unsigned)i;
-}
+//inline static int token_get_int(token*t){
+//	int i=atoi(t->content);//?  assuming file ends with whitespace
+//	return i;
+//}
+//
+//inline static unsigned token_get_uint(token*t){
+//	int i=atoi(t->content);//?  assuming file ends with whitespace, error?
+//	if(i<0){
+//		//? break
+//		exit(-100);
+//	}
+//	return(unsigned)i;
+//}
 
 //inline static token token_next_from_string(const char*s){
 //	const char*p=s;

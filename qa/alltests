@@ -4,57 +4,10 @@ date &&
 cd .. &&
 ./make.sh &&
 cd qa &&
-./do-test 0 &&
-./do-test 1 &&
-./do-test 2 &&
-./do-test 3 &&
-./do-test 4 &&
-./do-test 5 &&
-./do-test 6 &&
-./do-test 7 &&
-./do-test 8 &&
-./do-test 9 &&
-./do-test 10 &&
-./do-test 11 &&
-./do-test 12 &&
-./do-test 13 &&
-./do-test 14 &&
-./do-test 15 &&
-./do-test 16 &&
-./do-test 17 &&
-./do-test 18 &&
-./do-test 19 &&
-./do-test 20 &&
-./do-test 21 &&
-./do-test 22 &&
-./do-test 23 &&
-./do-test 24 &&
-./do-test 25 &&
-./do-test 26 &&
-./do-test 27 &&
-./do-test 28 &&
-./do-test 29 &&
-./do-test 30 &&
-./do-test 31 &&
-./do-test 32 &&
-./do-test 33 &&
-./do-test 34 &&
-./do-test 35 &&
-./do-test 36 &&
-./do-test 37 &&
-./do-test 38 &&
-./do-test 39 &&
-./do-test 40 &&
-./do-test 41 &&
-./do-test 42 &&
-./do-test 43 &&
-./do-test 44 &&
-./do-test 45 &&
-./do-test 46 &&
-./do-test 47 &&
-./do-test 48 &&
-./do-test 49 &&
-./do-test 50 &&
-./do-test 51 &&
-date &&
-echo ok
+
+ls *.ci | while read F; do
+	name=$(echo "$F" | cut -f 1 -d '.')
+	./do-test $name
+	rc=$?
+	if [[ $rc != 0 ]]; then exit 1; fi
+done
