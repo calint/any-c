@@ -152,12 +152,12 @@ inline static xtyperef ci_get_typeref_for_accessor(
 			printf("\n    %s %d",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
-		isref=fn->is_ref;
-		tp=ci_get_type_for_name_try(tc,fn->type);
+		isref=fn->super.is_ref;
+		tp=ci_get_type_for_name_try(tc,fn->super.type);
 		if(tp)
 			tpnm=tp->name;
 		else
-			tpnm=fn->type;
+			tpnm=fn->super.type;
 	}
 	strc_split_free(&strbs);
 	if(!tp && !ci_is_builtin_type(tpnm)){
@@ -239,8 +239,8 @@ inline static void ci_xcall_assert(const toc*tc,token tk,xcall*o){
 	if(ci_is_builtin_func(o->name))
 		return;
 	xfunc*fn=ci_get_func_for_accessor(tc,o->name,o->super.token);
-	o->super.is_ref=fn->is_ref;
-	o->super.type=fn->type;
+	o->super.is_ref=fn->super.is_ref;
+	o->super.type=fn->super.type;
 	if(o->args.count!=fn->params.count){
 		toc_print_source_location(tc,tk,4);
 		printf("function '%s' requires %ld %s, got %ld",
@@ -253,11 +253,11 @@ inline static void ci_xcall_assert(const toc*tc,token tk,xcall*o){
 	}
 	for(unsigned i=0;i<o->args.count;i++){
 		xexp*arg=(xexp*)ptrs_get(&o->args,i);
-		xfuncparam*fp=(xfuncparam*)ptrs_get(&fn->params,i);
-		if(strcmp(arg->type,fp->super.type)){
+		xexp*param=(xexp*)ptrs_get(&fn->params,i);
+		if(strcmp(arg->type,param->type)){
 			toc_print_source_location(tc,tk,4);
 			printf("argument %d for function '%s' requires '%s', got '%s'",
-					i,fn->name,fp->type,arg->type
+					i,fn->name,param->type,arg->type
 			);
 			printf("\n    %s %d",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
@@ -267,13 +267,13 @@ inline static void ci_xcall_assert(const toc*tc,token tk,xcall*o){
 
 inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 	xfunc*fn=toc_get_func_in_context(tc,o->super.token);
-	o->super.is_ref=fn->is_ref;
-	if(!strcmp(fn->type,o->expls.super.type))
+	o->super.is_ref=fn->super.is_ref;
+	if(!strcmp(fn->super.type,o->expls.super.type))
 			return;
 	toc_print_source_location(tc,o->super.token,4);
 	printf("return type '%s' does not match function return type '%s'",
 			o->expls.super.type,
-			fn->type
+			fn->super.type
 	);
 	printf("\n    %s %d",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
@@ -857,7 +857,7 @@ inline static bool ci_is_func_param_ref(
 		const xtype*tp=ci_get_type_for_name_try(tc,vartypenm);
 		const xfunc*fn=xtype_get_func_for_name(tp,funcnm);
 		const xfuncparam*fna=ptrs_get(&fn->params,param_index);
-		return fna->is_ref;
+		return fna->super.is_ref;
 	}
 	return false;
 }

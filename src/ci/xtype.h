@@ -34,20 +34,18 @@ inline static void _xfield_print_source_(xexp*e){
 
 typedef struct xfuncparam{
 	xexp super;
-	strc type;
+//	strc type;
 	strc name;
-	bool is_ref;
+//	bool is_ref;
 }xfuncparam;
 
-#define xfuncparam_def (xfuncparam){xexp_def,strc_def,strc_def,false}
+#define xfuncparam_def (xfuncparam){xexp_def,strc_def}
 
 typedef struct xfunc{
 	xexp super;
-	strc type;
 	strc name;
 	ptrs params;
 	xcode code;
-	bool is_ref;
 }xfunc;
 
 
@@ -57,7 +55,6 @@ inline static void _xfunc_free_(xexp*e){
 	const long n=o->params.count;
 	for(long i=0;i<n;i++){
 		xfuncparam*fp=(xfuncparam*)ptrs_get(&o->params,i);
-//		fp->super.free((xexp*)fp);
 		free(fp);
 	}
 	ptrs_free(&o->params);
@@ -73,7 +70,7 @@ inline static void _xfunc_print_source_(xexp*e){
 
 #define xfunc_def (xfunc){\
 	{NULL,_xfunc_free_,_xfunc_print_source_,strc_def,token_def,0,false},\
-	strc_def,strc_def,ptrs_def,xcode_def,false}
+	strc_def,ptrs_def,xcode_def}
 
 typedef struct xtable{
 	xexp super;
@@ -207,8 +204,8 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 		for(unsigned i=0;i<c->funcs.count;i++){
 			xfunc*f=(xfunc*)ptrs_get(&c->funcs,i);
 			toc_push_scope(tc,'f',f->name);
-			printf("inline static %s",f->type);
-			if(f->is_ref)
+			printf("inline static %s",f->super.type);
+			if(f->super.is_ref)
 				printf("*");
 			else
 				printf(" ");
@@ -216,13 +213,13 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 			for(unsigned j=0;j<f->params.count;j++){
 				xfuncparam*fp=ptrs_get(&f->params,j);
 				printf(",");
-				printf("%s",fp->type);
-				if(fp->is_ref)
+				printf("%s",fp->super.type);
+				if(fp->super.is_ref)
 					printf("*");
 				else
 					printf(" ");
 				printf("%s",fp->name);
-				toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
+				toc_add_declaration(tc,fp->super.type,fp->super.is_ref,fp->name);
 			}
 			printf(")");
 			f->code.super.compile((xexp*)&f->code,tc);
@@ -322,15 +319,15 @@ inline static/*gives*/xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 	token type,token name){
 	xfunc*f=malloc(sizeof(xfunc));
 	*f=xfunc_def;
-	f->is_ref=is_ref;
+	f->super.is_ref=is_ref;
 	bool enclosed_args=false;
 	if(toc_srcp_is(tc,'{') || toc_srcp_is(tc,'(')){
 		if(token_is_empty(&name)){ // global{main{}}
-			f->type="void";
+			f->super.type="void";
 			f->name=token_content_to_new_strc(&type);
 			f->super.token=type;
 		}else{ // global{int main{}}
-			f->type=token_content_to_new_strc(&type);
+			f->super.type=token_content_to_new_strc(&type);
 			f->name=token_content_to_new_strc(&name);
 			f->super.token=name;
 		}
@@ -348,13 +345,13 @@ inline static/*gives*/xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		ptrs_add(&f->params,fp);
 		*fp=xfuncparam_def;
 		if(toc_srcp_is_take(tc,'&'))
-			fp->is_ref=true;
+			fp->super.is_ref=true;
 		token tkn=toc_next_token(tc);
-		fp->type=token_content_to_new_strc(&tkt);
+//		fp->type=token_content_to_new_strc(&tkt);
 		fp->name=token_content_to_new_strc(&tkn);
-		fp->super.type=fp->type;
+		fp->super.type=token_content_to_new_strc(&tkt);
 		fp->super.token=tkn;
-		toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
+		toc_add_declaration(tc,fp->super.type,fp->super.is_ref,fp->name);
 		toc_srcp_is_take(tc,',');
 	}
 	if(enclosed_args){
