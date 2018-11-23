@@ -280,7 +280,7 @@ inline static void _xtype_free_(xexp*o){
 	ptrs_free(&oo->tables);
 }
 
-inline static void _xtype_print_source_(xexp*o){//! TODO
+inline static void _xtype_print_source_(xexp*o){//? write
 	xtype*oo=(xtype*)o;
 	token_print(&oo->super.token);
 	printf("{");
@@ -347,10 +347,9 @@ inline static/*gives*/xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		if(toc_srcp_is_take(tc,'&'))
 			fp->super.is_ref=true;
 		token tkn=toc_next_token(tc);
-//		fp->type=token_content_to_new_strc(&tkt);
-		fp->name=token_content_to_new_strc(&tkn);
 		fp->super.type=token_content_to_new_strc(&tkt);
 		fp->super.token=tkn;
+		fp->name=token_content_to_new_strc(&tkn);
 		toc_add_declaration(tc,fp->super.type,fp->super.is_ref,fp->name);
 		toc_srcp_is_take(tc,',');
 	}
