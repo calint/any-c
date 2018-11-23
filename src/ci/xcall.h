@@ -78,6 +78,6 @@ inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	ci_xcall_assert(tc,o);
+	ci_xcall_assert(tc,o->super.token,o);
 	return o;
 }

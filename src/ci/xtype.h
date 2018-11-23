@@ -352,6 +352,8 @@ inline static/*gives*/xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		token tkn=toc_next_token(tc);
 		fp->type=token_content_to_new_strc(&tkt);
 		fp->name=token_content_to_new_strc(&tkn);
+		fp->super.type=fp->type;
+		fp->super.token=tkn;
 		toc_add_declaration(tc,fp->type,fp->is_ref,fp->name);
 		toc_srcp_is_take(tc,',');
 	}

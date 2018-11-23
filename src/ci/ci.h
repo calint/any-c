@@ -235,19 +235,33 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 }
 
 
-inline static void ci_xcall_assert(const toc*tc,xcall*o){
+inline static void ci_xcall_assert(const toc*tc,token tk,xcall*o){
 	if(ci_is_builtin_func(o->name))
 		return;
 	xfunc*fn=ci_get_func_for_accessor(tc,o->name,o->super.token);
 	o->super.is_ref=fn->is_ref;
 	o->super.type=fn->type;
 	if(o->args.count!=fn->params.count){
-		printf("function '%s' requires %ld arguments, got %ld'",
+		toc_print_source_location(tc,tk,4);
+		printf("function '%s' requires %ld %s, got %ld",
 				fn->name,fn->params.count,
+				fn->params.count==1?"argument":"arguments",
 				o->args.count
 		);
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
+	}
+	for(unsigned i=0;i<o->args.count;i++){
+		xexp*arg=(xexp*)ptrs_get(&o->args,i);
+		xfuncparam*fp=(xfuncparam*)ptrs_get(&fn->params,i);
+		if(strcmp(arg->type,fp->super.type)){
+			toc_print_source_location(tc,tk,4);
+			printf("argument %d for function '%s' requires '%s', got '%s'",
+					i,fn->name,fp->type,arg->type
+			);
+			printf("\n    %s %d",__FILE__,__LINE__);
+			longjmp(_jmp_buf,1);
+		}
 	}
 }
 

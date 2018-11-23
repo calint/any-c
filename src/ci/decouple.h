@@ -30,7 +30,7 @@ inline static void ci_xcode_compile_free_current_scope();
 inline static void ci_xcode_compile_free_current_loop_scope(
 		const struct toc*,token);
 inline static bool ci_xvar_needs_init(const struct toc*,strc);
-inline static void ci_xcall_assert(const struct toc*,struct xcall*);
+inline static void ci_xcall_assert(const struct toc*,token,struct xcall*);
 inline static void ci_xreturn_assert(const struct toc*tc,struct xreturn*);
 
 inline static/*gives*/strb ci_get_c_accessor_for_accessor(
