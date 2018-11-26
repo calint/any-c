@@ -11,7 +11,7 @@ typedef struct toc{
 	unsigned indent;
 }toc;
 
-#define toc_def {ptrs_def,ptrs_def,strc_def,NULL,NULL,0}
+#define toc_def (toc){ptrs_def,ptrs_def,strc_def,NULL,NULL,0}
 
 typedef struct tocscope{
 	char type;
@@ -19,7 +19,7 @@ typedef struct tocscope{
 	ptrs tocdecls;
 }tocscope;
 
-#define ci_toc_scope_def (tocscope){0,NULL,ptrs_def}
+#define tocscope_def (tocscope){0,NULL,ptrs_def}
 
 typedef struct tocdecl{
 	token token;
@@ -28,7 +28,7 @@ typedef struct tocdecl{
 	bool is_ref;
 }tocdecl;
 
-#define toctn_def (tocdecl){token_def,strc_def,strc_def,false}
+#define tocdecl_def (tocdecl){token_def,strc_def,strc_def,false}
 
 
 typedef struct tocloc{
@@ -101,7 +101,7 @@ inline static void tocscope_free(tocscope*o){
 
 inline static void toc_push_scope(toc*o,char type,strc name){
 	tocscope*s=malloc(sizeof(tocscope));
-	*s=ci_toc_scope_def;
+	*s=tocscope_def;
 	s->type=type;
 	s->name=name;
 	ptrs_add(&o->scopes,s);
@@ -133,7 +133,7 @@ inline static void toc_print(const toc*o){
 
 inline static void toc_add_declaration(toc*o,strc type,bool is_ref,strc name){
 	tocdecl*id=(tocdecl*)malloc(sizeof(tocdecl));
-	*id=toctn_def;
+	*id=tocdecl_def;
 	id->type=type;
 	id->name=name;
 	id->is_ref=is_ref;

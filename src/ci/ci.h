@@ -593,7 +593,6 @@ inline static xexp*ci_read_next_statement(toc*tc){
 			token_equals(&tk,"var")||token_equals(&tk,"strc"))
 		return(xexp*)xvar_read_next(tc,name);
 
-
 	// assignment
 	if(toc_srcp_is_take(tc,'='))
 		return(xexp*)xset_read_next(tc,name,tk);
@@ -607,31 +606,10 @@ inline static xexp*ci_read_next_statement(toc*tc){
 	if(toc_srcp_is(tc,'('))
 		return(xexp*)xcall_read_next(tc,tk,name);
 
-	// incdecs
-//	char incdecbits=0;
-//	if(toc_srcp_is_take(tc,'+')){
-//		if(toc_srcp_is_take(tc,'+')){
-//			incdecbits|=1;
-//		}else{
-////			toc_srcp_back(1);//?
-//			tc->srcp--;
-//			tc->srcp--;
-//		}
-//	}else if(toc_srcp_is_take(tc,'-')){
-//		if(toc_srcp_is_take(tc,'-')){
-//			incdecbits|=2;
-//		}else{
-////			toc_srcp_back(1);//?
-//			tc->srcp--;
-//			tc->srcp--;
-//		}
-//	}
-
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
 	e->ident=name;
 	e->super.token=tk;
-//	e->incdecbits=incdecbits;
 	e->super.type=ci_get_field_type_for_accessor(tc,e->ident,tk);
 	return(xexp*)e;
 }
@@ -657,29 +635,14 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	if(toc_srcp_is(tc,'('))
 		return(xexp*)xcall_read_next(tc,tk,name);
 
-//	char incdecbits=0;
-//	// toc_src_peek_is(tc,"++") //?
-//	if(toc_srcp_is_take(tc,'+')){
-//		if(toc_srcp_is_take(tc,'+')){
-//			incdecbits|=1;
-//		}else{
-//			tc->srcp--;
-//		}
-//	}else if(toc_srcp_is_take(tc,'-')){
-//		if(toc_srcp_is_take(tc,'-')){
-//			incdecbits|=2;
-//		}else{
-//			tc->srcp--;
-//		}
-//	}
 
+	// identifier
 	const xtyperef tr=ci_get_typeref_for_accessor(tc,tk,name);
 
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
 	e->ident=name;
 	e->super.token=tk;
-//	e->incdecbits=incdecbits;
 	e->super.type=tr.type;
 	e->super.is_ref=tr.is_ref;
 	return(xexp*)e;

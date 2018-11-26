@@ -46,27 +46,24 @@ inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 	xcall*o=malloc(sizeof(xcall));
 	*o=xcall_def;
 	o->name=name;
-	if(!strcmp(o->name,"malloc")){
-		o->super.is_ref=true;
-	}
-
+//	if(!strcmp(o->name,"malloc")){
+//		o->super.is_ref=true;
+//	}
+//
 	o->super.token=tk;
-	if(!toc_srcp_is(tc,'(')){// arguments
+	if(!toc_srcp_is_take(tc,'(')){// arguments
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected '(' followed by arguments and ')'");
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	toc_srcp_inc(tc);
+//	toc_srcp_inc(tc);
 	while(1){ // arguments passed to function
 		if(toc_srcp_is_take(tc,')'))
 			break;
 		xexp*a=(xexp*)xexpls_read_next(tc,tk,false);
-//		if(xexp_is_empty(a)){//?
-//			printf("<file> <line> <col> expected ')' or more arguments");
-//			longjmp(_jmp_buf,1);
-//		}
 		ptrs_add(&o->args,a);
+
 		if(toc_srcp_is_take(tc,','))
 			continue;
 		if(toc_srcp_is_take(tc,')'))
