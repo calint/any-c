@@ -41,7 +41,7 @@ global{
 #		loc.name="yard"
 #		locations[].filter(.id=1 || .name="yard").any()
 #		                         .sort(.name)
-#		                                     .page(1,20)
+#		                                  .page(1,20)
 
 		# comment
 		int id=0b11

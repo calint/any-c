@@ -6,12 +6,12 @@
 typedef struct xident{
 	xexp super;
 	strc ident;
-	char incdecbits;
+//	char incdecbits;
 }xident;
 
 #define xident_def (xident){\
 	{_xident_compile_,NULL,_xident_print_source_,strc_def,token_def,0,false},\
-	strc_def,false\
+	strc_def\
 }
 
 inline static void _xident_print_source_(xexp*oo){
@@ -36,6 +36,6 @@ inline static void _xident_compile_(const xexp*oo,toc*tc){
 	}
 	strb_free(/*gives*/&acc_c);
 
-	if(o->incdecbits&1)printf("++");
-	if(o->incdecbits&2)printf("--");
+//	if(o->incdecbits&1)printf("++");
+//	if(o->incdecbits&2)printf("--");
 }

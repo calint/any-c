@@ -1,4 +1,5 @@
 #/bin/sh
+echo $1 &&
 ../any-c $1.ci > $1.c && gcc -O0 $1.c && gcc -O0 -S $1.c && ./a.out > cmp && diff -q cmp $1.cmp && rm -f a.out && echo "$1 :   output ok" &&
 valgrind ../any-c $1.ci 1>/dev/null 2> valgrnd &&
 cat valgrnd | grep "in use at exit: 0 bytes in 0 blocks" > valgrnd2 &&

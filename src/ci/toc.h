@@ -269,3 +269,7 @@ inline static void toc_read_to_end_of_line(toc*o){
 	}
 }
 
+inline static void toc_free(toc*o){
+	ptrs_free(&o->types);
+	ptrs_free(&o->scopes);
+}

@@ -71,12 +71,9 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 	while(1){
 		if(!o->exps.count)
 			strb_add(&o->ops,'\0');
-
-		xexp*e;
-
 		token_skip_empty_space(&tc->srcp); //? lost info
 		bool is_negated=toc_srcp_is_take(tc,'-');
-
+		xexp*e;
 		if(toc_srcp_is_take(tc,'(')){
 			xexpls*els=xexpls_read_next(tc,tk,true);
 			//? xexpls_deduce_typeref(&o->exps)
@@ -87,9 +84,9 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 		}else{
 			e=ci_read_next_expression(tc);
 		}
+//		if(!e)
+//			break;
 		xexp_set_is_negated(e,is_negated);
-		if(!e)
-			break;
 		ptrs_add(&o->exps,e);
 		if(issubexpr)
 			if(toc_srcp_is_take(tc,')'))

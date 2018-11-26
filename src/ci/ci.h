@@ -608,30 +608,30 @@ inline static xexp*ci_read_next_statement(toc*tc){
 		return(xexp*)xcall_read_next(tc,tk,name);
 
 	// incdecs
-	char incdecbits=0;
-	if(toc_srcp_is_take(tc,'+')){
-		if(toc_srcp_is_take(tc,'+')){
-			incdecbits|=1;
-		}else{
-//			toc_srcp_back(1);//?
-			tc->srcp--;
-			tc->srcp--;
-		}
-	}else if(toc_srcp_is_take(tc,'-')){
-		if(toc_srcp_is_take(tc,'-')){
-			incdecbits|=2;
-		}else{
-//			toc_srcp_back(1);//?
-			tc->srcp--;
-			tc->srcp--;
-		}
-	}
+//	char incdecbits=0;
+//	if(toc_srcp_is_take(tc,'+')){
+//		if(toc_srcp_is_take(tc,'+')){
+//			incdecbits|=1;
+//		}else{
+////			toc_srcp_back(1);//?
+//			tc->srcp--;
+//			tc->srcp--;
+//		}
+//	}else if(toc_srcp_is_take(tc,'-')){
+//		if(toc_srcp_is_take(tc,'-')){
+//			incdecbits|=2;
+//		}else{
+////			toc_srcp_back(1);//?
+//			tc->srcp--;
+//			tc->srcp--;
+//		}
+//	}
 
 	xident*e=malloc(sizeof(xident));
 	*e=xident_def;
 	e->ident=name;
 	e->super.token=tk;
-	e->incdecbits=incdecbits;
+//	e->incdecbits=incdecbits;
 	e->super.type=ci_get_field_type_for_accessor(tc,e->ident,tk);
 	return(xexp*)e;
 }
@@ -657,21 +657,21 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	if(toc_srcp_is(tc,'('))
 		return(xexp*)xcall_read_next(tc,tk,name);
 
-	char incdecbits=0;
-	// toc_src_peek_is(tc,"++") //?
-	if(toc_srcp_is_take(tc,'+')){
-		if(toc_srcp_is_take(tc,'+')){
-			incdecbits|=1;
-		}else{
-			tc->srcp--;
-		}
-	}else if(toc_srcp_is_take(tc,'-')){
-		if(toc_srcp_is_take(tc,'-')){
-			incdecbits|=2;
-		}else{
-			tc->srcp--;
-		}
-	}
+//	char incdecbits=0;
+//	// toc_src_peek_is(tc,"++") //?
+//	if(toc_srcp_is_take(tc,'+')){
+//		if(toc_srcp_is_take(tc,'+')){
+//			incdecbits|=1;
+//		}else{
+//			tc->srcp--;
+//		}
+//	}else if(toc_srcp_is_take(tc,'-')){
+//		if(toc_srcp_is_take(tc,'-')){
+//			incdecbits|=2;
+//		}else{
+//			tc->srcp--;
+//		}
+//	}
 
 	const xtyperef tr=ci_get_typeref_for_accessor(tc,tk,name);
 
@@ -679,34 +679,12 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	*e=xident_def;
 	e->ident=name;
 	e->super.token=tk;
-	e->incdecbits=incdecbits;
+//	e->incdecbits=incdecbits;
 	e->super.type=tr.type;
 	e->super.is_ref=tr.is_ref;
 	return(xexp*)e;
 }
 
-inline static int ci_compile_file(strc path){
-	const int ret=setjmp(_jmp_buf);
-	if(ret)
-		return ret;
-	toc tc=toc_def;
-	tc.filepth=path;
-	strb srcstr=strb_from_file(path);
-	tc.srcp=tc.src=srcstr.data;
-
-	xprg*prg=/*takes*/xprg_read_next(&tc);
-	prg->super.compile((xexp*)prg,&tc);
-//	prg->super.print_source((xexp*)prg);
-	prg->super.free((xexp*)prg);
-	free(prg);
-
-	ptrs_free(&tc.types);
-	ptrs_free(&tc.scopes);
-	token_free();
-	strb_free(&srcstr);
-	ci_free();
-	return 0;
-}
 inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 		const toc*tc,token tk,strc accessor){
 
@@ -860,4 +838,26 @@ inline static bool ci_is_func_param_ref(
 		return fna->super.is_ref;
 	}
 	return false;
+}
+
+inline static int ci_compile_file(strc path){
+	const int ret=setjmp(_jmp_buf);
+	if(ret)
+		return ret;
+	toc tc=toc_def;
+	tc.filepth=path;
+	strb srcstr=strb_from_file(path);
+	tc.srcp=tc.src=srcstr.data;
+
+	xprg*prg=/*takes*/xprg_read_next(&tc);
+	prg->super.compile((xexp*)prg,&tc);
+//	prg->super.print_source((xexp*)prg);
+	prg->super.free((xexp*)prg);
+	free(prg);
+
+	toc_free(&tc);
+	token_free();
+	strb_free(&srcstr);
+	ci_free();
+	return 0;
 }

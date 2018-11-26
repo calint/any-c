@@ -59,6 +59,7 @@ inline static void _xfunc_free_(xexp*e){
 
 inline static void _xfunc_print_source_(xexp*e){
 	xfunc*o=(xfunc*)e;
+	printf("%s",o->super.type);
 	token_print(&o->super.token);
 	printf("{");
 
