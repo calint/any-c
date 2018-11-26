@@ -14,6 +14,8 @@ typedef struct xident{
 }
 
 inline static void _xident_print_source_(xexp*oo){
+	xident*o=(xident*)oo;
+	token_print_including_whitespace(&o->super.token);
 }
 
 inline static void _xident_compile_(const xexp*oo,toc*tc){

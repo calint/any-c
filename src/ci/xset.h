@@ -26,8 +26,16 @@ inline static void _xset_free_(xexp*oo){
 	o->setexpls.super.free((xexp*)&o->setexpls);
 }
 
+inline static void _xset_print_source_(xexp*oo){
+	xset*o=(xset*)oo;
+	token_print_including_whitespace(&o->super.token);
+	printf("=");
+	_xexpls_print_source_((xexp*)&o->setexpls);
+}
+
+
 #define xset_def (xset){\
-	{_xset_compile_,_xset_free_,NULL,strc_def,token_def,0,false},\
+	{_xset_compile_,_xset_free_,_xset_print_source_,strc_def,token_def,0,false},\
 	strc_def,xexpls_def\
 }
 

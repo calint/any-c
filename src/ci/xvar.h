@@ -34,8 +34,14 @@ inline static void _xvar_free_(xexp*oo){
 	xvar*o=(xvar*)oo;
 	o->initval.super.free((xexp*)&o->initval);
 }
+
+inline static void _xvar_print_source_(xexp*oo){
+	xvar*o=(xvar*)oo;
+	token_print_including_whitespace(&o->super.token);
+}
+
 #define xvar_def (xvar){\
-	{_xvar_compile_,_xvar_free_,NULL,strc_def,token_def,0,false},\
+	{_xvar_compile_,_xvar_free_,_xvar_print_source_,strc_def,token_def,0,false},\
 		strc_def,xset_def,false\
 }
 
