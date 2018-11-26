@@ -813,8 +813,8 @@ inline static int ci_compile_file(strc path){
 	tc.srcp=tc.src=srcstr.data;
 
 	xprg*prg=/*takes*/xprg_read_next(&tc);
-	prg->super.compile((xexp*)prg,&tc);
-//	prg->super.print_source((xexp*)prg);
+//	prg->super.compile((xexp*)prg,&tc);
+	prg->super.print_source((xexp*)prg);
 	prg->super.free((xexp*)prg);
 	free(prg);
 

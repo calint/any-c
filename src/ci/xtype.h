@@ -31,9 +31,7 @@ inline static void _xfield_print_source_(xexp*e){
 
 typedef struct xfuncparam{
 	xexp super;
-//	strc type;
 	strc name;
-//	bool is_ref;
 }xfuncparam;
 
 #define xfuncparam_def (xfuncparam){xexp_def,strc_def}
