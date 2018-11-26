@@ -16,7 +16,7 @@ typedef struct xexp{
 
 #define xexp_def (xexp){NULL,NULL,NULL,strc_def,token_def,0,false}
 
-inline static int xexp_is_empty(const xexp*o){return o->compile==NULL;}
+//inline static int xexp_is_empty(const xexp*o){return o->compile==NULL;}
 inline static bool xexp_is_encapsulated(const xexp*o){return(o->bits&1)==1;}
 inline static void xexp_set_is_encapsulated(xexp*o,const bool b){
 	if(b) o->bits|=1;

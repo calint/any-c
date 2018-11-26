@@ -15,6 +15,7 @@ inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 		printf("*");
 	}
 	o->expls.super.compile((xexp*)&o->expls,tc);
+	//? free scope
 }
 
 inline static void _xreturn_free_(xexp*oo){

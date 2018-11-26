@@ -62,10 +62,10 @@ inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 		if(toc_srcp_is_take(tc,')'))
 			break;
 		xexp*a=(xexp*)xexpls_read_next(tc,tk,false);
-		if(xexp_is_empty(a)){//?
-			printf("<file> <line> <col> expected ')' or more arguments");
-			longjmp(_jmp_buf,1);
-		}
+//		if(xexp_is_empty(a)){//?
+//			printf("<file> <line> <col> expected ')' or more arguments");
+//			longjmp(_jmp_buf,1);
+//		}
 		ptrs_add(&o->args,a);
 		if(toc_srcp_is_take(tc,','))
 			continue;
