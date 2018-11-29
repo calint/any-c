@@ -1,5 +1,9 @@
 global{
 	main{
-		p("hello\n");
+		var i=1
+		var j=2
+
+		if ((i=1 and (j=2 or i=2)) or i!=0) p("true") else p("false")
+		p("\n")
 	}
 }

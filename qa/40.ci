@@ -13,8 +13,8 @@ materials{
 		m2.id=2
 	}
 	material&get(strc nm){
-		if nm=="mat1" return m1
-		if nm=="mat2" return m2
+		if(nm="mat1") return m1
+		if(nm="mat2") return m2
 	}
 }
 
@@ -24,7 +24,7 @@ glob{
 	id=1
 	print{
 		p("glob %d {material ",id)
-		if(material)
+		if(material!=0)
 			p("%d",material.id);
 		else
 			p("n/a");
