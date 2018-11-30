@@ -10,8 +10,8 @@ typedef struct xbool{
 	xexpls rh;
 
 	// list
-	strb op_list;
-	ptrs bool_list;
+	ptrs lsbools;
+	strb lsops;
 
 	// 1: not
 	char bits;
@@ -19,7 +19,7 @@ typedef struct xbool{
 
 #define xbool_def (xbool){\
 	{_xbool_compile_,_xbool_free_,NULL,strc_def,token_def,0,false},\
-	xexpls_def,0,xexpls_def,strb_def,ptrs_def,0\
+	xexpls_def,0,xexpls_def,ptrs_def,strb_def,0\
 }
 
 inline static bool xbool_is_not(const xexp*oo){
@@ -35,33 +35,33 @@ inline static void xbool_set_is_not(xexp*oo,bool b){
 
 inline static void _xbool_free_(xexp*oo){
 	xbool*o=(xbool*)oo;
-	for(unsigned i=0;i<o->bool_list.count;i++){
-		xbool*b=(xbool*)ptrs_get(&o->bool_list,i);
+	for(unsigned i=0;i<o->lsbools.count;i++){
+		xbool*b=(xbool*)ptrs_get(&o->lsbools,i);
 		b->super.free((xexp*)b);
 		free(b);
 	}
 	o->lh.super.free((xexp*)&o->lh);
 	o->lh.super.free((xexp*)&o->rh);
 
-	ptrs_free(&o->bool_list);
-	strb_free(&o->op_list);
+	ptrs_free(&o->lsbools);
+	strb_free(&o->lsops);
 }
 
 inline static void _xbool_compile_(const xexp*oo,toc*tc){
 	xbool*o=(xbool*)oo;
-	if(o->bool_list.count){
+	if(o->lsbools.count){
 		if(xbool_is_not(oo))
 			printf("!");
 		printf("(");
-		const long n=o->bool_list.count;
+		const long n=o->lsbools.count;
 		for(long i=0;;i++){
-			xbool*b=(xbool*)ptrs_get(&o->bool_list,i);
+			xbool*b=(xbool*)ptrs_get(&o->lsbools,i);
 			_xbool_compile_((xexp*)b,tc);
 
 			if(i==n-1)
 				break;
 
-			const char op=strb_get(&o->op_list,i);
+			const char op=strb_get(&o->lsops,i);
 			if(op=='&')
 				printf(" && ");
 			else if(op=='|')
@@ -112,14 +112,14 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			xbool*e=malloc(sizeof(xbool));
 			*e=xbool_def;
 			xbool_parse(e,tc,tk);
-			ptrs_add(&o->bool_list,e);
+			ptrs_add(&o->lsbools,e);
 			if(toc_srcp_is_take(tc,')'))
 				return;
 			token tkn=toc_next_token(tc);
 			if(token_equals(&tkn,"and")){
-				strb_add(&o->op_list,'&');
+				strb_add(&o->lsops,'&');
 			}else if(token_equals(&tkn,"or")){
-				strb_add(&o->op_list,'|');
+				strb_add(&o->lsops,'|');
 			}else{
 				toc_print_source_location(tc,tkn,4);
 				printf("expected 'and' or 'or'");
