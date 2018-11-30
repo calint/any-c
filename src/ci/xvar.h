@@ -9,6 +9,11 @@ typedef struct xvar{
 	bool is_ref;
 }xvar;
 
+#define xvar_def (xvar){\
+	{_xvar_compile_,_xvar_free_,_xvar_print_source_,strc_def,token_def,0,false},\
+		strc_def,xset_def,false\
+}
+
 inline static void _xvar_compile_(const xexp*oo,toc*tc){
 	xvar*o=(xvar*)oo;
 	printf("%s",o->super.type);
@@ -38,11 +43,6 @@ inline static void _xvar_free_(xexp*oo){
 inline static void _xvar_print_source_(xexp*oo){
 	xvar*o=(xvar*)oo;
 	token_print_including_whitespace(&o->super.token);
-}
-
-#define xvar_def (xvar){\
-	{_xvar_compile_,_xvar_free_,_xvar_print_source_,strc_def,token_def,0,false},\
-		strc_def,xset_def,false\
 }
 
 inline static xvar*xvar_read_next(toc*tc,strc type){

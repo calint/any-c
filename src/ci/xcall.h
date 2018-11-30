@@ -9,6 +9,11 @@ typedef struct xcall{
 	ptrs args;
 }xcall;
 
+#define xcall_def (xcall){\
+	{_xcall_compile_,_xcall_free_,NULL,strc_def,token_def,0,false},\
+	strc_def,ptrs_def\
+}
+
 inline static void _xcall_free_(xexp*oo){
 	xcall*o=(xcall*)oo;
 	for(unsigned i=0;i<o->args.count;i++){
@@ -35,11 +40,6 @@ inline static void _xcall_compile_(const xexp*oo,toc*tc){
 			printf(",");
 	}
 	printf(")");
-}
-
-#define xcall_def (xcall){\
-	{_xcall_compile_,_xcall_free_,NULL,strc_def,token_def,0,false},\
-	strc_def,ptrs_def\
 }
 
 inline static xcall*xcall_read_next(toc*tc,token tk,strc name){

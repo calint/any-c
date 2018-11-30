@@ -10,6 +10,11 @@ typedef struct xexpls{
 	strb ops;
 }xexpls;
 
+#define xexpls_def (xexpls){\
+	{_xexpls_compile_,_xexpls_free_,_xexpls_print_source_,strc_def,token_def,0,false},\
+		ptrs_def,strb_def\
+}
+
 inline static void _xexpls_compile_(const xexp*oo,toc*tc){
 	const xexpls*o=(xexpls*)oo;
 	for(unsigned i=0;i<o->exps.count;i++){
@@ -51,11 +56,6 @@ inline static void _xexpls_print_source_(xexp*oo){
 		e->print_source(e);
 	}
 }
-
-
-#define xexpls_def (xexpls){\
-	{_xexpls_compile_,_xexpls_free_,_xexpls_print_source_,strc_def,token_def,0,false},\
-		ptrs_def,strb_def}
 
 inline static void xexpls_parse_next(xexpls*,toc*,token,bool issubexpr);
 inline static xexpls*xexpls_read_next(toc*tc,token tk,bool issubexpr){

@@ -8,6 +8,11 @@ typedef struct xset{
 	xexpls setexpls;
 }xset;
 
+#define xset_def (xset){\
+	{_xset_compile_,_xset_free_,_xset_print_source_,strc_def,token_def,0,false},\
+	strc_def,xexpls_def\
+}
+
 inline static void _xset_compile_(const xexp*oo,toc*tc){
 	xset*o=(xset*)oo;
 	ci_xset_compile(tc,o);
@@ -31,12 +36,6 @@ inline static void _xset_print_source_(xexp*oo){
 	token_print_including_whitespace(&o->super.token);
 	printf("=");
 	_xexpls_print_source_((xexp*)&o->setexpls);
-}
-
-
-#define xset_def (xset){\
-	{_xset_compile_,_xset_free_,_xset_print_source_,strc_def,token_def,0,false},\
-	strc_def,xexpls_def\
 }
 
 inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){

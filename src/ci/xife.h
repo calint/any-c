@@ -10,6 +10,11 @@ typedef struct xif{
 	xcode code;
 }xif;
 
+#define xif_def (xif){\
+	{_xif_compile_,_xif_free_,NULL,strc_def,token_def,0,false},\
+	xbool_def,xcode_def\
+}
+
 inline static void _xif_compile_(const xexp*oo,toc*tc){
 	xif*o=(xif*)oo;
 	printf("if");
@@ -21,11 +26,6 @@ inline static void _xif_free_(xexp*oo){
 	xif*o=(xif*)oo;
 	o->cond.super.free((xexp*)&o->cond);
 	o->code.super.free((xexp*)&o->code);
-}
-
-#define xif_def (xif){\
-	{_xif_compile_,_xif_free_,NULL,strc_def,token_def,0,false},\
-	xbool_def,xcode_def\
 }
 
 inline static xif*xif_read_next(toc*tc,token tk){
@@ -47,6 +47,11 @@ typedef struct xife{
 	ptrs ifs;
 	xcode elsecode;
 }xife;
+
+#define xife_def (xife){\
+	{_xife_compile_,_xife_free_,NULL,strc_def,token_def,2,false},\
+		ptrs_def,xcode_def\
+}
 
 inline static void _xife_compile_(const xexp*oo,toc*tc){
 	xife*o=(xife*)oo;
@@ -91,11 +96,6 @@ inline static void _xife_free_(xexp*oo){
 	}
 	ptrs_free(&o->ifs);
 	o->elsecode.super.free((xexp*)&o->elsecode);
-}
-
-#define xife_def (xife){\
-	{_xife_compile_,_xife_free_,NULL,strc_def,token_def,2,false},\
-		ptrs_def,xcode_def\
 }
 
 inline static xife*xife_read_next(toc*tc,token tk){

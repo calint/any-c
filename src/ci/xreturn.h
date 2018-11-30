@@ -6,6 +6,11 @@ typedef struct xreturn{
 	xexpls expls;
 }xreturn;
 
+#define xreturn_def (xreturn){\
+	{_xreturn_compile_,_xreturn_free_,NULL,strc_def,token_def,0,false},\
+	xexpls_def\
+}
+
 inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 	xreturn*o=(xreturn*)oo;
 	printf("return ");
@@ -21,11 +26,6 @@ inline static void _xreturn_compile_(const xexp*oo,toc*tc){
 inline static void _xreturn_free_(xexp*oo){
 	xreturn*o=(xreturn*)oo;
 	o->expls.super.free((xexp*)&o->expls);
-}
-
-#define xreturn_def (xreturn){\
-	{_xreturn_compile_,_xreturn_free_,NULL,strc_def,token_def,0,false},\
-	xexpls_def\
 }
 
 inline static xreturn*xreturn_read_next(toc*tc,token tk){

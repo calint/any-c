@@ -6,6 +6,11 @@ typedef struct xconst{
 	strc name;
 }xconst;
 
+#define xconst_def (xconst){\
+	{_xconst_compile_,NULL,_xconst_print_,strc_def,token_def,0,false},\
+		strc_def\
+}
+
 inline static void _xconst_compile_(const xexp*oo,toc*tc){
 	const xconst*o=(xconst*)oo;
 	printf("%s",o->name);
@@ -16,9 +21,4 @@ inline static void _xconst_compile_(const xexp*oo,toc*tc){
 inline static void _xconst_print_(xexp*oo){
 	const xconst*o=(xconst*)oo;
 	printf("%s",o->name);
-}
-
-#define xconst_def (xconst){\
-	{_xconst_compile_,NULL,_xconst_print_,strc_def,token_def,0,false},\
-		strc_def\
 }

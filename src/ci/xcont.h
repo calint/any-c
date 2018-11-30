@@ -5,14 +5,14 @@ typedef struct xcont{
 	xexp super;
 }xcont;
 
+#define xcont_def (xcont){\
+	{_xcont_compile_,NULL,NULL,strc_def,token_def,0,false}\
+}
+
 inline static void _xcont_compile_(const xexp*oo,toc*tc){
 	ci_xcode_compile_free_current_loop_scope(tc,oo->token);
 //	toc_print_indent_for_compile(tc);
 	printf("continue");
-}
-
-#define xcont_def (xcont){\
-	{_xcont_compile_,NULL,NULL,strc_def,token_def,0,false}\
 }
 
 inline static xcont*xcont_read_next(toc*tc,token tk){

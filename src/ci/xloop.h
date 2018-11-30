@@ -6,6 +6,11 @@ typedef struct xloop{
 	xcode code;
 }xloop;
 
+#define xloop_def (xloop){\
+	{_xloop_compile_,_xloop_free_,NULL,strc_def,token_def,1,false},\
+		xcode_def\
+}
+
 inline static void _xloop_compile_(const xexp*oo,toc*tc){
 	xloop*o=(xloop*)oo;
 	toc_push_scope(tc,'l',"");
@@ -17,11 +22,6 @@ inline static void _xloop_compile_(const xexp*oo,toc*tc){
 inline static void _xloop_free_(xexp*oo){
 	xloop*o=(xloop*)oo;
 	o->code.super.free((xexp*)&o->code);
-}
-
-#define xloop_def (xloop){\
-	{_xloop_compile_,_xloop_free_,NULL,strc_def,token_def,1,false},\
-		xcode_def\
 }
 
 inline static xloop*xloop_read_next(toc*tc,token tk){

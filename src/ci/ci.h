@@ -19,7 +19,8 @@
 typedef struct ci{
 	ptrs types;
 }ci;
-#define ci_def {ptrs_def}
+
+#define ci_def (ci){ptrs_def}
 
 inline static bool ci_is_builtin_type(strc typenm){
 	if(!strcmp("var",typenm))return true;

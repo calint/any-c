@@ -10,6 +10,10 @@ typedef struct xfield{
 	bool is_ref;
 }xfield;
 
+#define xfield_def (xfield){\
+	{NULL,_xfield_free_,_xfield_print_source_,strc_def,token_def,0,false}\
+	,strc_def,strc_def,xexpls_def,false\
+}
 
 inline static void _xfield_free_(xexp*o){
 	xfield*oo=(xfield*)o;
@@ -25,10 +29,6 @@ inline static void _xfield_print_source_(xexp*e){
 	fflush(0);
 }
 
-#define xfield_def (xfield){\
-	{NULL,_xfield_free_,_xfield_print_source_,strc_def,token_def,0,false}\
-	,strc_def,strc_def,xexpls_def,false}
-
 typedef struct xfuncparam{
 	xexp super;
 	strc name;
@@ -43,6 +43,10 @@ typedef struct xfunc{
 	xcode code;
 }xfunc;
 
+#define xfunc_def (xfunc){\
+	{NULL,_xfunc_free_,_xfunc_print_source_,strc_def,token_def,0,false},\
+	strc_def,ptrs_def,xcode_def\
+}
 
 inline static void _xfunc_free_(xexp*e){
 	xfunc*o=(xfunc*)e;
@@ -64,16 +68,11 @@ inline static void _xfunc_print_source_(xexp*e){
 	printf("}");
 }
 
-#define xfunc_def (xfunc){\
-	{NULL,_xfunc_free_,_xfunc_print_source_,strc_def,token_def,0,false},\
-	strc_def,ptrs_def,xcode_def}
-
 typedef struct xtable{
 	xexp super;
 	token sizetkn;
 	long long size;
 }xtable;
-
 
 #define xtable_def (xtable){\
 	{NULL,NULL,NULL,strc_def,token_def,0,false},\
@@ -92,6 +91,11 @@ typedef struct xtype{
 	char bits; // bit 1: needs call to free     bit 2: has _free
 	           // bit 3: needs call to init     bit 4: has _init
 }xtype;
+
+#define xtype_def (xtype){\
+	{_xtype_compile_,_xtype_free_,_xtype_print_source_,strc_def,token_def,0,false},\
+	strc_def,ptrs_def,ptrs_def,ptrs_def,ptrs_def,0\
+}
 
 inline static bool xtype_is_needs_free(const xtype*o){return (o->bits&1)==1;}
 inline static void xtype_set_needs_free(xtype*o){o->bits|=1;}
@@ -300,10 +304,6 @@ inline static void _xtype_print_source_(xexp*o){//? write
 	}
 	printf("}");
 }
-
-#define xtype_def (xtype){\
-	{_xtype_compile_,_xtype_free_,_xtype_print_source_,strc_def,token_def,0,false},\
-	strc_def,ptrs_def,ptrs_def,ptrs_def,ptrs_def,0}
 
 inline static xfield*xtype_get_field_for_name(const xtype*o,strc field_name){
 	for(unsigned i=0;i<o->fields.count;i++){
@@ -530,6 +530,11 @@ typedef struct xprg{
 	ptrs stmts;
 }xprg;
 
+#define xprg_def (xprg){\
+	{_xprg_compile_,_xprg_free_,_xprg_print_source_,strc_def,token_def,0,false}\
+	 ,ptrs_def\
+}
+
 inline static void _xprg_print_source_(xexp*o){
 	xprg*oo=(xprg*)o;
 	const long n=oo->stmts.count;
@@ -603,10 +608,6 @@ inline static void _xprg_free_(xexp*o){
 	ptrs_free(&oo->stmts);
 //	free(o);
 }
-
-#define xprg_def (xprg){\
-	{_xprg_compile_,_xprg_free_,_xprg_print_source_,strc_def,token_def,0,false}\
-	 ,ptrs_def}
 
 inline static/*gives*/xprg*xprg_read_next(toc*tc){
 	xprg*o=malloc(sizeof(xprg));

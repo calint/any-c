@@ -1,7 +1,6 @@
 #pragma once
 #include"xexp.h"
 #include"decouple.h"
-//inline static /*gives*/xexp*ci_read_next_statement(toc*o);
 
 typedef struct xcode{
 	xexp super;
@@ -22,7 +21,6 @@ inline static void _xcode_free_(xexp*oo){
 		free(e);
 	}
 	ptrs_free(&o->exps);
-//	free(oo);
 }
 
 inline static void _xcode_compile_(const xexp*oo,toc*tc){
@@ -49,7 +47,7 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 inline static void xcode_read_next(xcode*o,toc*tc){
 	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
-	if(toc_srcp_is_take(tc,'{')){
+	if(toc_srcp_is_take(tc,'{')){// block statement
 		xexp_set_is_encapsulated(&o->super,true);
 		while(1){
 			xexp*e=ci_read_next_statement(tc);
@@ -61,8 +59,6 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 				break;
 			}
 			ptrs_add(&o->exps,e);
-//			if(toc_srcp_is_take(tc,';'))
-//				continue;
 		}
 		if(!toc_srcp_is_take(tc,'}')){
 			toc_print_source_location2(tc,tc->srcp,4);
@@ -70,16 +66,12 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 			printf("\n    %s %d",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
-//		tc->srcp++;
-//		toc_srcp_inc(tc);
 		toc_pop_scope(tc);
 		return;
 	}
+	// single statement
 	xexp_set_is_encapsulated(&o->super,false);
 	xexp*e=ci_read_next_statement(tc);
 	ptrs_add(&o->exps,e);
-//	if(*tc->srcp==';'){
-//		tc->srcp++;
-//	}
 	toc_pop_scope(tc);
 }
