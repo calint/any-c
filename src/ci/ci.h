@@ -122,7 +122,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 				toc_get_typenm_in_context(tc,tk),
 				fn->name
 				);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
@@ -150,7 +150,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 			toc_print_source_location(tc,tk,4);
 			printf("field or function '%s' not found in type '%s' using accessor '%s'",
 					sb->data,tpnm,accessor);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		isref=fn->super.is_ref;

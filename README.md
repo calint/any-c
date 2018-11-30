@@ -17,7 +17,7 @@ source size
 cat src/ci/* src/lib/* src/lib.h main.c | wc
    3533    5728   85984
 cat src/ci/* src/lib/* src/lib.h main.c | gzip | wc
-     57     329   15996
+     57     379   16015
 ```
 
 

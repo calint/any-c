@@ -87,11 +87,11 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 		}
 		xexp_set_is_negated(e,is_negated);
 		if(prev_exp){
-			if(strcmp(o->super.type,prev_exp->type)){
+			if(strcmp(e->type,prev_exp->type)){
 				toc_print_source_location(tc,e->token,4);
 				printf("expression type '%s' is not same as previous type '%s'",
 						e->type,prev_exp->type);
-				printf("\n    %s %d",__FILE__,__LINE__);
+				printf("\n    %s %d\n",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
 		}
