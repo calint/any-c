@@ -68,6 +68,7 @@ inline static xexpls*xexpls_read_next(toc*tc,token tk,bool issubexpr){
 
 inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 	o->super.token=tk;
+	xexp*prev_exp=NULL;
 	while(1){
 		if(!o->exps.count)
 			strb_add(&o->ops,'\0');
@@ -84,9 +85,17 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 		}else{
 			e=ci_read_next_expression(tc);
 		}
-//		if(!e)
-//			break;
 		xexp_set_is_negated(e,is_negated);
+		if(prev_exp){
+			if(strcmp(o->super.type,prev_exp->type)){
+				toc_print_source_location(tc,e->token,4);
+				printf("expression type '%s' is not same as previous type '%s'",
+						e->type,prev_exp->type);
+				printf("\n    %s %d",__FILE__,__LINE__);
+				longjmp(_jmp_buf,1);
+			}
+		}
+		prev_exp=e;
 		ptrs_add(&o->exps,e);
 		if(issubexpr)
 			if(toc_srcp_is_take(tc,')'))
