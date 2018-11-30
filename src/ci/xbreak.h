@@ -13,9 +13,9 @@ inline static void _xbreak_compile_(const xexp*oo,toc*tc){
 }
 
 inline static xbreak*xbreak_read_next(toc*tc,token tk){
-	if(*tc->srcp==';')
-		tc->srcp++;
-
+//	if(*tc->srcp==';')
+//		tc->srcp++;
+//
 	xbreak*e=malloc(sizeof(xbreak));
 	*e=xbreak_def;
 	e->super.token=tk;
