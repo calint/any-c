@@ -36,9 +36,11 @@ inline static material*materials_get(materials*o,strc nm){
     if(nm=="mat1"){
         return &o->m1;
     }
+;
     if(nm=="mat2"){
         return &o->m2;
     }
+;
 }
 inline static void materials_init(materials*o){
     materials__init(o);
@@ -59,6 +61,7 @@ inline static void glob_print(glob*o){
     else {
         printf("n/a");
     }
+;
     printf("}\n");
 }
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - globs

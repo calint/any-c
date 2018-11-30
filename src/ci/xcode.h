@@ -31,8 +31,8 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 		xexp*e=ptrs_get(&o->exps,i);
 		toc_print_indent_for_compile(tc);
 		e->compile(e,tc);
-		if(xexp_is_block(e))
-			continue;
+//		if(xexp_is_block(e))
+//			continue;
 		if(!xexp_is_encapsulated(e))
 			printf(";\n");
 		else
