@@ -199,7 +199,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 		}
 		toc_print_source_location(tc,tk,4);
 		printf("function '%s' not found in type '%s'",acc->data,tp->name);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
@@ -210,7 +210,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 		if(!fld){
 			toc_print_source_location(tc,tk,4);
 			printf("'%s' not found in '%s'",sb->data,accessor);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		tp=ci_get_type_for_name_try(tc,fld->type);
@@ -230,7 +230,7 @@ inline static xfunc*ci_get_func_for_accessor(const toc*tc,
 		tp->name,
 		accessor
 	);
-	printf("\n    %s %d",__FILE__,__LINE__);
+	printf("\n    %s %d\n",__FILE__,__LINE__);
 	strc_split_free(&strbs);
 	longjmp(_jmp_buf,1);
 }
@@ -249,7 +249,7 @@ inline static void ci_xcall_assert(const toc*tc,token tk,xcall*o){
 				fn->params.count==1?"argument":"arguments",
 				o->args.count
 		);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	for(unsigned i=0;i<o->args.count;i++){
@@ -260,7 +260,7 @@ inline static void ci_xcall_assert(const toc*tc,token tk,xcall*o){
 			printf("argument %d for function '%s' requires '%s', got '%s'",
 					i,fn->name,param->type,arg->type
 			);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 	}
@@ -276,7 +276,7 @@ inline static void ci_xreturn_assert(const toc*tc,struct xreturn*o){
 			o->expls.super.type,
 			fn->super.type
 	);
-	printf("\n    %s %d",__FILE__,__LINE__);
+	printf("\n    %s %d\n",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
 
