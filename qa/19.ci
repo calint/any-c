@@ -1,7 +1,7 @@
 id{
 	var i=0
 	_free{
-		printf("free id\n");
+		printf("free id\n")
 	}
 }
 
@@ -30,6 +30,6 @@ global{
 		e1.print()
 	}
 	_free{
-		printf("free global\n");
+		printf("free global\n")
 	}
 }

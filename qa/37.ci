@@ -1,7 +1,7 @@
 entity{
 	id=0
 	print{
-		printf("entity %d\n",id);
+		printf("entity %d\n",id)
 	}
 }
 
@@ -17,9 +17,9 @@ global{
 	main{
 		es.e.id=1
 		entity&a=es.get("a")
-		a.print();
+		a.print()
 		es.e.id=2
 		a=es.get("a")
-		a.print();
+		a.print()
 	}
 }

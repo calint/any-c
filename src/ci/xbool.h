@@ -10,7 +10,7 @@ typedef struct xbool{
 	xexpls rh;
 
 	// list
-	strb bool_op_list;
+	strb op_list;
 	ptrs bool_list;
 
 	// 1: not
@@ -44,7 +44,7 @@ inline static void _xbool_free_(xexp*oo){
 	o->lh.super.free((xexp*)&o->rh);
 
 	ptrs_free(&o->bool_list);
-	strb_free(&o->bool_op_list);
+	strb_free(&o->op_list);
 }
 
 inline static void _xbool_compile_(const xexp*oo,toc*tc){
@@ -54,12 +54,14 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 			printf("!");
 		printf("(");
 		const long n=o->bool_list.count;
-		for(long i=0;i<n;i++){
+		for(long i=0;;i++){
 			xbool*b=(xbool*)ptrs_get(&o->bool_list,i);
 			_xbool_compile_((xexp*)b,tc);
 
-			if(i==n-1) break;
-			const char op=strb_get(&o->bool_op_list,i);
+			if(i==n-1)
+				break;
+
+			const char op=strb_get(&o->op_list,i);
 			if(op=='&')
 				printf(" && ");
 			else if(op=='|')
@@ -90,7 +92,7 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 		longjmp(_jmp_buf,1);
 	}
 	o->rh.super.compile((xexp*)&o->rh,tc);
-	if(o->bits&1)
+	if(xbool_is_not(oo))
 		printf(")");
 }
 
@@ -115,12 +117,12 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 				return;
 			token tkn=toc_next_token(tc);
 			if(token_equals(&tkn,"and")){
-				strb_add(&o->bool_op_list,'&');
+				strb_add(&o->op_list,'&');
 			}else if(token_equals(&tkn,"or")){
-				strb_add(&o->bool_op_list,'|');
+				strb_add(&o->op_list,'|');
 			}else{
 				toc_print_source_location(tc,tkn,4);
-				printf("expected 'and' or 'or'\n");
+				printf("expected 'and' or 'or'");
 				printf("\n    %s %d",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
@@ -145,13 +147,13 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			 o->op='!';
 		else{
 			toc_print_source_location(tc,tk,4);
-			printf("expected '!='\n");
+			printf("expected '!='");
 			printf("\n    %s %d",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 	}else{
 		toc_print_source_location2(tc,tc->srcp,4);
-		printf("expected = > < >= <= !=\n");
+		printf("expected comparison = > < >= <= !=");
 		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}

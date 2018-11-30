@@ -1,7 +1,7 @@
 player{
 	c=2
 	print{
-		p(" player: %d\n",c);
+		p(" player: %d\n",c)
 	}
 }
 

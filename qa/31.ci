@@ -1,21 +1,21 @@
 id{
 	var i=0
 	_init{printf("init id\n") i=1}
-	_free{printf("free id\n");}
+	_free{printf("free id\n")}
 }
 
 entity{
 	id id
 	_init{printf("init entity\n")}
 	print{printf("entity: %i\n",id.i)}
-	_free{printf("free entity\n");}
+	_free{printf("free entity\n")}
 }
 
 global{
 	entity e
-	_init{printf("init global\n");}
+	_init{printf("init global\n")}
 	main{
 		e.print()
 	}
-	_free{printf("free global\n");}
+	_free{printf("free global\n")}
 }

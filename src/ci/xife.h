@@ -33,7 +33,8 @@ inline static xif*xif_read_next(toc*tc,token tk){
 	*o=xif_def;
 	if(!toc_srcp_is(tc,'(')){
 		toc_print_source_location2(tc,tk.end,4);
-		printf("expected '('\n");
+		printf("expected '('");
+		printf("\n    %s %d",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	xbool_parse(&o->cond,tc,tk);
@@ -104,14 +105,14 @@ inline static xife*xife_read_next(toc*tc,token tk){
 	while(1){
 		xif*i=xif_read_next(tc,tk);
 		ptrs_add(&o->ifs,i);
-		token t=toc_next_token(tc);
+		const token t=toc_next_token(tc);
 		if(!token_equals(&t,"else")){
-			tc->srcp=t.begin;
+			toc_push_back_token(tc,t);
 			return o;
 		}
-		token t2=toc_next_token(tc);
+		const token t2=toc_next_token(tc);
 		if(!token_equals(&t2,"if")){
-			tc->srcp=t2.begin;
+			toc_push_back_token(tc,t2);
 			xcode_read_next(&o->elsecode,tc);
 			return o;
 		}

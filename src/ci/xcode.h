@@ -61,25 +61,25 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 				break;
 			}
 			ptrs_add(&o->exps,e);
-			if(toc_srcp_is_take(tc,';'))
-				continue;
+//			if(toc_srcp_is_take(tc,';'))
+//				continue;
 		}
-		if(!toc_srcp_is(tc,'}')){
-//			toc_print_source_location(tc,tk,4);//! fix
+		if(!toc_srcp_is_take(tc,'}')){
+			toc_print_source_location2(tc,tc->srcp,4);
 			printf("expected '}' to end block");
 			printf("\n    %s %d",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 //		tc->srcp++;
-		toc_srcp_inc(tc);
+//		toc_srcp_inc(tc);
 		toc_pop_scope(tc);
 		return;
 	}
 	xexp_set_is_encapsulated(&o->super,false);
 	xexp*e=ci_read_next_statement(tc);
 	ptrs_add(&o->exps,e);
-	if(*tc->srcp==';'){
-		tc->srcp++;
-	}
+//	if(*tc->srcp==';'){
+//		tc->srcp++;
+//	}
 	toc_pop_scope(tc);
 }

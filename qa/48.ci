@@ -18,6 +18,6 @@ global{
 		entity e
 		e.set_location(loc)
 		
-		p("%s",e.location.get_name());
+		p("%s",e.location.get_name())
 	}
 }

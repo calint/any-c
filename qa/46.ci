@@ -15,7 +15,7 @@ entity{
 	}
 	p_where(){
 		p_name()
-		p("is at");
+		p("is at")
 		location.p_name()
 	}
 }

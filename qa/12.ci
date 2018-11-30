@@ -2,8 +2,8 @@ global{
 	main{
 		var a=2
 		var b=a+1
-		printf("(2,3)=(%d,%d)\n",a,b);
+		printf("(2,3)=(%d,%d)\n",a,b)
 		var c=a+b+2
-		printf("7=%d\n",c);
+		printf("7=%d\n",c)
 	}
 }

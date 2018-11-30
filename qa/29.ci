@@ -6,10 +6,10 @@ entity{
 	}
 	_init{
 		id=1
-		printf("init entity %d\n",id);
+		printf("init entity %d\n",id)
 	}
 	_free{
-		printf("free entity %d\n",id);
+		printf("free entity %d\n",id)
 	}
 }
 

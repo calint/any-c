@@ -4,6 +4,10 @@ global{
 		var j=2
 		var k=3
 
+		if(i=2)			p("2")
+		else if(i=3)	p("3")
+		else if(i=1)	p("1")
+		
 		if(i<=1) p("true\n") else p("false\n")
 		if(i>=1) p("true\n") else p("false\n")
 		if(i=1) p("true\n") else p("false\n")

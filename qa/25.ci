@@ -1,7 +1,7 @@
 id{
 	var i=0
 	_free{
-		printf("free id %d\n",i);
+		printf("free id %d\n",i)
 	}
 }
 
@@ -12,7 +12,7 @@ entity{
 		printf("entity: %d %f\n",id.i,f)
 	}
 	_free{
-		printf("free entity %d\n",id.i);
+		printf("free entity %d\n",id.i)
 	}
 }
 

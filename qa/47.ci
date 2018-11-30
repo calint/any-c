@@ -17,6 +17,6 @@ global{
 		entity e
 		e.set_location(loc)
 		
-		p("%s",e.location.name);
+		p("%s",e.location.name)
 	}
 }

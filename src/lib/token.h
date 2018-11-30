@@ -40,7 +40,7 @@ inline static void token_print_content(token*t){
 //	return strncmp(str,t->content,strlen(str))==0;
 //}
 
-inline static bool token_equals(token*t,const char*str){
+inline static bool token_equals(const token*t,const char*str){
 	const char*p=t->content;//? stdlib
 	while(1){
 		if(p==t->content_end){

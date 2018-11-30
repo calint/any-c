@@ -5,7 +5,7 @@ player{
 	var s="hello"
 	var ch='.'
 	print{
-		p("%d %f %d %s %c\n",i,f,b,s,ch);
+		p("%d %f %d %s %c\n",i,f,b,s,ch)
 	}
 }
 

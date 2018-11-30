@@ -27,6 +27,6 @@ global{
 		e1.print()
 	}
 	_free{
-		printf("free global\n");
+		printf("free global\n")
 	}
 }

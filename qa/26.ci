@@ -9,7 +9,7 @@ entity{
 		printf("entity: %d %f\n",id.i,f)
 	}
 	_free{
-		printf("free entity %d\n",id.i);
+		printf("free entity %d\n",id.i)
 	}
 }
 

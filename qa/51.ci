@@ -53,14 +53,14 @@ global{
 		me.location=roome
 		me.location.xs.name="roomi"
 		
-		p("%d\n",me.location.id);
-		p("%s\n",me.location.name);
-		p("%s\n",me.location.xn.name);
+		p("%d\n",me.location.id)
+		p("%s\n",me.location.name)
+		p("%s\n",me.location.xn.name)
 
 		me.move_to(hall)
 		
-		p("%d\n",me.location.id);
-		p("%s\n",me.location.name);
-		p("%s\n",me.location.xs.get_name());
+		p("%d\n",me.location.id)
+		p("%s\n",me.location.name)
+		p("%s\n",me.location.xs.get_name())
 	}
 }

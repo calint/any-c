@@ -1,7 +1,7 @@
 material{
 	id=1
 	print{
-		printf("material %d\n",id);
+		printf("material %d\n",id)
 	}
 }
 
@@ -25,10 +25,10 @@ glob{
 	print{
 		p("glob %d {material ",id)
 		if(material!=0)
-			p("%d",material.id);
+			p("%d",material.id)
 		else
-			p("n/a");
-		p("}\n");
+			p("n/a")
+		p("}\n")
 	}
 }
 

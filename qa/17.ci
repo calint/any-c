@@ -1,12 +1,12 @@
 player{
 	int ret(int a){
-		return a+2;
+		return a+2
 	}
 }
 
 global{
 	main{
 		player p
-		printf("4=%d\n",p.ret(2));
+		printf("4=%d\n",p.ret(2))
 	}
 }

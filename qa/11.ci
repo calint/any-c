@@ -3,6 +3,6 @@ global{
 		var a=2
 		var b=a
 		b=2
-		printf("(2,2)=(%d,%d)\n",a,b);
+		printf("(2,2)=(%d,%d)\n",a,b)
 	}
 }

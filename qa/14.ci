@@ -1,6 +1,6 @@
 global{
 	print(int a){
-		printf("%d",a);
+		printf("%d",a)
 	}
 	main{
 		var a=5

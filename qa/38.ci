@@ -1,7 +1,7 @@
 material{
 	id=3
 	print{
-		printf("material %d\n",id);
+		printf("material %d\n",id)
 	}
 }
 
@@ -12,9 +12,9 @@ materials{
 
 entity{
 	id=0
-	material&mref;
+	material&mref
 	print{
-		printf("entity %d\n",id);
+		printf("entity %d\n",id)
 	}
 }
 
@@ -27,8 +27,8 @@ entities{
 }
 
 global{
-	entities entities;
-	materials materials;
+	entities entities
+	materials materials
 	main{
 		entity&e=entities.get("a")
 		e.mref=materials.m1
