@@ -26,6 +26,12 @@ inline static void global_main(global*o){
     else {
         printf("false\n");
     }
+    if(i==1 && j==2){
+        printf("true\n");
+    }
+    else {
+        printf("false\n");
+    }
     if(!(i==1)){
         printf("true\n");
     }

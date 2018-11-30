@@ -5,6 +5,7 @@ global{
 		var k=3
 
 		if(i=1) p("true\n") else p("false\n")
+		if(i=1 and j=2) p("true\n") else p("false\n")
 		if(not i=1) p("true\n") else p("false\n")
 		if(i=1 and not (j=2 and k=3)) p("true\n") else p("false\n")
 	}

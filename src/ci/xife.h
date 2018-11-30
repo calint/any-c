@@ -31,9 +31,12 @@ inline static void _xif_free_(xexp*oo){
 inline static xif*xif_read_next(toc*tc,token tk){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
-//	toc_srcp_skip_if(tc,'(');
+	if(!toc_srcp_is(tc,'(')){
+		toc_print_source_location2(tc,tk.end,4);
+		printf("expected '('\n");
+		longjmp(_jmp_buf,1);
+	}
 	xbool_parse(&o->cond,tc,tk);
-//	toc_srcp_skip_if(tc,')');
 	xcode_read_next(&o->code,tc);
 	return o;
 }

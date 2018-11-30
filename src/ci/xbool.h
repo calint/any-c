@@ -22,6 +22,16 @@ typedef struct xbool{
 	xexpls_def,0,xexpls_def,strb_def,ptrs_def,0\
 }
 
+inline static bool xbool_is_not(const xexp*oo){
+	xbool*o=(xbool*)oo;
+	return (o->bits&1)==1;
+}
+
+inline static void xbool_set_is_not(xexp*oo,bool b){
+	xbool*o=(xbool*)oo;
+	if(b) o->bits|=1;
+	else o->bits&=~1;
+}
 
 inline static void _xbool_free_(xexp*oo){
 	xbool*o=(xbool*)oo;
@@ -40,7 +50,7 @@ inline static void _xbool_free_(xexp*oo){
 inline static void _xbool_compile_(const xexp*oo,toc*tc){
 	xbool*o=(xbool*)oo;
 	if(o->bool_list.count){
-		if(o->bits&1)
+		if(xbool_is_not(oo))
 			printf("!");
 		printf("(");
 		const long n=o->bool_list.count;
@@ -59,7 +69,7 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 		return;
 	}
 
-	if(o->bits&1)
+	if(xbool_is_not(oo))
 		printf("!(");
 	o->lh.super.compile((xexp*)&o->lh,tc);
 	if(o->op=='='){
@@ -86,12 +96,14 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 inline static void xbool_parse(xbool*o,toc*tc,token tk){
 	o->super.type="bool";
 	o->super.token=tk;
+
 	token t=toc_next_token(tc);
 	if(token_equals(&t,"not")){
-		o->bits|=1;
+		xbool_set_is_not((xexp*)o,true);
 	}else{
 		toc_push_back_token(tc,t);
 	}
+
 	if(toc_srcp_is_take(tc,'(')){
 		while(1){
 			xbool*e=malloc(sizeof(xbool));

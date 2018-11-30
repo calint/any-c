@@ -64,6 +64,11 @@ inline static void toc_print_source_location(const toc*o,token tk,int tabsize){
 	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
 }
 
+inline static void toc_print_source_location2(const toc*o,const char*p,int tabsize){
+	tocloc tl=toc_get_line_number_in_src(o,p,tabsize);
+	printf("\n\n%s:%d:%d: ",tl.filenm,tl.line,tl.col);
+}
+
 inline static strc toc_get_typenm_in_context(const toc*tc,token tk){
 	for(int j=(signed)tc->scopes.count-1;j>=0;j--){
 		tocscope*s=ptrs_get(&tc->scopes,(unsigned)j);

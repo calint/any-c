@@ -30,7 +30,9 @@ global_main:
 	call	puts@PLT
 .L3:
 	cmpl	$1, -12(%rbp)
-	je	.L4
+	jne	.L4
+	cmpl	$2, -8(%rbp)
+	jne	.L4
 	leaq	.LC0(%rip), %rdi
 	call	puts@PLT
 	jmp	.L5
@@ -39,19 +41,28 @@ global_main:
 	call	puts@PLT
 .L5:
 	cmpl	$1, -12(%rbp)
-	jne	.L6
-	cmpl	$2, -8(%rbp)
-	jne	.L7
-	cmpl	$3, -4(%rbp)
 	je	.L6
-.L7:
 	leaq	.LC0(%rip), %rdi
 	call	puts@PLT
-	jmp	.L8
+	jmp	.L7
 .L6:
 	leaq	.LC1(%rip), %rdi
 	call	puts@PLT
+.L7:
+	cmpl	$1, -12(%rbp)
+	jne	.L8
+	cmpl	$2, -8(%rbp)
+	jne	.L9
+	cmpl	$3, -4(%rbp)
+	je	.L8
+.L9:
+	leaq	.LC0(%rip), %rdi
+	call	puts@PLT
+	jmp	.L10
 .L8:
+	leaq	.LC1(%rip), %rdi
+	call	puts@PLT
+.L10:
 	nop
 	leave
 	.cfi_def_cfa 7, 8
@@ -121,9 +132,9 @@ main:
 	movl	$0, %eax
 	movq	-8(%rbp), %rdx
 	xorq	%fs:40, %rdx
-	je	.L13
+	je	.L15
 	call	__stack_chk_fail@PLT
-.L13:
+.L15:
 	leave
 	.cfi_def_cfa 7, 8
 	ret
