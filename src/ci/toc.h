@@ -78,7 +78,7 @@ inline static strc toc_get_typenm_in_context(const toc*tc,token tk){
 	}
 	toc_print_source_location(tc,tk,4);
 	printf("error: cannot find current class");
-	printf("\n    %s %d",__FILE__,__LINE__);
+	printf("\n    %s %d\n",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
 
@@ -91,7 +91,7 @@ inline static tocscope*toc_get_loop_scope_in_context(const toc*tc,token tk){
 	}
 	toc_print_source_location(tc,tk,4);
 	printf("error: cannot find current loop");
-	printf("\n    %s %d",__FILE__,__LINE__);
+	printf("\n    %s %d\n",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
 
@@ -159,7 +159,7 @@ inline static char toc_get_declaration_scope_type(const toc*oo,token tk,strc nam
 	}
 	toc_print_source_location(oo,tk,4);
 	printf("\ndeclaration '%s' not found in scope",name);
-	printf("\n    %s %d",__FILE__,__LINE__);
+	printf("\n    %s %d\n",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
 

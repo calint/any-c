@@ -54,7 +54,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 	if(!toc_srcp_is_take(tc,'(')){// arguments
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected '(' followed by arguments and ')'");
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 //	toc_srcp_inc(tc);
@@ -72,7 +72,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 		toc_print_source_location(tc,o->super.token,4);
 		printf("expected ',' and more arguments or ')' for function '%s'",
 				name);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	ci_xcall_assert(tc,o->super.token,o);

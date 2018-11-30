@@ -164,7 +164,7 @@ inline static xtyperef ci_get_typeref_for_accessor(
 	if(!tp && !ci_is_builtin_type(tpnm)){
 		toc_print_source_location(tc,tk,4);
 		printf("cannot find type '%s'",tpnm);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	struct xtyperef ti={tpnm,isref};
@@ -348,7 +348,7 @@ inline static strc ci_get_field_type_for_accessor(const toc*tc,
 	if(!td){
 		toc_print_source_location(tc,tk,4);
 		printf("'%s' not found",acc->data);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
@@ -361,7 +361,7 @@ inline static strc ci_get_field_type_for_accessor(const toc*tc,
 			toc_print_source_location(tc,tk,4);
 			printf("field '%s' not found in type '%s' using accessor '%s'",
 					sb->data,tp->name,accessor);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		typenm=fld->type;
@@ -384,7 +384,7 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 	if(!td){
 		toc_print_source_location(tc,tk,4);
 		printf("'%s' not found",o->name);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
@@ -408,7 +408,7 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 		if(!fld){
 			toc_print_source_location(tc,tk,4);
 			printf("field '%s' not found in type '%s'",el->data,tp->name);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 
@@ -421,7 +421,7 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 		if(!tp){
 			toc_print_source_location(tc,tk,4);
 			printf("type '%s' not found",el->data);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		typenm=tp->name;
@@ -436,7 +436,7 @@ inline static void ci_xset_assert(const toc*tc,const xset*o){
 	printf("cannot set '%s' to '%s' because '%s' is '%s'",
 			settype,o->name,o->name,typenm
 	);
-	printf("\n    %s %d",__FILE__,__LINE__);
+	printf("\n    %s %d\n",__FILE__,__LINE__);
 	longjmp(_jmp_buf,1);
 }
 
@@ -453,7 +453,7 @@ inline static/*gives*/xexp*ci_read_next_constant_try(toc*tc,token tk){
 				if(toc_srcp_is_take(tc,0) || toc_srcp_is_take(tc,'\n')){
 					toc_print_source_location(tc,tk,4);
 					printf("did not find the end of string on the same line");
-					printf("\n    %s %d",__FILE__,__LINE__);
+					printf("\n    %s %d\n",__FILE__,__LINE__);
 					longjmp(_jmp_buf,1);
 				}
 				if(toc_srcp_is_take(tc,'\\')){
@@ -478,7 +478,7 @@ inline static/*gives*/xexp*ci_read_next_constant_try(toc*tc,token tk){
 			if(!toc_srcp_is(tc,'\'')){
 				toc_print_source_location(tc,tk,4);
 				printf("expected a character, example 'a'");
-				printf("\n    %s %d",__FILE__,__LINE__);
+				printf("\n    %s %d\n",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
 			toc_srcp_inc(tc);
@@ -626,7 +626,7 @@ inline static xexp*ci_read_next_expression(toc*tc){
 	if(token_is_empty(&tk)){
 		toc_print_source_location(tc,tk,4);
 		printf("expected expression");
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
@@ -664,7 +664,7 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 				toc_get_typenm_in_context(tc,tk),
 				fn->name
 				);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
@@ -672,7 +672,7 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 	if(!tp && !ci_is_builtin_type(td->type)){
 		toc_print_source_location(tc,tk,4);
 		printf("type '%s' not found",td->type);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
@@ -691,7 +691,7 @@ inline static/*gives*/strb ci_get_c_accessor_for_accessor(
 		if(!fld){
 			toc_print_source_location(tc,tk,4);
 			printf("field '%s' not found in '%s'",sb->data,tp->name);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		strb_add_string(&acc_c,fld->name);

@@ -34,7 +34,7 @@ inline static xif*xif_read_next(toc*tc,token tk){
 	if(!toc_srcp_is(tc,'(')){
 		toc_print_source_location2(tc,tk.end,4);
 		printf("expected '('");
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	xbool_parse(&o->cond,tc,tk);

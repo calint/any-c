@@ -45,7 +45,7 @@ inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){
 	if(!d){
 		toc_print_source_location(tc,o->super.token,4);
 		printf("'%s' not found",o->name);//? better msg
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 		return;
 	}

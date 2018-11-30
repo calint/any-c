@@ -88,7 +88,7 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 		printf("<=");
 	}else{
 		printf("unknown op '%d' ')'\n",o->op);
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	o->rh.super.compile((xexp*)&o->rh,tc);
@@ -123,7 +123,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 			}else{
 				toc_print_source_location(tc,tkn,4);
 				printf("expected 'and' or 'or'");
-				printf("\n    %s %d",__FILE__,__LINE__);
+				printf("\n    %s %d\n",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
 		}
@@ -148,13 +148,13 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 		else{
 			toc_print_source_location(tc,tk,4);
 			printf("expected '!='");
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 	}else{
 		toc_print_source_location2(tc,tc->srcp,4);
 		printf("expected comparison = > < >= <= !=");
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	xexpls_parse_next(&o->rh,tc,tk,false);

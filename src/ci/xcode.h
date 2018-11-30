@@ -63,7 +63,7 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 		if(!toc_srcp_is_take(tc,'}')){
 			toc_print_source_location2(tc,tc->srcp,4);
 			printf("expected '}' to end block");
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		toc_pop_scope(tc);

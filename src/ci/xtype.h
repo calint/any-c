@@ -135,7 +135,7 @@ inline static void _xtype_compile_(const struct xexp*e,struct toc*tc){
 			if(!f->initval.exps.count){
 //					toc_print_source_location(tc,);
 				printf("expected initializer for var '%s'",f->name);
-				printf("\n    %s %d",__FILE__,__LINE__);
+				printf("\n    %s %d\n",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
 			f->initval.super.compile((xexp*)&f->initval,tc);
@@ -365,7 +365,7 @@ inline static/*gives*/xfunc*xfunc_read_next(toc*tc,xtype*c,bool is_ref,
 		if(!toc_srcp_is_take(tc,')')){
 			toc_print_source_location(tc,last_arg_tkn,4);
 			printf("expected ')' after arguments");
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 	}
@@ -461,7 +461,7 @@ inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 			if(!toc_srcp_is(tc,'}')){
 				toc_print_source_location(tc,tptk,4);
 				printf("expected '}' to close '%s' declared at %d",c->name,0);
-				printf("\n    %s %d",__FILE__,__LINE__);
+				printf("\n    %s %d\n",__FILE__,__LINE__);
 				longjmp(_jmp_buf,1);
 			}
 			toc_srcp_inc(tc);
@@ -511,7 +511,7 @@ inline static/*gives*/xtype*xtype_read_next(toc*tc,token tk){
 		if(!t){
 			toc_print_source_location(tc,f->super.token,4);
 			printf("type '%s' not found",f->type);
-			printf("\n    %s %d",__FILE__,__LINE__);
+			printf("\n    %s %d\n",__FILE__,__LINE__);
 			longjmp(_jmp_buf,1);
 		}
 		if(xtype_is_needs_free(t))
@@ -550,14 +550,14 @@ inline static void _xprg_compile_(const struct xexp*o,struct toc*tc){
 	if(!globl){
 //		toc_print_source_location(tc,tk,4);
 		printf("expected to find type 'global' containing function 'main' to start the program");
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 	xfunc*mainfn=xtype_get_func_for_name(globl,"main");
 	if(!mainfn){
 //		toc_print_source_location(tc,tk,4);
 		printf("expected to find function 'main' in type 'global' to start the program");
-		printf("\n    %s %d",__FILE__,__LINE__);
+		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
 
