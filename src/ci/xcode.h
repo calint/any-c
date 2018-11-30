@@ -47,7 +47,7 @@ inline static void _xcode_compile_(const xexp*oo,toc*tc){
 inline static void xcode_read_next(xcode*o,toc*tc){
 	token_skip_empty_space(&tc->srcp);
 	toc_push_scope(tc,'b',"");
-	if(toc_srcp_is_take(tc,'{')){// block statement
+	if(toc_srcp_is_take(tc,'{')){// is block statement
 		xexp_set_is_encapsulated(&o->super,true);
 		while(1){
 			xexp*e=ci_read_next_statement(tc);
@@ -69,7 +69,7 @@ inline static void xcode_read_next(xcode*o,toc*tc){
 		toc_pop_scope(tc);
 		return;
 	}
-	// single statement
+	// is single statement
 	xexp_set_is_encapsulated(&o->super,false);
 	xexp*e=ci_read_next_statement(tc);
 	ptrs_add(&o->exps,e);
