@@ -12,9 +12,8 @@ typedef struct xif{
 
 inline static void _xif_compile_(const xexp*oo,toc*tc){
 	xif*o=(xif*)oo;
-	printf("if (");
+	printf("if");
 	_xbool_compile_((xexp*)&o->cond,tc);
-	printf(") ");
 	_xcode_compile_((xexp*)&o->code,tc);
 }
 
@@ -33,7 +32,7 @@ inline static xif*xif_read_next(toc*tc,token tk){
 	xif*o=malloc(sizeof(xif));
 	*o=xif_def;
 //	toc_srcp_skip_if(tc,'(');
-	xbool_parse(&o->cond,tc,tk,false);
+	xbool_parse(&o->cond,tc,tk);
 //	toc_srcp_skip_if(tc,')');
 	xcode_read_next(&o->code,tc);
 	return o;

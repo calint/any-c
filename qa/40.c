@@ -33,10 +33,10 @@ inline static void materials__init(materials*o){
     o->m2.id=2;
 }
 inline static material*materials_get(materials*o,strc nm){
-    if ((nm=="mat1")) {
+    if(nm=="mat1"){
         return &o->m1;
     }
-    if ((nm=="mat2")) {
+    if(nm=="mat2"){
         return &o->m2;
     }
 }
@@ -53,7 +53,7 @@ typedef struct glob{
 //--- - - -------------------  - -- - - - - - - -- - - - -- - - - -- - funcs
 inline static void glob_print(glob*o){
     printf("glob %d {material ",o->id);
-    if ((o->material!=0)) {
+    if(o->material!=0){
         printf("%d",o->material->id);
     }
     else {
