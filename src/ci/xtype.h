@@ -391,7 +391,8 @@ inline static/*gives*/xfield*xfield_read_next(toc*tc,xtype*c,strc tktype,
 	ptrs_add(&c->fields,f);
 
 	if(toc_srcp_is_take(tc,'=')){
-		xexpls_parse_next(&f->initval,tc,tkname,false);
+		int ret=0;
+		xexpls_parse_next(&f->initval,tc,tkname,false,&ret,0);
 		if(strcmp(f->type,"var")){
 			xset tmp=xset_def;
 			tmp.name=f->name;

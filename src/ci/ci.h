@@ -374,7 +374,7 @@ inline static strc ci_get_field_type_for_accessor(const toc*tc,
 }
 
 inline static void ci_xset_assert(const toc*tc,const xset*o){
-	strc settype=o->setexpls.super.type;
+	strc settype=o->exp->type;
 	token tk=o->super.token;
 
 	ptrs strbs=strc_split(o->name,'.');

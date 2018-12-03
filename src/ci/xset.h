@@ -1,41 +1,44 @@
 #pragma once
 #include"xexpls.h"
+#include"xbool.h"
 #include"decouple.h"
 
 typedef struct xset{
 	xexp super;
 	strc name;
-	xexpls setexpls;
+	xexp*exp;
 }xset;
 
 #define xset_def (xset){\
 	{_xset_compile_,_xset_free_,_xset_print_source_,strc_def,token_def,0,false},\
-	strc_def,xexpls_def\
+	strc_def,NULL\
 }
 
 inline static void _xset_compile_(const xexp*oo,toc*tc){
 	xset*o=(xset*)oo;
 	ci_xset_compile(tc,o);
-	xexp*e=ptrs_get(&o->setexpls.exps,0);
+	xexp*e=o->exp;
 	if(o->super.is_ref && !e->is_ref){
 		printf("&");
 	}else if(!o->super.is_ref && e->is_ref){
 		printf("*");
 	}
 
-	o->setexpls.super.compile((xexp*)&o->setexpls,tc);
+	o->exp->compile(o->exp,tc);
 }
 
 inline static void _xset_free_(xexp*oo){
 	xset*o=(xset*)oo;
-	o->setexpls.super.free((xexp*)&o->setexpls);
+	o->exp->free(o->exp);
+	free(o->exp);
 }
 
 inline static void _xset_print_source_(xexp*oo){
 	xset*o=(xset*)oo;
 	token_print_including_whitespace(&o->super.token);
 	printf("=");
-	_xexpls_print_source_((xexp*)&o->setexpls);
+	if(o->exp->print_source)
+		o->exp->print_source(o->exp);
 }
 
 inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){
@@ -53,11 +56,22 @@ inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){
 	o->super.type=tr.type;
 	o->super.is_ref=tr.is_ref;
 
-	xexpls_parse_next(&o->setexpls,tc,tk,false);
+	int ret=0;
+	o->exp=(xexp*)xexpls_read_next(tc,tk,false,&ret,1);// mode=1 try to parse
+	if(ret){// could not parse
+		o->exp=(xexp*)xbool_read_next(tc,tk);
+	}
+//	if(strcmp(o->super.type,"bool")){
+//		int ret=0;
+//		o->exp=(xexp*)xexpls_read_next(tc,tk,false,&ret,0);
+//	}else{
+//		o->exp=(xexp*)xbool_read_next(tc,tk);
+//	}
+//	xexpls_parse_next(&o->setexpls,tc,tk,false);
 	ci_xset_assert(tc,o);
 
 	if(!strcmp(o->super.type,"var"))
-		o->super.type=o->setexpls.super.type;
+		o->super.type=o->exp->type;
 }
 
 inline static/*gives*/xset*xset_read_next(toc*tc,strc name,token tk){

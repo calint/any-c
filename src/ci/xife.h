@@ -37,7 +37,7 @@ inline static xif*xif_read_next(toc*tc,token tk){
 		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	xbool_parse(&o->cond,tc,tk);
+	xbool_parse_next(&o->cond,tc,tk);
 	xcode_read_next(&o->code,tc);
 	return o;
 }

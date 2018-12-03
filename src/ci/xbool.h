@@ -96,7 +96,16 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 		printf(")");
 }
 
-inline static void xbool_parse(xbool*o,toc*tc,token tk){
+
+inline static void xbool_parse_next(xbool*o,toc*tc,token tk);
+inline static xbool*xbool_read_next(toc*tc,token tk){
+	xbool*o=malloc(sizeof(xbool));
+	*o=xbool_def;
+	xbool_parse_next(o,tc,tk);
+	return o;
+}
+
+inline static void xbool_parse_next(xbool*o,toc*tc,token tk){
 	o->super.type="bool";
 	o->super.token=tk;
 
@@ -111,7 +120,7 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 		while(1){
 			xbool*e=malloc(sizeof(xbool));
 			*e=xbool_def;
-			xbool_parse(e,tc,tk);
+			xbool_parse_next(e,tc,tk);
 			ptrs_add(&o->lsbools,e);
 			if(toc_srcp_is_take(tc,')'))
 				return;
@@ -129,7 +138,8 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 		}
 	}
 
-	xexpls_parse_next(&o->lh,tc,tk,false);
+	int ret=0;
+	xexpls_parse_next(&o->lh,tc,tk,false,&ret,0);
 	if(toc_srcp_is_take(tc,'=')){
 		o->op='=';
 	}else if(toc_srcp_is_take(tc,'>')){
@@ -157,5 +167,6 @@ inline static void xbool_parse(xbool*o,toc*tc,token tk){
 		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	xexpls_parse_next(&o->rh,tc,tk,false);
+	ret=0;
+	xexpls_parse_next(&o->rh,tc,tk,false,&ret,0);
 }

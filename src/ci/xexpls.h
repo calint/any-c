@@ -57,18 +57,21 @@ inline static void _xexpls_print_source_(xexp*oo){
 	}
 }
 
-inline static void xexpls_parse_next(xexpls*,toc*,token,bool issubexpr);
-inline static xexpls*xexpls_read_next(toc*tc,token tk,bool issubexpr){
+inline static void xexpls_parse_next(xexpls*,toc*,token,bool,int*,int);
+inline static xexpls*xexpls_read_next(
+		toc*tc,token tk,bool issubexpr,int*ret,int mode){
 	xexpls*o=malloc(sizeof(xexpls));
 	*o=xexpls_def;
 	xexp_set_is_parenthesis(&o->super,issubexpr);
-	xexpls_parse_next(o,tc,tk,issubexpr);
+	xexpls_parse_next(o,tc,tk,issubexpr,ret,mode);
 	return o;
 }
 
-inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
+inline static void xexpls_parse_next(
+		xexpls*o,toc*tc,token tk,bool issubexpr,int*ret,int mode){
 	o->super.token=tk;
 	xexp*prev_exp=NULL;
+	const char*entry_srcp=tc->srcp;
 	while(1){
 		if(!o->exps.count)
 			strb_add(&o->ops,'\0');
@@ -76,7 +79,13 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 		bool is_negated=toc_srcp_is_take(tc,'-');
 		xexp*e;
 		if(toc_srcp_is_take(tc,'(')){
-			xexpls*els=xexpls_read_next(tc,tk,true);
+			int result=0;
+			xexpls*els=xexpls_read_next(tc,tk,true,&result,mode);
+			if(mode==1 && result){
+				*ret=result;
+				tc->srcp=entry_srcp;
+				return;
+			}
 			//? xexpls_deduce_typeref(&o->exps)
 			xexp*first=ptrs_get(&els->exps,0);
 			els->super.type=first->type;
@@ -108,7 +117,19 @@ inline static void xexpls_parse_next(xexpls*o,toc*tc,token tk,bool issubexpr){
 		else if(toc_srcp_is_take(tc,'|')){strb_add(&o->ops,'|');}
 		else if(toc_srcp_is_take(tc,'&')){strb_add(&o->ops,'&');}
 		else if(toc_srcp_is_take(tc,'^')){strb_add(&o->ops,'^');}
-		else break;
+		else {
+			if(!issubexpr)
+				break;
+			if(mode==0){
+				toc_print_source_location2(tc,tc->srcp,4);
+				printf("expected operator + - * / %% | & ^");
+				printf("\n    %s %d\n",__FILE__,__LINE__);
+				longjmp(_jmp_buf,1);
+			}
+			*ret=1;
+			tc->srcp=entry_srcp;
+			return;
+		}
 	}
 	//? xexpls_deduce_typeref(&o->exps)
 	xexp*first=ptrs_get(&o->exps,0);

@@ -37,7 +37,8 @@ inline static void _xvar_compile_(const xexp*oo,toc*tc){
 
 inline static void _xvar_free_(xexp*oo){
 	xvar*o=(xvar*)oo;
-	o->initval.super.free((xexp*)&o->initval);
+	if(o->initval.super.compile)
+		o->initval.super.free((xexp*)&o->initval);
 }
 
 inline static void _xvar_print_source_(xexp*oo){

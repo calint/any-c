@@ -1,0 +1,18 @@
+global{
+	main{
+		var i=1
+		var j=2
+		var k=3
+		
+		if(i=2)			p("2")
+		else if(i=3)	p("3")
+		else if(i=1)	p("1")
+		
+		if(i<=1) p("true\n") else p("false\n")
+		if(i>=1) p("true\n") else p("false\n")
+		if(i=1) p("true\n") else p("false\n")
+		if(i=1 and j=2) p("true\n") else p("false\n")
+		if(not i=1) p("true\n") else p("false\n")
+		if(i=1 and not (j=2 and k=3)) p("true\n") else p("false\n")
+	}
+}
