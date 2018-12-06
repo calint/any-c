@@ -138,8 +138,7 @@ inline static void xbool_parse_next(xbool*o,toc*tc,token tk,bool issubexpr){
 		}
 	}
 
-	int ret=0;
-	xexpls_parse_next(&o->lh,tc,tk,false,&ret,0);
+	xexpls_parse_next(&o->lh,tc,tk,false,0,NULL);
 	if(toc_srcp_is_take(tc,'=')){
 		o->op='=';
 	}else if(toc_srcp_is_take(tc,'>')){
@@ -167,6 +166,5 @@ inline static void xbool_parse_next(xbool*o,toc*tc,token tk,bool issubexpr){
 		printf("\n    %s %d\n",__FILE__,__LINE__);
 		longjmp(_jmp_buf,1);
 	}
-	ret=0;
-	xexpls_parse_next(&o->rh,tc,tk,false,&ret,0);
+	xexpls_parse_next(&o->rh,tc,tk,false,0,NULL);
 }

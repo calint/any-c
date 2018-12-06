@@ -57,7 +57,7 @@ inline static void _xset_parse(xset*o,toc*tc,strc name,token tk){
 	o->super.is_ref=tr.is_ref;
 
 	int ret=0;
-	o->exp=(xexp*)xexpls_read_next(tc,tk,false,&ret,1);// mode=1 try to parse
+	o->exp=(xexp*)xexpls_read_next(tc,tk,false,1,&ret);// mode=1 try to parse
 	if(ret){// could not parse, try bool
 		o->exp=(xexp*)xbool_read_next(tc,tk);
 	}

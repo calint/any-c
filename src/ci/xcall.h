@@ -61,8 +61,7 @@ inline static xcall*xcall_read_next(toc*tc,token tk,strc name){
 	while(1){ // arguments passed to function
 		if(toc_srcp_is_take(tc,')'))
 			break;
-		int ret=0;
-		xexp*a=(xexp*)xexpls_read_next(tc,tk,false,&ret,0);
+		xexp*a=(xexp*)xexpls_read_next(tc,tk,false,0,NULL);
 		ptrs_add(&o->args,a);
 
 		if(toc_srcp_is_take(tc,','))

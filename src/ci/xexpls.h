@@ -57,19 +57,19 @@ inline static void _xexpls_print_source_(xexp*oo){
 	}
 }
 
-inline static void xexpls_parse_next(xexpls*,toc*,token,bool,int*,int);
+inline static void xexpls_parse_next(xexpls*,toc*,token,bool,int,int*);
 // ret: return code, mode: 0 normal, 1 try and return ret code
 inline static xexpls*xexpls_read_next(
-		toc*tc,token tk,bool issubexpr,int*ret,int mode){
+		toc*tc,token tk,bool issubexpr,int mode,int*ret){
 	xexpls*o=malloc(sizeof(xexpls));
 	*o=xexpls_def;
 	xexp_set_is_parenthesis(&o->super,issubexpr);
-	xexpls_parse_next(o,tc,tk,issubexpr,ret,mode);
+	xexpls_parse_next(o,tc,tk,issubexpr,mode,ret);
 	return o;
 }
 
 inline static void xexpls_parse_next(
-		xexpls*o,toc*tc,token tk,bool issubexpr,int*ret,int mode){
+		xexpls*o,toc*tc,token tk,bool issubexpr,int mode,int*ret){
 	o->super.token=tk;
 	xexp*prev_exp=NULL;
 	const char*entry_srcp=tc->srcp;
@@ -81,7 +81,7 @@ inline static void xexpls_parse_next(
 		xexp*e;
 		if(toc_srcp_is_take(tc,'(')){
 			int result=0;
-			xexpls*els=xexpls_read_next(tc,tk,true,&result,mode);
+			xexpls*els=xexpls_read_next(tc,tk,true,mode,&result);
 			if(mode==1 && result){
 				*ret=result;
 				tc->srcp=entry_srcp;
