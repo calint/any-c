@@ -97,15 +97,15 @@ inline static void _xbool_compile_(const xexp*oo,toc*tc){
 }
 
 
-inline static void xbool_parse_next(xbool*o,toc*tc,token tk);
+inline static void xbool_parse_next(xbool*o,toc*tc,token tk,bool issubexpr);
 inline static xbool*xbool_read_next(toc*tc,token tk){
 	xbool*o=malloc(sizeof(xbool));
 	*o=xbool_def;
-	xbool_parse_next(o,tc,tk);
+	xbool_parse_next(o,tc,tk,false);
 	return o;
 }
 
-inline static void xbool_parse_next(xbool*o,toc*tc,token tk){
+inline static void xbool_parse_next(xbool*o,toc*tc,token tk,bool issubexpr){
 	o->super.type="bool";
 	o->super.token=tk;
 
@@ -120,7 +120,7 @@ inline static void xbool_parse_next(xbool*o,toc*tc,token tk){
 		while(1){
 			xbool*e=malloc(sizeof(xbool));
 			*e=xbool_def;
-			xbool_parse_next(e,tc,tk);
+			xbool_parse_next(e,tc,tk,issubexpr);
 			ptrs_add(&o->lsbools,e);
 			if(toc_srcp_is_take(tc,')'))
 				return;

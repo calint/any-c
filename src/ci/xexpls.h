@@ -58,6 +58,7 @@ inline static void _xexpls_print_source_(xexp*oo){
 }
 
 inline static void xexpls_parse_next(xexpls*,toc*,token,bool,int*,int);
+// ret: return code, mode: 0 normal, 1 try and return ret code
 inline static xexpls*xexpls_read_next(
 		toc*tc,token tk,bool issubexpr,int*ret,int mode){
 	xexpls*o=malloc(sizeof(xexpls));

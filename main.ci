@@ -3,8 +3,7 @@ global{
 	k=true
 	main{
 		var i=1
-		var b=(i=j)
-		var c=k
+		var b=(i=j and k=true)
 		if(b=true)
 			p("true\n")
 		else

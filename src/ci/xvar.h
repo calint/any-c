@@ -86,6 +86,11 @@ inline static xvar*xvar_read_next(toc*tc,strc type){
 			}
 		}
 	}else{
+		if(!strcmp(o->super.type,"var")){
+			toc_print_source_location(tc,o->super.token,4);
+			printf("var without initializer");
+			longjmp(_jmp_buf,1);
+		}
 		o->initval.super.compile=NULL;
 	}
 	return o;
